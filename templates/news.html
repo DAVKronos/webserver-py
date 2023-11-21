@@ -1,0 +1,14 @@
+<div class="flex">
+  
+<div class="grid grid-cols-1 gap-4 md:grid-cols-3">
+  {% for i in items %}
+  <div href="">
+<h2 class="text-lg font-bold tracking-tight"><a href="content/{{i.id}}">{{i.title}}</a></h2>
+<p class="px-4">{{i.news}}</p>
+</div>
+{% endfor %}
+</div>
+<div class="flex-none w-64">
+{{sidebar|safe}}
+</div>
+</div>
