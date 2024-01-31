@@ -7,6 +7,7 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
 # from .admin import admin
+from . import api
 from .routers import users
 from .database.pg import get_database
 from .database.queries import *
@@ -15,9 +16,9 @@ from .database.queries import *
 import jinja2
 
 app = FastAPI()
-
+app.mount("/api/v1", api.app)
 # app.mount("/admin", admin.app)
-app.include_router(users.router)
+# app.include_router(users.router)
 app.mount("/static", StaticFiles(directory="static"), name="static")
 templates = Jinja2Templates(directory="templates")
 
