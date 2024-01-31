@@ -33,8 +33,10 @@ async def activity(id: int, r: Request, db: Annotated[dict, Depends(get_database
 
 @app.get("/", response_class=HTMLResponse)
 async def home(r: Request):
+    #return "aaaahello!"
     return templates.TemplateResponse(name="react.html", context={"request": r})
 
 
 if __name__ == "__main__":
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+    #uvicorn.run(app, host="0.0.0.0", port=8000)
+    uvicorn.run("app.main:app", reload=True, host="0.0.0.0", port=8000)
