@@ -31,20 +31,9 @@ async def activity(id: int, r: Request, db: Annotated[dict, Depends(get_database
     # return HTMLResponse(f"<turbo-frame id='activity-{id}'>{res['description']}</turbo-frame>")
 
 
-@app.get("/")
-async def home(r: Request, db: Annotated[dict, Depends(get_database)]):
-    activities = await get_activities(db)
-    activities = activities[::-1][0:10]
-
-    res = await get_news(db)
-    for r in res:
-        r["news"] = r["news"][0:100]
-
-    # b = templates.get_template("activities.html").render(items=activities)
-    # a = templates.get_template("news.html").render(items=res, sidebar=b)
-    # layout = templates.get_template("layout.html")
-    # return templates.TemplateResponse("base.html", {"request": r, "content": a})
-    return activities
+@app.get("/", response_class=HTMLResponse)
+async def home(r: Request):
+    return templates.TemplateResponse(name="react.html", context={"request": r})
 
 
 if __name__ == "__main__":
