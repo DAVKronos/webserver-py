@@ -1,10 +1,10 @@
 from databases import Database
-
+from ..config import config
 
 async def get_database():
     async with Database(
-            "postgresql+asyncpg://kronos_test@localhost:5432/kronos_py_test",
-            password="#FFMEe9#jq!!SmoW"
+            f"postgresql+asyncpg://{config['database']['username']}@{config['database']['hostname']}:{config['database']['port']}/{config['database']['database']}",
+            password=config['database']['password'],
     ) as db:
         yield db
 
