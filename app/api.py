@@ -3,7 +3,7 @@ from fastapi import FastAPI, Request, Depends
 from fastapi.encoders import jsonable_encoder
 from fastapi.responses import JSONResponse
 
-from .routers import announcements, commissions
+from .routers import announcements, commissions, events
 from .database.pg import get_database
 from .database import queries
 
@@ -11,6 +11,7 @@ app = FastAPI()
 
 app.include_router(announcements.router)
 app.include_router(commissions.router)
+app.include_router(events.router)
 
 @app.get("/pages", response_class=JSONResponse)
 async def get_pages(r: Request, db: Annotated[dict, Depends(get_database)]):

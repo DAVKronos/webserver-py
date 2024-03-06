@@ -1,17 +1,16 @@
 from sqlalchemy import Boolean, Column, DateTime, ForeignKey, Integer, MetaData, String, Table
-from .user_types import user_types
 
 metadata = MetaData()
 
-users= Table(
-    "users",
+user_types = Table(
+    "user_types",
     metadata,
     Column("id", Integer, primary_key=True),
     Column("created_at", DateTime),
     Column("updated_at", DateTime),
-    Column("user_type_id", Integer, ForeignKey(user_types.c.id)),
     Column("name", String),
-    Column("initials", String),
-    Column("email", String),
+    Column("name_en", String),
+    Column("donor", Boolean),
+    Column("competition", Boolean)
 )
 
