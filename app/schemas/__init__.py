@@ -6,3 +6,4 @@ from .events import *
 from .eventtypes import *
 from .results import *
 from .users import *
+from .user_types import *

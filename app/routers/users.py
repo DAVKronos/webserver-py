@@ -1,19 +1,36 @@
-from fastapi import APIRouter
-from fastapi.responses import HTMLResponse, JSONResponse
-from ..models.user import *
+from typing import Annotated
+from fastapi import APIRouter, Request, Depends
+from fastapi.responses import JSONResponse
+from ..database.pg import get_database
+from ..queries import users
 
-router = APIRouter(prefix="/users")
-
-
-@router.get("/", tags=["users"], response_class=JSONResponse)
-async def read():
-    # list_users_query()
-    fake_save_user(UserIn(username="foo", password="bar"))
-    return HTMLResponse("<b>foo bar</b>")
+router = APIRouter(prefix="")
 
 
-@router.get("/active", tags=["users"], response_class=HTMLResponse)
-async def active():
-    fake_save_user(UserIn(username="foo", password="bar"))
-    # return TurboFrame('active-users',)
-    return HTMLResponse(f'<turbo-frame id="active-users">ussss</turbo-frame>')
+
+@router.get("/users", response_class=JSONResponse)
+async def get(r: Request, database: Annotated[dict, Depends(get_database)]):
+    res = await users.get(database)
+    return res
+    
+@router.get("/users/{id}", response_class=JSONResponse)
+async def get(id: int, r: Request, database: Annotated[dict, Depends(get_database)]):
+    res = await users.get(database, id)
+    return res
+
+@router.get("/user_types", response_class=JSONResponse)
+async def usertypes(r: Request, database: Annotated[dict, Depends(get_database)]):
+    res = await users.get_usertypes(database)
+    return res
+
+@router.get("/user_types/{id}",  response_class=JSONResponse)
+async def usertypes(id: int, r: Request, database: Annotated[dict, Depends(get_database)]):
+    res = await users.get_usertypes(database, id)
+    return res
+
+@router.get("/users/birthdays",  response_class=JSONResponse)
+async def birthdays(r: Request, database: Annotated[dict, Depends(get_database)]):
+    pass
+    
+
+
