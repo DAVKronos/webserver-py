@@ -14,9 +14,8 @@ newsitems = Table(
     Column("user_id", Integer, ForeignKey(users.c.id)),
     Column("agreed_by", Integer, ForeignKey(users.c.id)),
     Column("articlephoto_updated_at", DateTime),
-    #Column("articlephoto_url", String),
+    Column("articlephoto_url_normal", String),
+    Column("articlephoto_url_carrousel", String),
     Column("created_at", DateTime),
     Column("updated_at", DateTime),
 )
-
- 
