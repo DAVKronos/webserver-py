@@ -15,8 +15,8 @@ async def get(database, id: int = None):
     
     def mapping(row):
         d = dict(row._mapping)
-        d.update({'user': {'name': d["username"]}})
-        d.pop('username')
+        u = d.pop('username')
+        d.update({'user': {'name': u}})
         return d  
     return [mapping(r) for r in rows]
 
