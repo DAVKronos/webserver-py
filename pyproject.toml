@@ -4,11 +4,14 @@ version = "0.1.0"
 description = ""
 authors = ["Your Name <you@example.com>"]
 readme = "README.md"
+packages = [
+	 { include = "app", from = "" }
+	 ]
 
 [tool.poetry.dependencies]
 python = "^3.11"
 uvicorn = "^0.23.2"
-fastapi = "^0.104.0"
+fastapi = "^0.110.0"
 python-multipart = "^0.0.6"
 Jinja2 = "^3.1.2"
 pydantic = {extras = ["email"], version = "^2.4.2"}
@@ -22,7 +25,13 @@ black = "^23.10.0"
 flake8 = "^6.1.0"
 autoflake = "^2.2.1"
 pytest = "^7.4.2"
+anyio = "^4.3.0"
 
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
+
+[tool.pytest.ini_options]
+addopts = [
+    "--import-mode=importlib",
+]
