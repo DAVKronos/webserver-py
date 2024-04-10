@@ -2,10 +2,9 @@ from typing import Annotated
 from fastapi import FastAPI, Request, Depends
 from fastapi.encoders import jsonable_encoder
 from fastapi.responses import JSONResponse
-
+from .dependencies import DepDatabase
 from .routers import activities, announcements, articles, commissions, documents, events, photos, results, users
-from .database.pg import get_database
-from .database import queries
+from .routers import announcements
 
 app = FastAPI()
 
@@ -19,9 +18,8 @@ app.include_router(photos.router)
 app.include_router(results.router)
 app.include_router(users.router)
 
-
 @app.get("/pages", response_class=JSONResponse)
-async def get_pages(r: Request, db: Annotated[dict, Depends(get_database)]):
+async def get_pages(r: Request, database: DepDatabase):
     pass
 
 
