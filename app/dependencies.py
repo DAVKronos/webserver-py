@@ -12,3 +12,9 @@ async def get_database(request: Request):
         yield connection
 
 DepDatabase = Annotated[Connection, Depends(get_database)]
+
+async def jwt_onetime_parameter():
+    # inject a decoded jwt token into the request,
+    # and set an encoded jwt token if it is set in the response
+    # fail if the secret is not strong enough
+    pass

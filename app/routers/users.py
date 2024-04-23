@@ -3,9 +3,11 @@ from fastapi import APIRouter, Request, Depends
 from fastapi.responses import JSONResponse
 from ..dependencies import DepDatabase
 from ..queries import users
+from ..models.user import *
+from ..models.authentication import get_active_user
+
 
 router = APIRouter(prefix="")
-
 
 
 @router.get("/users", response_class=JSONResponse)
@@ -32,5 +34,3 @@ async def usertypes(id: int, r: Request, database: DepDatabase):
 async def birthdays(r: Request, database: DepDatabase):
     pass
     
-
-

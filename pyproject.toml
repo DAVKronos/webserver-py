@@ -17,6 +17,8 @@ Jinja2 = "^3.1.2"
 pydantic = {extras = ["email"], version = "^2.4.2"}
 databases = {extras = ["aiosqlite", "asyncpg"], version = "^0.8.0"}
 psycopg = {extras = ["binary"], version = "^3.1.13"}
+python-jose = {extras = ["cryptography"], version = "^3.3.0"}
+passlib = {extras = ["bcrypt"], version = "^1.7.4"}
 
 
 [tool.poetry.group.dev.dependencies]

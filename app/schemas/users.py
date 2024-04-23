@@ -13,5 +13,5 @@ users= Table(
     Column("name", String),
     Column("initials", String),
     Column("email", String),
+    Column("encrypted_password", String)
 )
-

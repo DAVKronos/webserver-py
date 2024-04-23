@@ -46,3 +46,20 @@ def update():
 
 def delete():
     pass
+
+def authenticate(username,password):
+    pass
+def login(username,password):
+    pass
+def logout():
+    pass
+def reset_password():
+    pass
+def expire_password():
+    pass
+def expire_user():
+    pass
+def forget_user():
+    pass
+def inject_user_into_dependency():
+    pass
