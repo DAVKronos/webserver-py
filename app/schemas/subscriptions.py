@@ -1,5 +1,6 @@
 from sqlalchemy import Boolean, Column, DateTime, ForeignKey, Integer, MetaData, String, Table
-
+from .agendaitems import agendaitems
+from .users import users
 metadata = MetaData()
 
 
