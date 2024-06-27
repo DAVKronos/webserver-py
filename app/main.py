@@ -7,6 +7,7 @@ from fastapi.encoders import jsonable_encoder
 from fastapi.responses import Response, HTMLResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
+from .routers import authentication
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -26,10 +27,14 @@ import jinja2
 templates = Jinja2Templates(directory="templates")
 
 app.mount("/api/v1", api.app)
-app.mount("/static", StaticFiles(directory="static"), name="static")
+app.mount("/static", StaticFiles(directory="static", follow_symlink=True), name="static")
 
-@app.get("/", response_class=HTMLResponse)
-async def get_home(r: Request):
+
+app.include_router(authentication.router)
+
+
+@app.get("/{full_path:path}", response_class=HTMLResponse)
+async def get_home(r: Request, full_path: str):
     return templates.TemplateResponse(name="react.html", context={"request": r})
 
 if __name__ == "__main__":
