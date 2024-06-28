@@ -2,6 +2,7 @@ from typing import Annotated
 
 from passlib.context import  CryptContext
 from jose import JWTError, jwt
+import time
 
 from ..queries import users
 from datetime import datetime, timezone, timedelta
@@ -16,15 +17,28 @@ def hash_password(password):
     return crypt.hash(password)
 
 def create_token(user):
-    secret = config["authentication.jwt"]["secret"]
-    algo = config["authentication.jwt"]["algorithm"]
-    expires = config["authentication.jwt"]["expiration_minutes"]
+    secret = config["authentication"]["jwt"]["secret"]
+    algo = config["authentication"]["jwt"]["algorithm"]
+    expires = config["authentication"]["access_token"]["expiration_minutes"]
 
     e = datetime.now(timezone.utc) + timedelta(minutes=expires)
-    payload = {"sub": user, "expires": e}
+
+    scopes = ["kronos_user"]
+    # user, contributor, board, admin
+    payload = {"sub": user, "scopes": scopes, "exp": int(e.timestamp())}
     
     token = jwt.encode(payload, secret, algorithm=algo)
     return token
+
+async def validate_token(token):
+    secret = config["authentication"]["jwt"]["secret"]
+    algo = config["authentication"]["jwt"]["algorithm"]
+    try:
+        payload = jwt.decode(token, secret, algorithms=[algo])
+    except JWTError:
+        payload = None
+
+    return payload
 
 async def decode_token(token):#: Annotated[str]):
     #try:
@@ -39,12 +53,12 @@ async def get_active_user():
 
 async def login(database, username, password):
     user = await users.get_password(database, username)
-    print(user)
+    
     if not user:
         return None
     if not verify_password(password, user.encrypted_password):
         return None
-    return create_token(user)
+    return create_token(user.email)
 
     
 def logout():
