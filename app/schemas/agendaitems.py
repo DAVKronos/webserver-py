@@ -1,5 +1,5 @@
 from sqlalchemy import Boolean, Column, DateTime, ForeignKey, Integer, MetaData, String, Table
-
+from .agendaitem_types import agendaitem_types
 metadata = MetaData()
 
 agendaitems = Table(
@@ -17,7 +17,7 @@ agendaitems = Table(
     Column("commission_id", Integer),
     Column("category", String),
     Column("intern", Boolean),
-    Column("agendaitemtype_id", Integer),
+    Column("agendaitemtype_id", Integer, ForeignKey(agendaitem_types.c.id)),
     Column("url", String),
     Column("user_id", Integer),
     Column("maxsubscription", Integer),
