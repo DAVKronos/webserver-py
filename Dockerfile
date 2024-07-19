@@ -9,13 +9,8 @@ WORKDIR /app
 
 RUN curl -sSL https://install.python-poetry.org | python3 -
 
-COPY pyproject.toml poetry.lock /app/
-
+COPY . /app/
 RUN poetry install
-
-COPY app /app/app
-COPY static /app/static
-COPY templates /app/templates
 
 EXPOSE 8000
 CMD ["poetry","run", "python", "-m", "app.main"]
