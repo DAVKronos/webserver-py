@@ -42,4 +42,6 @@ if __name__ == "__main__":
     r = config["uvicorn"]["reload"]
     h = config["uvicorn"]["hostname"]
     p = config["uvicorn"]["port"]
-    uvicorn.run("app.main:app", reload=r, host=h, port=p)
+    ph = config["uvicorn"]["proxy_headers"]
+    
+    uvicorn.run("app.main:app", reload=r, host=h, port=p, proxy_headers=ph)
