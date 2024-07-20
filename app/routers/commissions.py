@@ -6,7 +6,7 @@ from ..queries import commissions
 from datetime import datetime
 router = APIRouter(prefix="/commissions")
 
-@router.get("/", response_class=JSONResponse)
+@router.get("", response_class=JSONResponse)
 async def get(r: Request, database: DepDatabase):
     res = await commissions.get(database)
     return res

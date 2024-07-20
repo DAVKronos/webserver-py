@@ -6,7 +6,7 @@ from ..queries import articles
 
 router = APIRouter(prefix="/newsitems")
 
-@router.get("/", response_class=JSONResponse)
+@router.get("", response_class=JSONResponse)
 async def get(r: Request, database: DepDatabase):
     res = await articles.get_published(database)
     return res

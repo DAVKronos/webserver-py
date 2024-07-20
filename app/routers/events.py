@@ -6,7 +6,7 @@ from ..queries import events
 from datetime import datetime
 router = APIRouter(prefix="/events")
 
-@router.get("/", response_class=JSONResponse)
+@router.get("", response_class=JSONResponse)
 async def get(r: Request, database: DepDatabase):
     res = await events.get(database)
     return res

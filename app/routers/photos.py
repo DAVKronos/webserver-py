@@ -6,7 +6,7 @@ from ..queries import photos
 
 router = APIRouter(prefix="/photoalbums")
 
-@router.get("/", response_class=JSONResponse)
+@router.get("", response_class=JSONResponse)
 async def get(r: Request, database: DepDatabase):
     res = await photos.get_albums(database)
     return res

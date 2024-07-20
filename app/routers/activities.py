@@ -4,7 +4,7 @@ from fastapi.responses import JSONResponse
 from ..dependencies import DepDatabase
 from ..queries import activities
 from datetime import datetime
-router = APIRouter(prefix="")
+router = APIRouter()
 
 # date[year]=&date[month]=
 @router.get("/agendaitems", response_class=JSONResponse)

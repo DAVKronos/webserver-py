@@ -7,7 +7,7 @@ from ..queries import pages
 
 router = APIRouter(prefix="/pages")
 
-@router.get("/", response_class=JSONResponse)
+@router.get("", response_class=JSONResponse)
 async def get(r: Request, database: DepDatabase):
     res = await pages.get(database)
     return res
