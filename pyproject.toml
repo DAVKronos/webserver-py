@@ -14,11 +14,11 @@ uvicorn = "^0.23.2"
 fastapi = "^0.110.0"
 python-multipart = "^0.0.6"
 Jinja2 = "^3.1.2"
-pydantic = {extras = ["email"], version = "^2.4.2"}
-databases = {extras = ["aiosqlite", "asyncpg"], version = "^0.8.0"}
+databases = {extras = ["aiosqlite", "asyncpg"], version = "^0.9"}
 psycopg = {extras = ["binary"], version = "^3.1.13"}
 python-jose = {extras = ["cryptography"], version = "^3.3.0"}
 passlib = {extras = ["bcrypt"], version = "^1.7.4"}
+sqlmodel = "^0.0.21"
 
 
 [tool.poetry.group.dev.dependencies]

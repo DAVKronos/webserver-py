@@ -12,6 +12,10 @@ from .routers import authentication
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     # Startup
+    engine = database.create_engine()
+    api.app.state.engine = engine
+    app.state.engine = engine
+    
     async with database.create_pool() as pool:
         api.app.state.connection_pool = pool
         app.state.connection_pool = pool
