@@ -6,13 +6,16 @@ from ..queries import activities
 from datetime import datetime
 router = APIRouter()
 
+
+from app import dependencies as deps
+from app.models import AgendaitemResponse
 # date[year]=&date[month]=
-@router.get("/agendaitems", response_class=JSONResponse)
-async def get(database: DepDatabase,
+@router.get("/agendaitems", response_model= list[AgendaitemResponse])
+async def get(database: deps.Database,
               year: Annotated[int | None, Query(alias="date[year]")] = None,
               month: Annotated[int | None, Query(alias="date[month]")] = None):
-    res = await activities.get_by_date(database, year, month)
-    return res
+    
+    return (await activities.where(database, year=year, month=month))
 
 
 @router.get("/agendaitems/{id}", response_class=JSONResponse)

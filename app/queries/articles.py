@@ -1,35 +1,29 @@
-from sqlalchemy import column, select, join, and_, func, text
-from ..schemas import newsitems, comments,users
+from sqlmodel import select, func, and_, text
+from app.models import Article, ArticlePublic, ArticlePublicWithCommentCount, Comment, User, UserPublic
 
-async def get_published(database, id: int = None):
-    c = select(comments.c.commentable_id, func.count().label("comment_count")) \
-        .group_by(comments.c.commentable_id) \
-        .where(and_(comments.c.commentable_type=='Newsitem'))#
-    
-    if (id is not None): c = c.where(comments.c.commentable_id == id)
-    c = c.subquery()
-    query = select(newsitems, users.c.name.label("username"),
-                   func.coalesce(text('comment_count'), 0).label("comment_count")) \
-        .where(newsitems.c.agreed == True) \
-        .join(c, newsitems.c.id== text('commentable_id'), isouter=True) \
-        .join(users, newsitems.c.user_id == users.c.id, isouter=True) \
-        .order_by(newsitems.c.created_at.desc())
 
+async def get(database, id: int = None):
+    subq = select(Comment.commentable_id, func.count().label("comment_count")) \
+        .group_by(Comment.commentable_id) \
+        .where(and_(Comment.commentable_type=='Newsitem')) \
+        .subquery()
     
-    if id is not None: query = query.where(newsitems.c.id == id)
+    query = select(Article, func.coalesce(text('comment_count'), 0).label("comment_count")) \
+        .where(Article.agreed == True) \
+        .join(subq, Article.id == text('commentable_id'), isouter=True) \
+        .order_by(Article.created_at.desc())
+    if id is not None:
+        query = query.where(Article.id == id)
     
-    rows = await database.fetch_all(query=query)
-    
-    def mapping(row):
-        d = dict(row._mapping)
-        u = d.pop('username')
-        d.update({'user': {'name': u}})
-        return d  
-    return [mapping(r) for r in rows]
+    result = (await database.exec(query)).all()
 
-async def get_comments(database, id: int = None):
-    q = select(comments).where(and_(comments.c.commentable_type=='Newsitem',
-                                    comments.c.commentable_id == id))
+    return [ArticlePublicWithCommentCount(**record[0].dict(), user=UserPublic(**record[0].user.dict()) if record[0].user is not None else None, comment_count=record[1]) for record in result]
 
-    rows = await database.fetch_all(q)
-    return rows
+
+async def get_comments(database, id):
+    query = select(Comment) \
+        .where(and_(Comment.commentable_type=='Newsitem',
+                    Comment.commentable_id == id))
+
+    result = (await database.exec(query)).all()
+    return result
