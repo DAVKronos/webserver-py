@@ -8,8 +8,8 @@ async def get(database, id: int = None):
         .where(and_(Comment.commentable_type=='Newsitem')) \
         .subquery()
     
+    #.where(Article.agreed == True) \
     query = select(Article, func.coalesce(text('comment_count'), 0).label("comment_count")) \
-        .where(Article.agreed == True) \
         .join(subq, Article.id == text('commentable_id'), isouter=True) \
         .order_by(Article.created_at.desc())
     if id is not None:
@@ -18,7 +18,6 @@ async def get(database, id: int = None):
     result = (await database.exec(query)).all()
 
     return [ArticlePublicWithCommentCount(**record[0].dict(), user=UserPublic(**record[0].user.dict()) if record[0].user is not None else None, comment_count=record[1]) for record in result]
-
 
 async def get_comments(database, id):
     query = select(Comment) \

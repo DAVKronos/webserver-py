@@ -10,11 +10,16 @@ class ArticleBase(SQLModel):
     news: str
     news_en: str
     agreed: bool
-    agreed_by: int
-    articlephoto_updated_at: datetime
-    articlephoto_url_normal: str
-    articlephoto_url_carrousel: str
+    agreed_by: int | None = None
+    articlephoto_updated_at: datetime | None = None
+    articlephoto_url_normal: str | None = None
+    articlephoto_url_carrousel: str | None = None
 
+class Article(ArticleBase, table=True):
+    __tablename__: str = "newsitems"
+    id: int | None = Field(default=None, primary_key=True)
+    user_id: int = Field(foreign_key="users.id")
+    user: User = Relationship(back_populates="articles", sa_relationship_kwargs={"lazy": "selectin"})
 
 class ArticlePublic(ArticleBase):
     id: int
@@ -22,11 +27,15 @@ class ArticlePublic(ArticleBase):
 
 class ArticlePublicWithCommentCount(ArticlePublic):
     comment_count: int
-    
-class Article(ArticleBase, table=True):
-    __tablename__: str = "newsitems"
-    id: int | None = Field(default=None, primary_key=True)
-    user_id: int = Field(foreign_key="users.id")
-    user: User = Relationship(back_populates="articles", sa_relationship_kwargs={"lazy": "selectin"})
 
- 
+class ArticleCreate(SQLModel):
+    title: str
+    title_en: str
+    news: str
+    news_en: str
+
+class ArticleUpdate(SQLModel):
+    title: str | None = None
+    title_en: str | None = None
+    news: str | None = None
+    news_en: str | None = None
