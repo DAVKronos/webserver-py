@@ -1,10 +1,9 @@
 from typing import Annotated
 from fastapi import APIRouter, Request, Depends
 from fastapi.responses import JSONResponse
-from ..dependencies import DepDatabase
+from ..dependencies import DepDatabase, Database
 from ..queries import users
 from ..models.user import *
-from ..models.authentication import get_active_user
 
 
 router = APIRouter(prefix="")
@@ -15,10 +14,9 @@ async def get(r: Request, database: DepDatabase):
     res = await users.get(database)
     return res
     
-@router.get("/users/{id}", response_class=JSONResponse)
-async def get(id: int, r: Request, database: DepDatabase):
-    res = await users.get(database, id)
-    return res
+@router.get("/users/{id}", response_model=UserPublic)
+async def get(id: int, r: Request, database: Database):
+    return await database.get(User, id)
 
 @router.get("/user_types", response_class=JSONResponse)
 async def usertypes(r: Request, database: DepDatabase):

@@ -5,6 +5,7 @@ class UserBase(SQLModel):
     name: str
 
 class UserPublic(UserBase):
+    id: int | None
     email: str
     
 class User(UserBase, table=True):

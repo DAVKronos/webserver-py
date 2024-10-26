@@ -4,6 +4,7 @@ from passlib.context import  CryptContext
 from jose import JWTError, jwt
 import time
 
+from ..models.user import User
 from ..queries import users
 from datetime import datetime, timezone, timedelta
 from ..config import config
@@ -37,19 +38,17 @@ async def validate_token(token):
         payload = jwt.decode(token, secret, algorithms=[algo])
     except JWTError:
         payload = None
-
+    
     return payload
 
-async def decode_token(token):#: Annotated[str]):
+async def decode_token(payload):#: Annotated[str]):
     #try:
         #except JWTError:
-    username: str = payload.get("sub")
-    if username is None:
+    user_id: str = payload.get("sub")
+    if user_id is None:
         return false
-
-async def get_active_user():
-    pass
-
+    else:
+        return User(id=int(user_id))
 
 async def login(database, username, password):
     user = await users.get_password(database, username)
@@ -58,7 +57,8 @@ async def login(database, username, password):
         return None
     if not verify_password(password, user.encrypted_password):
         return None
-    return create_token(user.email)
+
+    return create_token(str(user.id))
 
     
 def logout():

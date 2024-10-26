@@ -1,25 +1,34 @@
 from typing import Annotated
-from fastapi import APIRouter, Form, Depends, Request
+from fastapi import APIRouter, Form, Depends, Request, Query
 from fastapi.responses import HTMLResponse, JSONResponse, Response
 from ..models import authentication
-from ..dependencies import DepDatabase
+from ..models.user import User, UserPublic
+from ..dependencies import Database, DepDatabase
 from ..config import config
+from ..queries import users
 
 router = APIRouter(prefix="/auth")
 
-@router.post("/login")
-async def login(username: Annotated[str, Form()] , password:Annotated[str, Form()], database: DepDatabase, response: Response):
-    token = await authentication.login(database, username, password)
-    # log login attempt by
+@router.post("/login", response_model=UserPublic) #, response_model_exclude_unset=True
+async def login(username: Annotated[str, Form()] , password:Annotated[str, Form()], deb_database: DepDatabase, database: Database, response: Response):
+    user = await users.get_password(deb_database, username)
+    
+    if not user:
+        return Response("", 403)
+    if not authentication.verify_password(password, user.encrypted_password):
+        return Response("", 403)
+
+    token = authentication.create_token(str(user.id))
+
     if token is None:
         # log login result
         return Response("", 403)
     else:
         # log login result
-        response = Response("", 200)
-        response.set_cookie(key="v2-access-token", value=token, max_age=3600*24*30, secure=True, httponly=True,)
+        #response.set_cookie(key="v2-access-token", value=token, max_age=3600*24*30, secure=True, httponly=True,)
         response.headers["access-token"] = token
-        return response
+        user = await database.get(User, user.id)
+        return UserPublic.model_validate(user, update={})
 
 @router.post("/logout")
 async def logout():
@@ -47,12 +56,13 @@ class PermissionCheck:
 async def validate_scope(user: Annotated[str, Depends(PermissionCheck(config['permissions']['scopes']['test']))]):
     return Response("",200)
 
-@router.get("/validate-token")
-async def validate(request: Request):
-    token = request.cookies["v2-access-token"]
-    await authentication.validate_token(token)
-    
-    return Response("", 200)
+@router.get("/validate_token",response_model=UserPublic)
+async def validate(request: Request, database: Database, token: Annotated[str | None, Query(alias="access-token")] = None,  ):
+    #token = request.cookies["v2-access-token"]
+    payload = await authentication.validate_token(token)
+    user_id: str = payload.get("sub")
+    user = await database.get(User, int(user_id))
+    return UserPublic.model_validate(user, update={'id':user_id})
 
 
 # maybe this belongs more to user administration than authentication?
