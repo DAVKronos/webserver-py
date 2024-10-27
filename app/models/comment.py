@@ -14,3 +14,4 @@ class Comment(CommentBase, table=True):
     id: int | None = Field(default=None, primary_key=True)
     user_id: int = Field(foreign_key="users.id")
     user: User = Relationship(back_populates="comments", sa_relationship_kwargs={"lazy": "selectin"})
+    

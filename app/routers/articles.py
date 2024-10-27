@@ -10,20 +10,37 @@ from datetime import datetime, timezone
 
 router = APIRouter(prefix="/newsitems")
 
-#@router.get("", response_model = list[ArticlePublicWithCommentCount])
 @router.get("", response_model=list[ArticlePublicWithCommentCount])
-async def get(r: Request, database: Database, active_user: ActiveUser):
-    res = await articles.get(database)
-    return [a for a in res if a.agreed]
+async def index(r: Request, database: Database, active_user: ActiveUser):
+    query = select(Article) \
+        .where(Article.agreed == True) \
+        .limit(None) \
+        .offset(None) \
+        .order_by(Article.created_at.desc())
+    
+    articles = await database.exec(query)
+    
+    # TODO: Make it DRY by using a computed field in the pydantic model?
+    from_article = lambda a: ArticlePublicWithCommentCount.model_validate(a, update= {
+        'comment_count': len(a.comments)})
+    
+    return map(from_article, articles.all())
 
 @router.get("/{id}", response_model=ArticlePublicWithCommentCount)
-async def get_by_id(id: int, r: Request, database: Database):
-    result = await articles.get(database, id)
-    
-    if len(result) == 0:
-        raise HTTPException(status_code=404, detail="Article not found")
+async def get_article(id: int, r: Request, database: Database):
     # TODO filter agreed depending on permission
-    return result[0]
+    query = select(Article) \
+        .where(Article.agreed == True) \
+        .where(Article.id == id)
+    
+    article = (await database.exec(query)).first()
+    
+    if article is None:
+        raise HTTPException(status_code=404, detail="Article not found")
+    
+    from_article = lambda a: ArticlePublicWithCommentCount.model_validate(a, update= {
+        'comment_count': len(a.comments)})
+    return from_article(article)
 
 @router.post("/", response_model=ArticlePublic)
 async def create_article(data: ArticleCreate, database: Database, active_user: ActiveUser):
@@ -40,7 +57,6 @@ async def create_article(data: ArticleCreate, database: Database, active_user: A
     await database.refresh(article)
      
     return ArticlePublic.model_validate(article, update={"user":None})
-    return article
     
 @router.patch("/{id}", response_model=ArticlePublic)
 async def update_article(data: ArticleUpdate, database: Database, active_user: ActiveUser):

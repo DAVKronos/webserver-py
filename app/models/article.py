@@ -1,6 +1,8 @@
-from sqlmodel import Field, Relationship,  SQLModel
+from sqlmodel import Field, Relationship, SQLModel, and_
 from datetime import datetime
 from .user import User, UserPublic
+from .comment import Comment
+from sqlalchemy.orm import foreign
 
 class ArticleBase(SQLModel):
     created_at: datetime
@@ -20,6 +22,10 @@ class Article(ArticleBase, table=True):
     id: int | None = Field(default=None, primary_key=True)
     user_id: int = Field(foreign_key="users.id")
     user: User = Relationship(back_populates="articles", sa_relationship_kwargs={"lazy": "selectin"})
+    comments: list[Comment] = Relationship(sa_relationship_kwargs = {
+        "primaryjoin": lambda: and_(Article.id==foreign(Comment.commentable_id), Comment.commentable_type=="Newsitem"),
+        "lazy": "selectin" })
+
 
 class ArticlePublic(ArticleBase):
     id: int
