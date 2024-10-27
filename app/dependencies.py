@@ -1,10 +1,12 @@
 from typing import Annotated
 from fastapi import FastAPI, Depends, Header, HTTPException, Request
 from databases.core import Connection
-from .models.user import User
+from .models.user import User, UserPublic
+from .models.commissions import CommissionMembership
 from .models import authentication
 from sqlmodel.ext.asyncio.session import AsyncSession
 from sqlalchemy.orm import sessionmaker
+from sqlmodel import select
 from app.config import config
 
 async def get_async_session(request: Request) -> AsyncSession:
@@ -37,7 +39,6 @@ async def get_active_user(request: Request, database: Database):
     user = await authentication.decode_token(payload)
     # TODO: now we hit the database on every request to lookup the user. Maybe be smarter about our JWT token. 
     user = await database.get(User, user.id)
-    
     return user
 
 ActiveUser = Annotated[User, Depends(get_active_user)]

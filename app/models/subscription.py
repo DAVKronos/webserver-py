@@ -1,13 +1,13 @@
 from sqlmodel import Field, Relationship,  SQLModel
 from datetime import datetime
-from .agendaitem import Agendaitem
+from ..models.agendaitem import Agendaitem
+from ..models.user import User
 
 class SubscriptionBase(SQLModel):
     name: str
     comment: str | None
     created_at: datetime
     updated_at: datetime
-    user_id: int | None
     reserve: bool
 
 class SubscriptionResponse(SubscriptionBase):
@@ -19,5 +19,6 @@ class Subscription(SubscriptionBase, table=True):
     id: int | None = Field(default=None, primary_key=True)
     agendaitem_id: int = Field(foreign_key="agendaitems.id")
     agendaitem: Agendaitem = Relationship(back_populates="subscriptions", sa_relationship_kwargs={"lazy": "selectin"})
+    user_id: int = Field(foreign_key="users.id")
+    user: User = Relationship(back_populates="subscriptions", sa_relationship_kwargs={"lazy": "selectin"})
     
-

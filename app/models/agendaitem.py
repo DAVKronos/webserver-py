@@ -21,6 +21,9 @@ class AgendaitemBase(SQLModel):
     description_en: str | None
     maxsubscription: int | None
 
+    def is_before_deadline(self):
+        return datetime.now() < self.subscriptiondeadline
+    
 class AgendaitemResponse(AgendaitemBase):
     agendaitemtype: AgendaitemTypeResponse | None = None
     subscriptions: list["SubscriptionResponse"] = []

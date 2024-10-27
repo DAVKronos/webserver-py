@@ -3,7 +3,8 @@ from fastapi import APIRouter, Form, Depends, Request, Query
 from fastapi.responses import HTMLResponse, JSONResponse, Response
 from ..models import authentication
 from ..models.user import User, UserPublic
-from ..dependencies import Database, DepDatabase
+from ..dependencies import Database, DepDatabase, ActiveUser
+from ..permissions import Ability, can, cannot
 from ..config import config
 from ..queries import users
 
@@ -85,3 +86,57 @@ async def reset_password():
     # requires valid token that  has {can_reset_password:true }
     return Response(200)
 
+@router.get("/permissions", response_model= list[Ability], response_model_exclude_none=True)
+async def permissions(request: Request, database: Database, active_user: ActiveUser):
+    
+    everyone = [can('read', 'all'),
+                can(['home', 'titleshow'], 'Page'),
+                can(['game'], 'Page'),
+                cannot('read', 'Page'),
+                can('read', 'Page', {'public':True}),
+                can(['perdag', 'month'], 'Agendaitem'),
+                can(['frontpage', 'records'], 'Result'),
+                can(['current', 'hide'], 'Announcement'),
+                can('create', ['Contact']),
+                cannot('read', 'Photoalbum'),
+                can('read', 'Photoalbum', {'public': True}),
+                cannot('read', ['User','Photo','Announcement', 'Kronometer', 'Subscription', 'Comment']),
+                can(['read','display'], 'Kronometer', {'public':True}),
+                cannot('see_email', 'Commission')]
+
+    abilities = [] + everyone
+    
+    if active_user is not None:
+        abilities += [can('read', 'all'),
+                   can('read', 'Page'),
+                   can('see_email', 'Commission'),
+                   can('create', ['Photo','Newsitem','Agendaitem','Event','Result','Comment']),
+                   can(['archief','wedstrijden','new_result','create_result', 'icalendar', 'duplicate'], 'Agendaitem'),
+                   can(['read','create','update'], 'Photoalbum'),
+                   can(['create', 'update'], ['Subscription'], {'user_id': active_user.id}),
+                   can('display', 'Kronometer'),
+                   can('update', 'Agendaitem', {'user_id': active_user.id}),
+                   can(['update','editpassword'], 'User', {'id':active_user.id}),
+                   can('birthdays', 'User'),
+                   cannot('create', 'User')]
+
+        abilities += [can('destroy', 'Subscription', {'id':sub.id}) for sub in active_user.subscriptions if sub.agendaitem.is_before_deadline()]
+        
+        if len(active_user.commission_memberships) > 0:
+            abilities += [can('manage', 'Agendaitem', {'user_id': active_user.id})]           
+            abilities += [can('update', 'Agendaitem', {'commission_id': cm.commission_id}) for cm in active_user.commission_memberships]
+            
+            for cm in active_user.commission_memberships:
+                match cm.commission.role:
+                    case "KRONOMETER_ADMIN":
+                        abilities += [can('kronometer_list', 'User'),
+                         can('manage', 'Kronometer')]
+                    case "RESULT_ADMIN":
+                        abilities += [can('manage', 'Result')]
+                    case "ADMIN":
+                        abilities += [can('manage', 'all'),
+                                      can(['update_mailinglists', 'update_announcements'], 'User'),
+                                      cannot('destroy', 'User')]
+            
+    
+    return abilities

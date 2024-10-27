@@ -21,4 +21,5 @@ class User(UserBase, table=True):
     encrypted_password: str
     articles: list["Article"] = Relationship(back_populates="user")
     comments: list["Comment"] = Relationship(back_populates="user")
-
+    commission_memberships: list["CommissionMembership"] = Relationship(back_populates="user", sa_relationship_kwargs={"lazy": "selectin"})
+    subscriptions: list["Subscription"] = Relationship(back_populates="user", sa_relationship_kwargs={"lazy": "selectin"})
