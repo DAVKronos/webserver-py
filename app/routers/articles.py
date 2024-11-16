@@ -4,6 +4,7 @@ from fastapi.responses import JSONResponse
 from ..dependencies import Database, ActiveUser
 from ..queries import articles
 from ..models.article import *
+from ..models.comment import *
 from sqlmodel import SQLModel, select, func, and_, text
 from pydantic import BaseModel, ValidationError
 from datetime import datetime, timezone
@@ -84,8 +85,14 @@ async def delete_photo(r: Request, database: Database):
     pass
 
 
-@router.get("/{id}/comments", response_class=JSONResponse)
+@router.get("/{id}/comments", response_model=list[CommentPublic])
 async def get(id: int, r: Request, database: Database, active_user: ActiveUser):
-    res = await articles.get_comments(database, id)
     # todo: comments are not public!
-    # return res
+    query = select(Comment) \
+        .where(Article.agreed == True) \
+        .limit(None) \
+        .offset(None) \
+        .order_by(Comment.created_at.desc())
+    
+    comments = await database.exec(query)
+    return comments.all()

@@ -8,7 +8,10 @@ class CommentBase(SQLModel):
     commenttext: str
     commentable_id: int
     commentable_type: str
-    
+
+class CommentPublic(CommentBase):
+    pass
+
 class Comment(CommentBase, table=True):
     __tablename__: str = "comments"
     id: int | None = Field(default=None, primary_key=True)
