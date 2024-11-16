@@ -15,11 +15,7 @@ async def lifespan(app: FastAPI):
     engine = database.create_engine()
     api.app.state.engine = engine
     app.state.engine = engine
-    
-    async with database.create_pool() as pool:
-        api.app.state.connection_pool = pool
-        app.state.connection_pool = pool
-        yield
+    yield
 
 app = FastAPI(lifespan=lifespan)
 # from .admin import admin
