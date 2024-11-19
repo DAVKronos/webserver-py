@@ -21,6 +21,8 @@ ENV VIRTUAL_ENV=/app/.venv \
 WORKDIR /app
 COPY --from=builder ${VIRTUAL_ENV} ${VIRTUAL_ENV}
 COPY ./app ./app
+COPY ./templates ./templates
+
 RUN mkdir static
 
 EXPOSE 8000
