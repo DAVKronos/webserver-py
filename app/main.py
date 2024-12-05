@@ -1,4 +1,3 @@
-
 import uvicorn
 from contextlib import asynccontextmanager
 from typing import Annotated
@@ -8,19 +7,23 @@ from fastapi.responses import Response, HTMLResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from .routers import authentication
+from .config import config
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     # Startup
-    engine = database.create_engine()
-    api.app.state.engine = engine
-    app.state.engine = engine
-    yield
+    create_engine_fn = database.create_ssh_engine if ("ssh" in config["database"]) else database.create_engine
+    
+    with create_engine_fn() as engine:
+        print("engine:", engine)
+        api.app.state.engine = engine
+        app.state.engine = engine
+        yield
 
 app = FastAPI(lifespan=lifespan)
 # from .admin import admin
 from . import api, database
-from .config import config
+
 
 # add csrf middleware
 import jinja2
