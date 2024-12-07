@@ -26,7 +26,6 @@ class Article(ArticleBase, table=True):
         "primaryjoin": lambda: and_(Article.id==foreign(Comment.commentable_id), Comment.commentable_type=="Newsitem"),
         "lazy": "selectin" })
 
-
 class ArticlePublic(ArticleBase):
     id: int
     user: UserPublic | None = None

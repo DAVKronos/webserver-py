@@ -2,7 +2,6 @@ from typing import Annotated, Optional
 from fastapi import APIRouter, Depends, File, Form, HTTPException, Request
 from fastapi.responses import JSONResponse
 from ..dependencies import Database, ActiveUser
-from ..queries import articles
 from ..models.article import *
 from ..models.comment import *
 from sqlmodel import SQLModel, select, func, and_, text
