@@ -1,4 +1,3 @@
-from .comments import *
 from .commissions import *
 from .commission_memberships import *
 from .documents import *
