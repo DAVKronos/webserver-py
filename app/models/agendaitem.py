@@ -11,8 +11,8 @@ class AgendaitemBase(SQLModel):
     subscribe: bool | None
     subscriptiondeadline: datetime | None
     commission_id: int | None
-    created_at: datetime
-    updated_at: datetime
+    created_at: datetime | None
+    updated_at: datetime | None
     category: str | None
     intern: bool | None
     url: str | None
@@ -22,11 +22,15 @@ class AgendaitemBase(SQLModel):
     maxsubscription: int | None
 
     def is_before_deadline(self):
-        return datetime.now() < self.subscriptiondeadline
+        if subscriptiondeadline is None:
+            return False
+        else:
+            return datetime.now() < self.subscriptiondeadline
     
 class AgendaitemResponse(AgendaitemBase):
     agendaitemtype: AgendaitemTypeResponse | None = None
     subscriptions: list["SubscriptionResponse"] = []
+
 
 class Agendaitem(AgendaitemBase, table=True):
     __tablename__: str = "agendaitems"

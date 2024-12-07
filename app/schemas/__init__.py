@@ -1,5 +1,3 @@
-from .agendaitems import *
-from .announcements import *
 from .comments import *
 from .commissions import *
 from .commission_memberships import *
