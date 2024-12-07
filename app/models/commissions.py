@@ -4,6 +4,9 @@ from ..models.user import User
 class CommissionBase(SQLModel):
     name: str
 
+class CommissionResponse(CommissionBase):
+    pass
+
 class Commission(CommissionBase, table=True):
     __tablename__: str = "commissions"
     id: int | None = Field(default=None, primary_key=True)
@@ -31,3 +34,7 @@ class CommissionMembership(CommissionMembershipBase, table=True):
     commission: Commission = Relationship(back_populates="commission_memberships", sa_relationship_kwargs={"lazy": "selectin"})
     function: str
     installed: bool
+
+class CommissionMembershipResponse(SQLModel):
+    # user = {name:}
+    pass

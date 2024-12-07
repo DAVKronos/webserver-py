@@ -1,22 +1,31 @@
 from typing import Annotated
 from fastapi import APIRouter, Request, Depends
 from fastapi.responses import JSONResponse
-from ..dependencies import DepDatabase
-from ..queries import commissions
+from ..dependencies import Database
+from ..models.commissions import *
 from datetime import datetime
 router = APIRouter(prefix="/commissions")
 
-@router.get("", response_class=JSONResponse)
-async def get(r: Request, database: DepDatabase):
-    res = await commissions.get(database)
-    return res
+@router.get("", response_model=list[CommissionResponse])
+async def get_all(r: Request, database: Database):
+    query = select(Commission) \
+        .order_by(Commission.name.desc())
 
-@router.get("/{id}", response_class=JSONResponse)
-async def get(id: int, r: Request, db: DepDatabase):
-    res = await commissions.get(db, id)
-    return res
+    commissions = await database.exec(query)
+    return commissions.all()
 
-@router.get("/{id}/commission_memberships", response_class=JSONResponse)
-async def get(id: int, r: Request, db: DepDatabase):
-    res = await commissions.get_memberships(db, id)
-    return res
+@router.get("/{id}", response_model=CommissionResponse)
+async def get_one(id: int, r: Request, database: Database):
+    commission = database.get(commission, id)
+    if not commission:
+        raise HTTPException(status_code=404, detail="Commission not found")
+    return commission
+
+@router.get("/{id}/commission_memberships",  response_model=list[CommissionMembershipResponse])
+async def get_membership(id: int, r: Request, database: Database):
+    query = select(CommissionMembership) \
+        .where(CommissionMembership.commission_id == id) \
+        .order_by(CommissionMembership.create_at.desc())
+    
+    memberships = await database.exec(query)
+    return memberships.all()
