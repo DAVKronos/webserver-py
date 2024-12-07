@@ -1,17 +1,22 @@
 from typing import Annotated
+from datetime import datetime
 from fastapi import APIRouter, Request, Depends
 from fastapi.responses import JSONResponse
-from ..dependencies import DepDatabase
-from ..queries import events
-from datetime import datetime
+from ..dependencies import Database
+from ..models.event import *
 router = APIRouter(prefix="/events")
 
-@router.get("", response_class=JSONResponse)
-async def get(r: Request, database: DepDatabase):
-    res = await events.get(database)
-    return res
+@router.get("", response_model=list[EventResponse])
+async def get_all(r: Request, database: Database):
+    query = select(Event) \
+        .order_by(Event.name.desc())
 
-@router.get("/{id}", response_class=JSONResponse)
-async def get(id: int, r: Request, db: DepDatabase):
-    res = await events.get(db, id)
-    return res
+    events = await database.exec(query)
+    return events.all()
+
+@router.get("/{id}", response_class=EventResponse)
+async def get(id: int, r: Request, db: Database):
+    event = database.get(event, id)
+    if not event:
+        raise HTTPException(status_code=404, detail="Event not found")
+    return event

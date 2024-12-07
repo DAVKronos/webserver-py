@@ -1,5 +1,3 @@
-from .events import *
-from .eventtypes import *
 from .newsitems import *
 from .pages import *
 from .photos import *
