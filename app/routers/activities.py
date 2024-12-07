@@ -31,8 +31,6 @@ async def index(r: Request, database: Database, year: Annotated[int | None, Quer
         
     return [to_response(r) for (r,) in agendaitems.all()]
 
-
-
 @router.get("/agendaitems/{id}", response_class=JSONResponse)
 async def get(r: Request, database: Database):
     pass

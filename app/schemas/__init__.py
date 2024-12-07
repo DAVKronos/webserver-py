@@ -1,4 +1,3 @@
-from .documents import *
 from .events import *
 from .eventtypes import *
 from .newsitems import *
@@ -8,4 +7,3 @@ from .results import *
 from .subscriptions import *
 from .users import *
 from .user_types import *
-
