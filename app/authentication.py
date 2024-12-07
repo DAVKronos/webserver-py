@@ -4,10 +4,10 @@ from passlib.context import  CryptContext
 from jose import JWTError, jwt
 import time
 
-from ..models.user import User
-from ..queries import users
+from .models.user import User
+from .queries import users
 from datetime import datetime, timezone, timedelta
-from ..config import config
+from .config import config
 
 crypt = CryptContext(schemes=["bcrypt"], deprecated="auto")
 

@@ -3,7 +3,7 @@ from fastapi import FastAPI, Depends, Header, HTTPException, Request
 from databases.core import Connection
 from .models.user import User, UserPublic
 from .models.commissions import CommissionMembership
-from .models import authentication
+from .authentication import *
 from sqlmodel.ext.asyncio.session import AsyncSession
 from sqlalchemy.orm import sessionmaker
 from sqlmodel import select

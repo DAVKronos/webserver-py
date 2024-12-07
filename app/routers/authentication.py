@@ -1,7 +1,7 @@
 from typing import Annotated
 from fastapi import APIRouter, Form, Depends, Request, Query
 from fastapi.responses import HTMLResponse, JSONResponse, Response
-from ..models import authentication
+from ..authentication import *
 from ..models.user import User, UserPublic
 from ..dependencies import Database, DepDatabase, ActiveUser
 from ..permissions import Ability, can, cannot
