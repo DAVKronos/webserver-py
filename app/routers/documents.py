@@ -14,14 +14,14 @@ async def get_all(r: Request, database: Database):
     folders = await database.exec(query)
     return folders.all()
 
-@router.get("/folders/{id}", response_class=FolderResponse)
+@router.get("/folders/{id}", response_model=FolderResponse)
 async def get_one(id: int, r: Request, database: Database):
     folder = database.get(folder, id)
     if not folder:
         raise HTTPException(status_code=404, detail="Folder not found")
     return folder
 
-@router.get("/kronometers", response_class=FileResponse)
+@router.get("/kronometers", response_model=FileResponse)
 async def get_all_files(r: Request, database: Database):
     query = select(File) \
         .order_by(File.name.desc())
@@ -29,7 +29,7 @@ async def get_all_files(r: Request, database: Database):
     files = await database.exec(query)
     return files.all()
 
-@router.get("/folders/{id}/kronometers", response_class=list[FileResponse])
+@router.get("/folders/{id}/kronometers", response_model=list[FileResponse])
 async def get_file(id: int, r: Request, database: Database):
     query = select(File) \
         .where(File.folder_id == id) \
