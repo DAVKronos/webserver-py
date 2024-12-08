@@ -4,7 +4,7 @@ from datetime import datetime
 class UserBase(SQLModel):
     name: str
 
-class UserPublic(UserBase):
+class UserResponse(UserBase):
     id: int | None
     email: str
     
@@ -23,3 +23,20 @@ class User(UserBase, table=True):
     comments: list["Comment"] = Relationship(back_populates="user")
     commission_memberships: list["CommissionMembership"] = Relationship(back_populates="user", sa_relationship_kwargs={"lazy": "selectin"})
     subscriptions: list["Subscription"] = Relationship(back_populates="user", sa_relationship_kwargs={"lazy": "selectin"})
+
+
+class UserTypeBase(SQLModel):
+    name: str | None
+    name_en: str | None
+    donor: bool | None
+    competition: bool | None
+    
+
+class UserTypeResponse(UserTypeBase):
+    pass
+    
+class UserType(UserTypeBase, table=True):
+    __tablename__: str = "user_types"
+    id: int | None = Field(default=None, primary_key=True)
+    created_at: datetime
+    updated_at: datetime

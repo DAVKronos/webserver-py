@@ -1,7 +1,7 @@
 from typing import Annotated
 from fastapi import FastAPI, Depends, Header, HTTPException, Request
 from databases.core import Connection
-from .models.user import User, UserPublic
+from .models.user import User
 from .models.commissions import CommissionMembership
 from .authentication import *
 from sqlmodel.ext.asyncio.session import AsyncSession

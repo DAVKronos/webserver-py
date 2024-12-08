@@ -1,6 +1,6 @@
 from sqlmodel import Field, Relationship, SQLModel, and_
 from datetime import datetime
-from .user import User, UserPublic
+from .user import User, UserResponse
 from .comment import Comment
 from sqlalchemy.orm import foreign
 
@@ -28,7 +28,7 @@ class Article(ArticleBase, table=True):
 
 class ArticlePublic(ArticleBase):
     id: int
-    user: UserPublic | None = None
+    user: UserResponse | None = None
 
 class ArticlePublicWithCommentCount(ArticlePublic):
     comment_count: int

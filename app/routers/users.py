@@ -1,34 +1,44 @@
 from typing import Annotated
 from fastapi import APIRouter, Request, Depends
 from fastapi.responses import JSONResponse
-from ..dependencies import DepDatabase, Database
-from ..queries import users
+from ..dependencies import Database
 from ..models.user import *
-
 
 router = APIRouter(prefix="")
 
+@router.get("/users", response_model=list[UserResponse])
+async def get_all(r: Request, database: Database):
+    query = select(User) \
+        .order_by(User.name.desc())
 
-@router.get("/users", response_class=JSONResponse)
-async def get(r: Request, database: DepDatabase):
-    res = await users.get(database)
-    return res
-    
-@router.get("/users/{id}", response_model=UserPublic)
-async def get(id: int, r: Request, database: Database):
-    return await database.get(User, id)
+    users = await database.exec(query)
+    return users.all()
 
-@router.get("/user_types", response_class=JSONResponse)
-async def usertypes(r: Request, database: DepDatabase):
-    res = await users.get_usertypes(database)
-    return res
+@router.get("/users/{id}", response_model=UserResponse)
+async def get_one(id: int, r: Request, database: Database):
+    user = database.get(User, id)
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    return user
 
-@router.get("/user_types/{id}",  response_class=JSONResponse)
-async def usertypes(id: int, r: Request, database: DepDatabase):
-    res = await users.get_usertypes(database, id)
-    return res
+@router.get("/user_types", response_model=list[UserTypeResponse])
+async def get_all_usertypes(r: Request, database: Database):
+    query = select(UserType) \
+        .order_by(UserType.id.desc())
 
-@router.get("/users/birthdays",  response_class=JSONResponse)
-async def birthdays(r: Request, database: DepDatabase):
-    pass
-    
+    usertypes = await database.exec(query)
+    return usertypes.all()
+
+@router.get("/user_types/{id}", response_model=UserTypeResponse)
+async def get_one_usertype(id: int, r: Request, database: Database):
+    usertype = database.get(UserType, id)
+    if not usertype:
+        raise HTTPException(status_code=404, detail="Usertype not found")
+    return usertype
+
+@router.get("/users/birthdays", response_model=list[UserResponse])
+async def get_birthdays(r: Request, database: Database):
+    user = database.get(User, id)
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    return user

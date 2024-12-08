@@ -1,12 +1,11 @@
 from typing import Annotated
-
+import time
+from datetime import datetime, timezone, timedelta
 from passlib.context import  CryptContext
 from jose import JWTError, jwt
-import time
+
 
 from .models.user import User
-from .queries import users
-from datetime import datetime, timezone, timedelta
 from .config import config
 
 crypt = CryptContext(schemes=["bcrypt"], deprecated="auto")
@@ -51,8 +50,11 @@ async def decode_token(payload):#: Annotated[str]):
         return User(id=int(user_id))
 
 async def login(database, username, password):
-    user = await users.get_password(database, username)
+    query = select(User) \
+        .where(func.lower(column("email")) == func.lower(username))
     
+    user = (await database.exec(query)).first()
+
     if not user:
         return None
     if not verify_password(password, user.encrypted_password):

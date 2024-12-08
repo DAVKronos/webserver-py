@@ -1,6 +1,6 @@
 from sqlmodel import Field, Relationship,  SQLModel
 from datetime import datetime
-from .user import User, UserPublic
+from .user import User, UserResponse
 
 class CommentBase(SQLModel):
     created_at: datetime

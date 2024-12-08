@@ -1,5 +1,4 @@
 from sqlalchemy import Boolean, Column, DateTime, ForeignKey, Integer, MetaData, String, Table
-from .users import users
 
 metadata = MetaData()
 newsitems = Table(
@@ -11,8 +10,8 @@ newsitems = Table(
     Column("news", String),
     Column("news_en", String),
     Column("agreed", Boolean),
-    Column("user_id", Integer, ForeignKey(users.c.id)),
-    Column("agreed_by", Integer, ForeignKey(users.c.id)),
+    Column("user_id", Integer),
+    Column("agreed_by", Integer),
     Column("articlephoto_updated_at", DateTime),
     Column("articlephoto_url_normal", String),
     Column("articlephoto_url_carrousel", String),
