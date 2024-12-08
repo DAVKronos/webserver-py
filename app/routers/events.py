@@ -1,7 +1,6 @@
 from typing import Annotated
 from datetime import datetime
 from fastapi import APIRouter, Request, Depends
-from fastapi.responses import JSONResponse
 from ..dependencies import Database
 from ..models.event import *
 router = APIRouter(prefix="/events")
@@ -14,7 +13,7 @@ async def get_all(r: Request, database: Database):
     events = await database.exec(query)
     return events.all()
 
-@router.get("/{id}", response_class=EventResponse)
+@router.get("/{id}", response_model=EventResponse)
 async def get(id: int, r: Request, db: Database):
     event = database.get(event, id)
     if not event:

@@ -1,12 +1,11 @@
 from typing import Annotated, Optional
-from fastapi import APIRouter, Depends, File, Form, HTTPException, Request
-from fastapi.responses import JSONResponse
+from datetime import datetime, timezone
+from fastapi import APIRouter, Depends, Form, HTTPException, Request
+from sqlmodel import SQLModel, select, func, and_, text
+from pydantic import BaseModel, ValidationError
 from ..dependencies import Database, ActiveUser
 from ..models.article import *
 from ..models.comment import *
-from sqlmodel import SQLModel, select, func, and_, text
-from pydantic import BaseModel, ValidationError
-from datetime import datetime, timezone
 
 router = APIRouter(prefix="/newsitems")
 

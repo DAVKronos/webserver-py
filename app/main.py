@@ -1,9 +1,9 @@
-import uvicorn
-from contextlib import asynccontextmanager
 from typing import Annotated
+from contextlib import asynccontextmanager
+import uvicorn
 from fastapi import FastAPI, Request, Depends
 from fastapi.encoders import jsonable_encoder
-from fastapi.responses import Response, HTMLResponse, JSONResponse
+from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from .routers import authentication
@@ -24,17 +24,13 @@ app = FastAPI(lifespan=lifespan)
 # from .admin import admin
 from . import api, database
 
-
 # add csrf middleware
 import jinja2
 templates = Jinja2Templates(directory="templates")
 
 app.mount("/api/v1", api.app)
 app.mount("/static", StaticFiles(directory="static", follow_symlink=True), name="static")
-
-
 app.include_router(authentication.router)
-
 
 @app.get("/{full_path:path}", response_class=HTMLResponse)
 async def get_home(r: Request, full_path: str):

@@ -1,7 +1,6 @@
 
 from typing import Annotated
 from fastapi import APIRouter, Request, Depends
-from fastapi.responses import JSONResponse
 from ..dependencies import Database
 from ..models.page import *
 
@@ -15,7 +14,7 @@ async def get_all(r: Request, database: Database):
     pages = await database.exec(query)
     return pages.all()
 
-@router.get("/{id}", response_class=PageResponse)
+@router.get("/{id}", response_model=PageResponse)
 async def get(id: int, r: Request, database: Database):
     page = database.get(page, id)
     if not page:

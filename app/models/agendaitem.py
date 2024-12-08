@@ -31,14 +31,12 @@ class AgendaitemResponse(AgendaitemBase):
     agendaitemtype: AgendaitemTypeResponse | None = None
     subscriptions: list["SubscriptionResponse"] = []
 
-
 class Agendaitem(AgendaitemBase, table=True):
     __tablename__: str = "agendaitems"
     id: int | None = Field(default=None, primary_key=True)
     agendaitemtype_id: int | None = Field(default=None, foreign_key="agendaitemtypes.id")
     agendaitemtype: AgendaitemType = Relationship(back_populates="agendaitems", sa_relationship_kwargs={"lazy": "selectin"})
     subscriptions: list["Subscription"] = Relationship(back_populates="agendaitem",sa_relationship_kwargs={"lazy": "selectin"})
-
 
 # Trick to deal with Pydantic circular dependencies
 from .subscription import SubscriptionResponse

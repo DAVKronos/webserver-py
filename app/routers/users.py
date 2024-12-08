@@ -1,6 +1,5 @@
 from typing import Annotated
 from fastapi import APIRouter, Request, Depends
-from fastapi.responses import JSONResponse
 from ..dependencies import Database
 from ..models.user import *
 

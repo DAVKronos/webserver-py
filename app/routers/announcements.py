@@ -1,10 +1,10 @@
 from typing import Annotated
+from datetime import datetime
 from fastapi import APIRouter, Request, Depends
-from fastapi.responses import JSONResponse
 from sqlmodel import select
 from ..dependencies import Database
-from ..models.announcement import * 
-from datetime import datetime
+from ..models.announcement import *
+
 router = APIRouter(prefix="/announcements")
 
 @router.get("/current", response_model=list[AnnouncementResponse])

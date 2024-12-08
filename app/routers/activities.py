@@ -9,11 +9,8 @@ from ..models.agendaitemtype import *
 
 router = APIRouter()
 
-from app import dependencies as deps
-from app.models import AgendaitemResponse
-# date[year]=&date[month]=
-@router.get("/agendaitems", response_model= list[AgendaitemResponse])
-async def index(r: Request, database: Database, year: Annotated[int | None, Query(alias="date[year]")] = None,
+@router.get("/agendaitems", response_model = list[AgendaitemResponse])
+async def get_all(r: Request, database: Database, year: Annotated[int | None, Query(alias="date[year]")] = None,
               month: Annotated[int | None, Query(alias="date[month]")] = None):
     
     query = select(Agendaitem) \
@@ -22,14 +19,7 @@ async def index(r: Request, database: Database, year: Annotated[int | None, Quer
     if month is not None: query = query.where(func.extract("month", Agendaitem.date) == month)
 
     agendaitems = await database.exec(query)
-
-    # TODO: as a constructor on AgendaitemResponse
-    def to_response(row):
-        ait = AgendaitemTypeResponse(**row.agendaitemtype.dict()) if row.agendaitemtype is not None else None
-        sbs = [SubscriptionResponse(**s.dict()) for s in row.subscriptions]
-        return AgendaitemResponse(**row.dict(), agendaitemtype=ait, subscriptions=sbs)
-        
-    return [to_response(r) for (r,) in agendaitems.all()]
+    return [x for x,_ in agendaitems.all()]
 
 @router.get("/agendaitems/{id}", response_class=JSONResponse)
 async def get(r: Request, database: Database):
