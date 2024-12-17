@@ -15,7 +15,7 @@ async def get_all(r: Request, database: Database):
         .order_by(Event.created_at.desc())
 
     events = await database.exec(query)
-    return events.all()
+    return [EventResponse.model_validate(event) for event in events.all()]
 
 @router.get("/{id}", response_model=EventResponse)
 async def get(id: int, r: Request, db: Database):
@@ -23,7 +23,6 @@ async def get(id: int, r: Request, db: Database):
     if not event:
         raise HTTPException(status_code=404, detail="Event not found")
     return EventResponse.model_validate(event)
-    return event
 
 @router.post("/", response_model=EventCreate)
 async def create_event(data: EventCreate, database: Database):
