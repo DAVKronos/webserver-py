@@ -32,6 +32,15 @@ class EventTypeBase(SQLModel):
     important: bool | None
     distance: float | None
 
+
+
+class EventCreate(SQLModel):
+    event: str
+    event_en: str
+    news: str
+    news_en: str
+
+
 class EventTypeResponse(EventTypeBase):
     pass
 
