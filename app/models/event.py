@@ -1,11 +1,11 @@
 from sqlmodel import Field, Relationship,  SQLModel
-from datetime import datetime
+from datetime import datetime, time
 
 class EventBase(SQLModel):
     id: int | None
     created_at: datetime | None
     updated_at: datetime | None
-    date: datetime | None
+    date: time | None
     eventtype_id: int | None
     agendaitem_id: int | None
     distance: float | None
