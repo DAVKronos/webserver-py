@@ -1,6 +1,7 @@
 from typing import Annotated
 from datetime import datetime
 from fastapi import APIRouter, Request, Depends
+from sqlmodel import select
 from ..dependencies import Database
 from ..models.event import *
 router = APIRouter(prefix="/events")
@@ -15,8 +16,7 @@ async def get_all(r: Request, database: Database):
 
 @router.get("/{id}", response_model=EventResponse)
 async def get(id: int, r: Request, db: Database):
-    event = database.get(event, id)
-    
+    event = await db.get(Event, id)
     if not event:
         raise HTTPException(status_code=404, detail="Event not found")
-    return event
+    return EventResponse.model_validate(event)
