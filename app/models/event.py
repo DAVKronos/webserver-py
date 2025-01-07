@@ -30,7 +30,6 @@ class EventTypeBase(SQLModel):
     calculated_unit: str | None
     show_wind: bool | None
     important: bool | None
-    distance: float | None
 
 
 
