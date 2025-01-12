@@ -4,6 +4,7 @@ from .agendaitemtype import AgendaitemType, AgendaitemTypeResponse
 
 
 class AgendaitemBase(SQLModel):
+    id: int
     name: str | None
     description: str | None
     date: datetime | None
