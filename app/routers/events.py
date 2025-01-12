@@ -3,6 +3,7 @@ from datetime import datetime
 from fastapi import APIRouter, Request, Depends, HTTPException
 from sqlmodel import SQLModel, select, func, and_, text
 from pydantic import ValidationError
+from sqlalchemy.orm import selectinload
 from ..dependencies import Database
 from ..models.event import *
 
@@ -19,10 +20,31 @@ async def get_all(r: Request, database: Database):
 
 @router.get("/{id}", response_model=EventResponse)
 async def get(id: int, r: Request, db: Database):
-    event = await db.get(Event, id)
+    query = (
+        select(Event, Result) \
+        .where(Event.id == id)
+        .join(Result, Event.id == Result.event_id)
+    )
+    
+    rows = await db.exec(query)
+    rows = rows.all()
+    event = rows[0].Event
+    results = [
+        ResultResponse.model_validate(row.Result)
+        for row in rows
+    ]
     if not event:
         raise HTTPException(status_code=404, detail="Event not found")
-    return EventResponse.model_validate(event)
+    return EventResponse(
+        id=event.id,
+        created_at=event.created_at,
+        updated_at=event.updated_at,
+        date=event.date,
+        eventtype_id=event.eventtype_id,
+        agendaitem_id=event.agendaitem_id,
+        distance=event.distance,
+        results=results
+    )
 
 @router.post("/", response_model=EventCreate)
 async def create_event(data: EventCreate, database: Database):
