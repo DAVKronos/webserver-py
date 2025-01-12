@@ -1,5 +1,6 @@
 from sqlmodel import Field, Relationship,  SQLModel
 from datetime import datetime, time
+from ..models.result import ResultResponse, Result
 
 class EventBase(SQLModel):
     id: int | None
@@ -11,11 +12,12 @@ class EventBase(SQLModel):
     distance: float | None
 
 class EventResponse(EventBase):
-    pass
+    results: list["ResultResponse"] = []
 
 class Event(EventBase, table=True):
     __tablename__: str = "events"
     id: int | None = Field(default=None, primary_key=True)
+    results: list["Result"] | None = Relationship(back_populates="event")
 
 
 class EventTypeBase(SQLModel):
