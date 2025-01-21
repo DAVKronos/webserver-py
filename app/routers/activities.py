@@ -24,11 +24,10 @@ async def get_all(r: Request, database: Database, year: Annotated[int | None, Qu
 
 @router.get("/agendaitems/{id}", response_model=AgendaitemResponse)
 async def get(id : int , r: Request, database: Database):
-    agendaitem = database.get(Agendaitem,id) 
+    agendaitem = await database.get(Agendaitem,id) 
     if agendaitem is None : 
         raise HTTPException(status_code=404, detail="Agenda item not found")
-    print(agendaitem)
-    return AgendaitemResponse.model_validate(agendaitem)
+    return agendaitem
 
 #/agendaitemtypes
 @router.get("/agendaitemtypes/{id}", response_class=JSONResponse)
