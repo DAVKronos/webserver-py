@@ -10,7 +10,7 @@ router = APIRouter(prefix="/pages")
 @router.get("", response_model=list[PageResponse])
 async def get_all(r: Request, database: Database):
     query = select(Page) \
-        .order_by(Page.name.desc())
+        .order_by(Page.pagetag.desc())
 
     pages = await database.exec(query)
     return [PageResponse.model_validate(page) for page in pages.all()]
