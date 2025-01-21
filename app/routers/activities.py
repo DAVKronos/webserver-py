@@ -1,6 +1,6 @@
 from typing import Annotated
 from datetime import datetime
-from fastapi import APIRouter, Request, Depends, Query
+from fastapi import APIRouter, Request, Depends, Query , HTTPException 
 from fastapi.responses import JSONResponse
 from sqlalchemy import column, func
 from sqlmodel import select
@@ -22,9 +22,13 @@ async def get_all(r: Request, database: Database, year: Annotated[int | None, Qu
     agendaitems = await database.exec(query)
     return [AgendaitemResponse.model_validate(agendaitem) for agendaitem in agendaitems.all()]
 
-@router.get("/agendaitems/{id}", response_class=JSONResponse)
-async def get(r: Request, database: Database):
-    pass
+@router.get("/agendaitems/{id}", response_model=AgendaitemResponse)
+async def get(id : int , r: Request, database: Database):
+    agendaitem = database.get(Agendaitem,id) 
+    if agendaitem is None : 
+        raise HTTPException(status_code=404, detail="Agenda item not found")
+    print(agendaitem)
+    return AgendaitemResponse.model_validate(agendaitem)
 
 #/agendaitemtypes
 @router.get("/agendaitemtypes/{id}", response_class=JSONResponse)
