@@ -2,7 +2,8 @@ from typing import Annotated
 from datetime import datetime
 from fastapi import APIRouter, Request, Depends, Query
 from fastapi.responses import JSONResponse
-from sqlalchemy import column, select, func
+from sqlalchemy import column, func
+from sqlmodel import select
 from ..dependencies import Database
 from ..models.agendaitem import *
 from ..models.agendaitemtype import *
@@ -19,7 +20,7 @@ async def get_all(r: Request, database: Database, year: Annotated[int | None, Qu
     if month is not None: query = query.where(func.extract("month", Agendaitem.date) == month)
 
     agendaitems = await database.exec(query)
-    return [x for x,_ in agendaitems.all()]
+    return [AgendaitemResponse.model_validate(agendaitem) for agendaitem in agendaitems.all()]
 
 @router.get("/agendaitems/{id}", response_class=JSONResponse)
 async def get(r: Request, database: Database):
