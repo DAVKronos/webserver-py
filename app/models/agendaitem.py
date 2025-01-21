@@ -4,7 +4,7 @@ from .agendaitemtype import AgendaitemType, AgendaitemTypeResponse
 
 
 class AgendaitemBase(SQLModel):
-    id: int | None
+    id: int
     name: str | None
     description: str | None
     date: datetime | None
@@ -32,7 +32,6 @@ class AgendaitemResponse(AgendaitemBase):
     agendaitemtype_id: int | None
     agendaitemtype: AgendaitemTypeResponse | None = None
     subscriptions: list["SubscriptionResponse"] = []
-    agendaitemtype_id: int | None
 
 class Agendaitem(AgendaitemBase, table=True):
     __tablename__: str = "agendaitems"

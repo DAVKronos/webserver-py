@@ -1,9 +1,8 @@
 from typing import Annotated
-from datetime import datetime
+from datetime import datetime, date
 from fastapi import APIRouter, Request, Depends, Query, HTTPException , HTTPException 
 from fastapi.responses import JSONResponse
-from sqlmodel import select
-from sqlalchemy import column, func
+from sqlalchemy import column, select, func
 from ..dependencies import Database
 from ..models.agendaitem import *
 from ..models.agendaitemtype import AgendaitemTypeResponse
@@ -64,7 +63,7 @@ async def get(id: int, r: Request, db: Database):
             id=event_data['event'].id,
             created_at=event_data['event'].created_at,
             updated_at=event_data['event'].updated_at,
-            date=event_data['event'].date,
+            date=datetime.combine(date.today(), event_data['event'].date),
             eventtype_id=event_data['event'].eventtype_id,
             agendaitem_id=event_data['event'].agendaitem_id,
             distance=event_data['event'].distance,

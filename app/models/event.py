@@ -12,6 +12,7 @@ class EventBase(SQLModel):
     distance: float | None
 
 class EventResponse(EventBase):
+    date: datetime | None
     results: list["ResultResponse"] = []
 
 class Event(EventBase, table=True):

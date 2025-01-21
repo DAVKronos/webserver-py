@@ -1,5 +1,5 @@
 from typing import Annotated
-from datetime import datetime
+from datetime import datetime, date
 from fastapi import APIRouter, Request, Depends, HTTPException
 from sqlmodel import SQLModel, select, func, and_, text
 from pydantic import ValidationError
@@ -39,7 +39,7 @@ async def get(id: int, r: Request, db: Database):
         id=event.id,
         created_at=event.created_at,
         updated_at=event.updated_at,
-        date=event.date,
+        date=datetime.combine(date.today(), event.time),
         eventtype_id=event.eventtype_id,
         agendaitem_id=event.agendaitem_id,
         distance=event.distance,
