@@ -19,10 +19,10 @@ async def login(username: Annotated[str, Form()] , password:Annotated[str, Form(
 
     if not user:
         return Response("", 403)
-    if not authentication.verify_password(password, user.encrypted_password):
+    if not verify_password(password, user.encrypted_password):
         return Response("", 403)
 
-    token = authentication.create_token(str(user.id))
+    token = create_token(str(user.id))
 
     if token is None:
         # log login result
@@ -49,7 +49,7 @@ class PermissionCheck:
         self.required_scopes = required_scopes
     async def __call__(self, request: Request):
         data = request.cookies["v2-access-token"]
-        token = await authentication.validate_token(data)
+        token = await validate_token(data)
         user_scopes = token["scopes"]
 
         check = all(s in user_scopes for s in self.required_scopes)
@@ -63,7 +63,7 @@ async def validate_scope(user: Annotated[str, Depends(PermissionCheck(config['pe
 @router.get("/validate_token",response_model=UserResponse)
 async def validate(request: Request, database: Database, token: Annotated[str | None, Query(alias="access-token")] = None,  ):
     #token = request.cookies["v2-access-token"]
-    payload = await authentication.validate_token(token)
+    payload = await validate_token(token)
     user_id: str = payload.get("sub")
     user = await database.get(User, int(user_id))
     return UserResponse.model_validate(user, update={'id':user_id})
