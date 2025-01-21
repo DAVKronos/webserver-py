@@ -1,6 +1,7 @@
 from sqlmodel import select
 from typing import Annotated
-from fastapi import APIRouter, Request, Depends, HTTPException
+from fastapi import APIRouter, Request, Depends , HTTPException
+from sqlmodel import select
 from ..dependencies import Database
 from ..models.page import *
 
@@ -12,11 +13,11 @@ async def get_all(r: Request, database: Database):
         .order_by(Page.pagetag.desc())
 
     pages = await database.exec(query)
-    return pages.all()
+    return [PageResponse.model_validate(page) for page in pages.all()]
 
 @router.get("/{id}", response_model=PageResponse)
 async def get(id: int, r: Request, database: Database):
     page = database.get(page, id)
     if not page:
         raise HTTPException(status_code=404, detail="Page not found")
-    return page
+    return PageResponse.model_validate(page)
