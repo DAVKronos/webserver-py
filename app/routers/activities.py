@@ -13,14 +13,16 @@ from ..models.event import EventResponse, Event
 router = APIRouter()
 
 @router.get("/agendaitems", response_model = list[AgendaitemResponse])
-async def get_all(r: Request, database: Database, year: Annotated[int | None, Query(alias="date[year]")] = None,
-              month: Annotated[int | None, Query(alias="date[month]")] = None):
+async def get(
+    r: Request, 
+    database: Database, 
+    year: Annotated[int, Query(alias="date[year]")] = datetime.now().year,
+    month: Annotated[int, Query(alias="date[month]")] = datetime.now().month):
     
     query = select(Agendaitem) \
-        .order_by(Agendaitem.created_at.desc())
-    if year is not None: query = query.where(func.extract("year", Agendaitem.date) == year)
-    if month is not None: query = query.where(func.extract("month", Agendaitem.date) == month)
-    
+        .order_by(Agendaitem.created_at.desc()) \
+        .where(func.extract("year", Agendaitem.date) == year) \
+        .where(func.extract("month", Agendaitem.date) == month)
 
     agendaitems = await database.exec(query)
     
