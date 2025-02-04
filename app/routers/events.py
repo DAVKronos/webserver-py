@@ -3,7 +3,6 @@ from datetime import datetime, date
 from fastapi import APIRouter, Request, Depends, HTTPException
 from sqlmodel import SQLModel, select, func, and_, text
 from pydantic import ValidationError
-from sqlalchemy.orm import selectinload
 from ..dependencies import Database
 from ..models.event import *
 
