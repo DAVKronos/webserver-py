@@ -14,15 +14,15 @@ async def get_all(r: Request, database: Database):
     query = select(EventType) \
         .order_by(EventType.created_at.desc())
 
-    events = await database.exec(query)
-    return [EventTypeResponse.model_validate(event) for event in events.all()]
+    event_types = await database.exec(query)
+    return event_types.all()
 
 @router.get("/{id}", response_model=EventTypeResponse)
 async def get(id: int, r: Request, db: Database):
-    event = await db.get(EventType, id)
-    if not event:
+    event_types = await db.get(EventType, id)
+    if not event_types:
         raise HTTPException(status_code=404, detail="Event Type not found")
-    return EventTypeResponse.model_validate(event)
+    return event_types
 
 @router.post("/", response_model=EventCreate)
 async def create_event(data: EventCreate, database: Database):

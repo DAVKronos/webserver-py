@@ -16,7 +16,7 @@ async def get_all(r: Request, database: Database):
         .order_by(Event.created_at.desc())
 
     events = await database.exec(query)
-    return [EventResponse.model_validate(event) for event in events.all()]
+    return events.all()
 
 @router.get("/{id}", response_model=EventResponse)
 async def get(id: int, r: Request, db: Database):
