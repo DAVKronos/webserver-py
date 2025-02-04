@@ -2,7 +2,8 @@ from typing import Annotated
 from datetime import datetime, date
 from fastapi import APIRouter, Request, Depends, Query, HTTPException , HTTPException 
 from fastapi.responses import JSONResponse
-from sqlalchemy import column, select, func
+from sqlalchemy import column, func
+from sqlmodel import select
 from ..dependencies import Database
 from ..models.agendaitem import *
 from ..models.agendaitemtype import AgendaitemTypeResponse
@@ -19,8 +20,10 @@ async def get_all(r: Request, database: Database, year: Annotated[int | None, Qu
         .order_by(Agendaitem.created_at.desc())
     if year is not None: query = query.where(func.extract("year", Agendaitem.date) == year)
     if month is not None: query = query.where(func.extract("month", Agendaitem.date) == month)
+    
 
     agendaitems = await database.exec(query)
+    
     return agendaitems.all()
 
 @router.get("/agendaitems/{id}", response_model=AgendaitemResponse)
@@ -37,6 +40,14 @@ async def get(id : int , r: Request, database: Database):
     if agendaitemType is None : 
         raise HTTPException(status_code=404, detail="Agenda item type not found")
     return agendaitemType
+
+@router.get("/agendaitemtypes", response_model=list[AgendaitemTypeResponse])
+async def get(r: Request, database: Database):
+    query = select(AgendaitemType)
+    agendaitemTypes = await database.exec(query) 
+    if agendaitemTypes is None : 
+        raise HTTPException(status_code=404, detail="Agenda item type not found")
+    return agendaitemTypes.all()
 
 @router.get("/agendaitems/{id}/events", response_model=list[EventResponse])
 async def get(id: int, r: Request, db: Database):
