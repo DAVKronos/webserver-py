@@ -29,7 +29,6 @@ class AgendaitemBase(SQLModel):
             return datetime.now() < self.subscriptiondeadline
     
 class AgendaitemResponse(AgendaitemBase):
-    agendaitemtype_id: int | None
     agendaitemtype: AgendaitemTypeResponse | None = None
     subscriptions: list["SubscriptionResponse"] = []
 
