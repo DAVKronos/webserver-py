@@ -1,6 +1,5 @@
 from sqlmodel import Field, Relationship, SQLModel
 from datetime import datetime
-from typing import Optional
 
 class ResultBase(SQLModel):
     id: int | None
@@ -18,7 +17,9 @@ class Result(ResultBase, table=True):
     __tablename__ = "results"
     id: int | None = Field(default=None, primary_key=True)
     event_id: int = Field(foreign_key="events.id")
-    event: Optional["Event"] = Relationship(back_populates="results")
+    event: "Event" = Relationship(back_populates="results", sa_relationship_kwargs={"lazy": "selectin"})
 
 class ResultResponse(ResultBase):
     pass
+
+from ..models.event import Event

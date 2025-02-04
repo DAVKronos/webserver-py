@@ -20,31 +20,11 @@ async def get_all(r: Request, database: Database):
 
 @router.get("/{id}", response_model=EventResponse)
 async def get(id: int, r: Request, db: Database):
-    query = (
-        select(Event, Result) \
-        .where(Event.id == id)
-        .join(Result, Event.id == Result.event_id)
-    )
-    
-    rows = await db.exec(query)
-    rows = rows.all()
-    event = rows[0].Event
-    results = [
-        ResultResponse.model_validate(row.Result)
-        for row in rows
-    ]
+    event = await db.get(Event, id)
+    print(event)
     if not event:
         raise HTTPException(status_code=404, detail="Event not found")
-    return EventResponse(
-        id=event.id,
-        created_at=event.created_at,
-        updated_at=event.updated_at,
-        date=datetime.combine(date.today(), event.time),
-        eventtype_id=event.eventtype_id,
-        agendaitem_id=event.agendaitem_id,
-        distance=event.distance,
-        results=results
-    )
+    return event
 
 @router.post("/", response_model=EventCreate)
 async def create_event(data: EventCreate, database: Database):
