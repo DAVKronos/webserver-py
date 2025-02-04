@@ -21,7 +21,7 @@ async def get_all(r: Request, database: Database, year: Annotated[int | None, Qu
     if month is not None: query = query.where(func.extract("month", Agendaitem.date) == month)
 
     agendaitems = await database.exec(query)
-    return [AgendaitemResponse.model_validate(agendaitem) for agendaitem in agendaitems.all()]
+    return agendaitems.all()
 
 @router.get("/agendaitems/{id}", response_model=AgendaitemResponse)
 async def get(id : int , r: Request, database: Database):
@@ -46,7 +46,7 @@ async def get(id: int, r: Request, db: Database):
     rows = await db.exec(query)
     rows = rows.all()
     if not rows:
-        raise HTTPException(status_code=404, detail="Has no events")
+        return []
     
     event_results = {}
     for row in rows:
@@ -56,7 +56,7 @@ async def get(id: int, r: Request, db: Database):
                 'event': row.Event,
                 'results': []
             }
-        event_results[event_id]['results'].append(ResultResponse.model_validate(row.Result))
+        event_results[event_id]['results'].append(row.Result)
     
     event_responses = [
         EventResponse(
