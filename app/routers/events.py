@@ -21,7 +21,6 @@ async def get_all(r: Request, database: Database):
 @router.get("/{id}", response_model=EventResponse)
 async def get(id: int, r: Request, db: Database):
     event = await db.get(Event, id)
-    print(event)
     if not event:
         raise HTTPException(status_code=404, detail="Event not found")
     return event
