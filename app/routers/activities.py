@@ -25,15 +25,18 @@ async def get_all(r: Request, database: Database, year: Annotated[int | None, Qu
 
 @router.get("/agendaitems/{id}", response_model=AgendaitemResponse)
 async def get(id : int , r: Request, database: Database):
-    agendaitem = await database.get(Agendaitem,id) 
+    agendaitem = await database.get(Agendaitem, id) 
     if agendaitem is None : 
         raise HTTPException(status_code=404, detail="Agenda item not found")
     return agendaitem
 
 #/agendaitemtypes
-@router.get("/agendaitemtypes/{id}", response_class=JSONResponse)
-async def get(r: Request, database: Database):
-    pass
+@router.get("/agendaitemtypes/{id}", response_model=AgendaitemTypeResponse)
+async def get(id : int , r: Request, database: Database):
+    agendaitemType = await database.get(AgendaitemType, id) 
+    if agendaitemType is None : 
+        raise HTTPException(status_code=404, detail="Agenda item type not found")
+    return agendaitemType
 
 @router.get("/agendaitems/{id}/events", response_model=list[EventResponse])
 async def get(id: int, r: Request, db: Database):
