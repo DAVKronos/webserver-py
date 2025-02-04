@@ -17,8 +17,8 @@ async def get(
     r: Request, 
     database: Database, 
     year: Annotated[int, Query(alias="date[year]")] = datetime.now().year,
-    month: Annotated[int, Query(alias="date[month]")] = datetime.now().month):
-    
+    month: Annotated[int, Query(alias="date[month]")] = datetime.now().month
+):
     query = select(Agendaitem) \
         .order_by(Agendaitem.created_at.desc()) \
         .where(func.extract("year", Agendaitem.date) == year) \
