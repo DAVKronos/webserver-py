@@ -15,10 +15,7 @@ class EventResponse(EventBase):
     date: datetime | None
     results: list["ResultResponse"] = []
 
-class Event(EventBase, table=True):
-    __tablename__: str = "events"
-    id: int | None = Field(default=None, primary_key=True)
-    results: list["Result"] | None = Relationship(back_populates="event")
+
 
 
 class EventTypeBase(SQLModel):
@@ -49,8 +46,14 @@ class EventTypeResponse(EventTypeBase):
 class EventType(EventTypeBase, table=True):
     __tablename__: str = "eventtypes"
     id: int | None = Field(default=None, primary_key=True)
+    events: list["Event"] = Relationship(back_populates="eventtype")
 
 
-
+class Event(EventBase, table=True):
+    __tablename__: str = "events"
+    id: int | None = Field(default=None, primary_key=True)
+    eventtype_id: int | None = Field(default=None, foreign_key="eventtypes.id")
+    eventtype: EventType = Relationship(back_populates="events", sa_relationship_kwargs={"lazy": "selectin"})
+    results: list["Result"] | None = Relationship(back_populates="event")
 
 
