@@ -36,8 +36,8 @@ async def jwt_onetime_parameter():
 async def get_active_user(request: Request, database: Database):
     if "v2-access-token" in request.cookies:
         token = request.cookies["v2-access-token"]
-        payload = await authentication.validate_token(token)
-        user = await authentication.decode_token(payload)
+        payload = await validate_token(token)
+        user = await decode_token(payload)
         # TODO: now we hit the database on every request to lookup the user. Maybe be smarter about our JWT token. 
         user = await database.get(User, user.id)
         return user
