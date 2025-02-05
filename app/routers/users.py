@@ -1,5 +1,6 @@
 from typing import Annotated
-from fastapi import APIRouter, Request, Depends
+from fastapi import APIRouter, Request, Depends, HTTPException
+from sqlmodel import select
 from ..dependencies import Database
 from ..models.user import *
 
@@ -37,7 +38,5 @@ async def get_one_usertype(id: int, r: Request, database: Database):
 
 @router.get("/users/birthdays", response_model=list[UserResponse])
 async def get_birthdays(r: Request, database: Database):
-    user = database.get(User, id)
-    if not user:
-        raise HTTPException(status_code=404, detail="User not found")
-    return user
+    #Implement the birthdays
+    pass
