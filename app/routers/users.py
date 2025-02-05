@@ -13,7 +13,7 @@ async def get_all(r: Request, database: Database):
     query = select(User) \
         .order_by(User.name.desc())
         #The users table currently has 2 problematic entries, id 479 & 340
-        # these have a birthdate with the year 0001 which might return errors
+        # these have a birthdate with the year 0001 initially gave return errors
         # after manually changing it and setting it back it somehow works again
         # but maybe update 01/01/0001 dates?
     users = await database.exec(query)
@@ -48,8 +48,8 @@ async def get_birthdays(r: Request, database: Database):
             (extract("month", User.birthdate) == next_month) & (extract("day", User.birthdate) <= today.day)
         )
     ).order_by(
-        extract("month", User.birthdate),  # Order by month first
-        extract("day", User.birthdate)     # Then order by day
+        extract("month", User.birthdate),
+        extract("day", User.birthdate)
     )
     users = await database.exec(query)
     return users.all()
