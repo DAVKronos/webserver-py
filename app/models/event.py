@@ -10,8 +10,6 @@ class EventBase(SQLModel):
     agendaitem_id: int | None
     distance: float | None
 
-class EventResponse(EventBase):
-    results: list["ResultResponse"] = []
 
 class EventTypeBase(SQLModel):
     id: int | None
@@ -34,6 +32,10 @@ class EventCreate(SQLModel):
 
 class EventTypeResponse(EventTypeBase):
     pass
+
+class EventResponse(EventBase):
+    eventtype: EventTypeResponse | None = None
+    results: list["ResultResponse"] = []
 
 class EventType(EventTypeBase, table=True):
     __tablename__: str = "eventtypes"
