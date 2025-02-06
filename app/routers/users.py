@@ -11,7 +11,7 @@ router = APIRouter(prefix="")
 @router.get("/users", response_model=list[UserResponse])
 async def get_all(r: Request, database: Database):
     query = select(User) \
-        .order_by(User.name.desc())
+        .order_by(User.name.asc())
         #The users table currently has 2 problematic entries, id 479 & 340
         # these have a birthdate with the year 0001 initially gave return errors
         # after manually changing it and setting it back it somehow works again
