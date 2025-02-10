@@ -1,5 +1,5 @@
 from fastapi import FastAPI
-from .routers import activities, announcements, articles, commissions, documents, events, pages, photos, users, results
+from .routers import activities, announcements, articles, commissions, documents, events, pages, photos, users, user_types, results
 
 app = FastAPI()
 
@@ -13,3 +13,4 @@ app.include_router(pages.router)
 app.include_router(photos.router)
 app.include_router(results.router)
 app.include_router(users.router)
+app.include_router(user_types.router)
