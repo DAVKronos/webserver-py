@@ -1,14 +1,13 @@
-from typing import Annotated
-from fastapi import APIRouter, Request, Depends, HTTPException
+from fastapi import APIRouter, Request, HTTPException
 from sqlalchemy.sql import extract
 from sqlmodel import select, or_
 from ..dependencies import Database
 from datetime import date
 from ..models.user import *
 
-router = APIRouter(prefix="")
+router = APIRouter(prefix="/users")
 
-@router.get("/users", response_model=list[UserResponse])
+@router.get("", response_model=list[UserResponse])
 async def get_all(r: Request, database: Database):
     query = select(User) \
         .order_by(User.name.asc())
@@ -19,24 +18,7 @@ async def get_all(r: Request, database: Database):
     users = await database.exec(query)
     return users.all()
 
-
-
-@router.get("/user_types", response_model=list[UserTypeResponse])
-async def get_all_usertypes(r: Request, database: Database):
-    query = select(UserType) \
-        .order_by(UserType.id.desc())
-
-    usertypes = await database.exec(query)
-    return usertypes.all()
-
-@router.get("/user_types/{id}", response_model=UserTypeResponse)
-async def get_one_usertype(id: int, r: Request, database: Database):
-    usertype = await database.get(UserType, id)
-    if not usertype:
-        raise HTTPException(status_code=404, detail="Usertype not found")
-    return usertype
-
-@router.get("/users/birthdays", response_model=list[UserResponse])
+@router.get("/birthdays", response_model=list[UserResponse])
 async def get_birthdays(r: Request, database: Database):
     today = date.today()
     next_month = (today.month % 12) + 1
@@ -54,7 +36,7 @@ async def get_birthdays(r: Request, database: Database):
     users = await database.exec(query)
     return users.all()
 
-@router.get("/users/{id}", response_model=UserResponse)
+@router.get("/{id}", response_model=UserResponse)
 async def get_one(id: int, r: Request, database: Database):
     user = await database.get(User, id)
     if not user:
