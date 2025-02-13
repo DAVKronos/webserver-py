@@ -87,8 +87,10 @@ async def delete_photo(r: Request, database: Database):
 async def get(id: int, r: Request, database: Database, active_user: ActiveUser):
     # todo: comments are not public!
     query = select(Comment) \
-        .where(Article.agreed == True) \
-        .limit(None) \
+        .where(
+            Article.id == id,
+            Article.agreed == True
+        ).limit(None) \
         .offset(None) \
         .order_by(Comment.created_at.desc())
     
