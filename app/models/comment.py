@@ -10,7 +10,7 @@ class CommentBase(SQLModel):
     commentable_type: str
 
 class CommentPublic(CommentBase):
-    pass
+    user_id: int
 
 class Comment(CommentBase, table=True):
     __tablename__: str = "comments"
