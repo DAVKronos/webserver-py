@@ -88,8 +88,8 @@ async def get(id: int, r: Request, database: Database, active_user: ActiveUser):
     # todo: comments are not public!
     query = select(Comment) \
         .where(
-            Article.id == id,
-            Article.agreed == True
+            Comment.commentable_id == id,
+            # Article.agreed == True
         ).limit(None) \
         .offset(None) \
         .order_by(Comment.created_at.desc())
