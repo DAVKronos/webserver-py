@@ -6,6 +6,7 @@ from sqlalchemy import column, func
 from sqlmodel import select
 from ..dependencies import Database
 from ..models.agendaitem import *
+from ..models.subscription import *
 from ..models.agendaitemtype import AgendaitemTypeResponse
 from ..models.result import ResultResponse, Result
 from ..models.event import EventResponse, Event
@@ -65,7 +66,10 @@ async def get(id: int, r: Request, db: Database):
 
 @router.get("/agendaitems/{id}/subscriptions", response_model=list[SubscriptionResponse])
 async def get(r: Request, id: int, database: Database):
-    agendaitem = await database.get(Agendaitem, id)
-    if agendaitem is None : 
-        raise HTTPException(status_code=404, detail="Agenda item not found")
-    return agendaitem.subscriptions
+    query = select(Subscription) \
+        .where(Subscription.agendaitem_id == id) \
+        .order_by(Subscription.created_at.asc()) \
+        
+    subscriptions = await database.exec(query)       
+    
+    return subscriptions
