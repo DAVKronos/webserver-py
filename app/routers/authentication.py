@@ -29,7 +29,7 @@ async def login(username: Annotated[str, Form()] , password:Annotated[str, Form(
         return Response("", 403)
     else:
         # log login result
-        #response.set_cookie(key="v2-access-token", value=token, max_age=3600*24*30, secure=True, httponly=True,)
+        response.set_cookie(key="v2-access-token", value=token, max_age=3600*24*30, secure=True, httponly=True)
         response.headers["access-token"] = token
         user = await database.get(User, user.id)
         return UserResponse.model_validate(user, update={})
@@ -108,8 +108,9 @@ async def permissions(request: Request, database: Database, active_user: ActiveU
                 cannot('see_email', 'Commission')]
 
     abilities = [] + everyone
-    
+
     if active_user is not None:
+        
         abilities += [can('read', 'all'),
                    can('read', 'Page'),
                    can('see_email', 'Commission'),

@@ -23,7 +23,7 @@ class AgendaitemBase(SQLModel):
     maxsubscription: int | None
 
     def is_before_deadline(self):
-        if subscriptiondeadline is None:
+        if self.subscriptiondeadline is None:
             return False
         else:
             return datetime.now() < self.subscriptiondeadline
