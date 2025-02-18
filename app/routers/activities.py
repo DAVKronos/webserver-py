@@ -20,7 +20,7 @@ async def get(
     month: Annotated[int, Query(alias="date[month]")] = datetime.now().month
 ):
     query = select(Agendaitem) \
-        .order_by(Agendaitem.created_at.desc()) \
+        .order_by(Agendaitem.date.asc()) \
         .where(func.extract("year", Agendaitem.date) == year) \
         .where(func.extract("month", Agendaitem.date) == month)
 
