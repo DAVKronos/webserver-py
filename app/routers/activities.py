@@ -63,6 +63,9 @@ async def get(id: int, r: Request, db: Database):
     return events
 
 
-@router.get("/agendaitems/{id}/subscriptions", response_class=JSONResponse)
-async def get(r: Request, database: Database):
-    pass
+@router.get("/agendaitems/{id}/subscriptions", response_model=list[SubscriptionResponse])
+async def get(r: Request, id: int, database: Database):
+    agendaitem = await database.get(Agendaitem, id)
+    if agendaitem is None : 
+        raise HTTPException(status_code=404, detail="Agenda item not found")
+    return agendaitem.subscriptions

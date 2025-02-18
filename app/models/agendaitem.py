@@ -30,6 +30,7 @@ class AgendaitemBase(SQLModel):
     
 class AgendaitemResponse(AgendaitemBase):
     agendaitemtype: AgendaitemTypeResponse | None = None
+    agendaitemtype_id: int
     subscriptions: list["SubscriptionResponse"] = []
 
 class Agendaitem(AgendaitemBase, table=True):
