@@ -3,6 +3,7 @@ from datetime import datetime
 from .user import User, UserResponse
 
 class CommentBase(SQLModel):
+    id:int
     created_at: datetime
     updated_at: datetime
     commenttext: str
@@ -10,7 +11,7 @@ class CommentBase(SQLModel):
     commentable_type: str
 
 class CommentPublic(CommentBase):
-    user_id: int
+    user: UserResponse | None
 
 class Comment(CommentBase, table=True):
     __tablename__: str = "comments"
