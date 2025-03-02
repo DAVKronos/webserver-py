@@ -5,7 +5,7 @@ from sqlmodel import SQLModel, select, func, and_, text
 from pydantic import BaseModel, ValidationError
 from ..dependencies import Database, ActiveUser
 from ..models.article import *
-from ..models.comment import *
+from ..models.comment import CommentCreate, CommentPublic
 
 router = APIRouter(prefix="/newsitems")
 
@@ -82,9 +82,8 @@ async def insert_photo(r: Request, database: Database):
 async def delete_photo(r: Request, database: Database):
     pass
 
-
 @router.get("/{id}/comments", response_model=list[CommentPublic])
-async def get(id: int, r: Request, database: Database, active_user: ActiveUser):
+async def get(id: int, database: Database):
     # todo: comments are not public!
     query = select(Comment) \
         .where(
@@ -96,3 +95,17 @@ async def get(id: int, r: Request, database: Database, active_user: ActiveUser):
     
     comments = await database.exec(query)
     return comments.all()
+
+@router.post("/{id}/comments", response_model=CommentPublic)
+async def create_comment(data: CommentCreate, database: Database, active_user: ActiveUser):
+    t = datetime.utcnow()
+    try:
+        comment = Comment.model_validate(data, update={'created_at': t, 'updated_at': t, 'user_id': active_user.id })
+    except ValidationError as error:
+        print(error)
+        raise HTTPException(status_code=500, detail="Input data not valid")
+    database.add(comment)
+    await database.commit()
+    await database.refresh(comment)
+
+    return comment

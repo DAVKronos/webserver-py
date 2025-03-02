@@ -13,6 +13,11 @@ class CommentBase(SQLModel):
 class CommentPublic(CommentBase):
     user: UserResponse | None
 
+class CommentCreate(SQLModel):
+    commentable_id: int
+    commentable_type: str
+    commenttext: str
+
 class Comment(CommentBase, table=True):
     __tablename__: str = "comments"
     id: int | None = Field(default=None, primary_key=True)
