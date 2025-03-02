@@ -5,6 +5,7 @@ from .comment import Comment
 from sqlalchemy.orm import foreign
 
 class ArticleBase(SQLModel):
+    id: int
     created_at: datetime
     updated_at: datetime
     title: str
@@ -27,7 +28,6 @@ class Article(ArticleBase, table=True):
         "lazy": "selectin" })
 
 class ArticlePublic(ArticleBase):
-    id: int
     user: UserResponse | None = None
 
 class ArticlePublicWithCommentCount(ArticlePublic):

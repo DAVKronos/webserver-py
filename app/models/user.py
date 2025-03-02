@@ -3,6 +3,7 @@ from datetime import date, datetime
 
 
 class UserBase(SQLModel):
+    id: int | None
     name: str
     initials: str
     email: str
@@ -28,7 +29,6 @@ class UserBase(SQLModel):
     aanvang: int | None
 
 class UserResponse(UserBase):
-    id: int | None
     commissions: list["CommissionResponse"] = []
     
 class User(UserBase, table=True):
