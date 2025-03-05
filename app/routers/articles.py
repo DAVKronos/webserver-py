@@ -1,6 +1,6 @@
 from typing import Annotated, Optional
 from datetime import datetime, timezone
-from fastapi import APIRouter, Depends, Form, HTTPException, Request
+from fastapi import APIRouter, Depends, Form, HTTPException, Request, status
 from sqlmodel import SQLModel, select, func, and_, text
 from pydantic import BaseModel, ValidationError
 from ..dependencies import Database, ActiveUser
@@ -109,3 +109,16 @@ async def create_comment(data: CommentCreate, database: Database, active_user: A
     await database.refresh(comment)
 
     return comment
+
+@router.delete("/{article_id}/comments/{comment_id}", status_code=status.HTTP_204_NO_CONTENT)
+async def delete_comment(comment_id: int, database: Database, active_user: ActiveUser):
+    comment:Comment | None = await database.get(Comment, comment_id)
+
+    if not comment:
+        raise HTTPException(status_code=404, detail="Comment not found")
+    #For now only allow the owner of the comment to remove it
+    if comment.user_id != active_user.id:
+        raise HTTPException(status_code=403, detail="Not authorized to delete this comment")
+    await database.delete(comment)
+    await database.commit()
+    return
