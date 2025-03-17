@@ -1,23 +1,27 @@
 from sqlmodel import Field, Relationship,  SQLModel
 from datetime import datetime
-from ..models.user import User
+from .user import User
 class CommissionBase(SQLModel):
+    id: int
+    created_at: datetime
+    updated_at: datetime
     name: str
+    name_en: str
+    description: str
+    description_en: str
+    email: str | None
+    role: str | None
 
 class CommissionResponse(CommissionBase):
     pass
 
+class CompactCommissionResponse(SQLModel):
+    name: str
+    name_en: str
+
 class Commission(CommissionBase, table=True):
     __tablename__: str = "commissions"
     id: int | None = Field(default=None, primary_key=True)
-    created_at: datetime
-    updated_at: datetime
-    name: str
-    name_en:str
-    description: str
-    description_en: str
-    email: str
-    role: str
     commission_memberships: list["CommissionMembership"] = Relationship(back_populates="commission")
 
 class CommissionMembershipBase(SQLModel):
@@ -36,5 +40,5 @@ class CommissionMembership(CommissionMembershipBase, table=True):
     installed: bool
 
 class CommissionMembershipResponse(SQLModel):
-    # user = {name:}
-    pass
+    name: str
+    name_en: str

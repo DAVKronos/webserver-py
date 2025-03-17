@@ -1,21 +1,23 @@
 from typing import Annotated
-from fastapi import APIRouter, Request, Depends
+from fastapi import APIRouter, Request, Depends, HTTPException
+from sqlmodel import select
 from ..dependencies import Database
-from ..models.commissions import *
+from ..models.commission import *
 from datetime import datetime
+
 router = APIRouter(prefix="/commissions")
 
 @router.get("", response_model=list[CommissionResponse])
 async def get_all(r: Request, database: Database):
     query = select(Commission) \
-        .order_by(Commission.name.desc())
+        .order_by(Commission.name.asc())
 
     commissions = await database.exec(query)
     return commissions.all()
 
 @router.get("/{id}", response_model=CommissionResponse)
 async def get_one(id: int, r: Request, database: Database):
-    commission = database.get(commission, id)
+    commission = await database.get(Commission, id)
     if not commission:
         raise HTTPException(status_code=404, detail="Commission not found")
     return commission
@@ -24,7 +26,7 @@ async def get_one(id: int, r: Request, database: Database):
 async def get_membership(id: int, r: Request, database: Database):
     query = select(CommissionMembership) \
         .where(CommissionMembership.commission_id == id) \
-        .order_by(CommissionMembership.create_at.desc())
+        .order_by(CommissionMembership.created_at.desc())
     
     memberships = await database.exec(query)
     return memberships.all()

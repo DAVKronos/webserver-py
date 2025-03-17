@@ -38,7 +38,8 @@ async def get_birthdays(r: Request, database: Database):
 
 @router.get("/{id}", response_model=UserResponse)
 async def get_one(id: int, r: Request, database: Database):
-    user = await database.get(User, id)
+    user: User | None = await database.get(User, id)
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
+
     return user

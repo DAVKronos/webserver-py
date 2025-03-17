@@ -29,7 +29,7 @@ class UserBase(SQLModel):
     aanvang: int | None
 
 class UserResponse(UserBase):
-    commissions: list["CommissionResponse"] = []
+    commissions: list["CompactCommissionResponse"] = []
     
 class User(UserBase, table=True):
     __tablename__: str = "users"
@@ -38,6 +38,17 @@ class User(UserBase, table=True):
     comments: list["Comment"] = Relationship(back_populates="user")
     commission_memberships: list["CommissionMembership"] = Relationship(back_populates="user", sa_relationship_kwargs={"lazy": "selectin"})
     subscriptions: list["Subscription"] = Relationship(back_populates="user", sa_relationship_kwargs={"lazy": "selectin"})
+    
+    @property
+    def commissions(self):
+        from .commission import CompactCommissionResponse
+        return [
+            CompactCommissionResponse(
+                name=membership.commission.name,
+                name_en=membership.commission.name_en
+            ) 
+            for membership in self.commission_memberships
+        ]
 
 class UserTypeBase(SQLModel):
     id: int
@@ -56,4 +67,4 @@ class UserType(UserTypeBase, table=True):
     created_at: datetime
     updated_at: datetime
 
-from .commissions import CommissionResponse
+from .commission import CommissionResponse, CompactCommissionResponse
