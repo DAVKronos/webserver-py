@@ -40,6 +40,7 @@ class User(UserBase, table=True):
     subscriptions: list["Subscription"] = Relationship(back_populates="user", sa_relationship_kwargs={"lazy": "selectin"})
 
 class UserTypeBase(SQLModel):
+    id: int
     name: str | None
     name_en: str | None
     donor: bool | None

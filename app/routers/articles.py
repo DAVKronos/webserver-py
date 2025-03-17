@@ -1,11 +1,11 @@
 from typing import Annotated, Optional
 from datetime import datetime, timezone
-from fastapi import APIRouter, Depends, Form, HTTPException, Request
+from fastapi import APIRouter, Depends, Form, HTTPException, Request, status
 from sqlmodel import SQLModel, select, func, and_, text
 from pydantic import BaseModel, ValidationError
 from ..dependencies import Database, ActiveUser
 from ..models.article import *
-from ..models.comment import *
+from ..models.comment import CommentCreate, CommentPublic, CommentUpdate
 
 router = APIRouter(prefix="/newsitems")
 
@@ -82,9 +82,8 @@ async def insert_photo(r: Request, database: Database):
 async def delete_photo(r: Request, database: Database):
     pass
 
-
 @router.get("/{id}/comments", response_model=list[CommentPublic])
-async def get(id: int, r: Request, database: Database, active_user: ActiveUser):
+async def get(id: int, database: Database):
     # todo: comments are not public!
     query = select(Comment) \
         .where(
@@ -96,3 +95,48 @@ async def get(id: int, r: Request, database: Database, active_user: ActiveUser):
     
     comments = await database.exec(query)
     return comments.all()
+
+@router.post("/{id}/comments", response_model=CommentPublic)
+async def create_comment(data: CommentCreate, database: Database, active_user: ActiveUser):
+    t = datetime.utcnow()
+    try:
+        comment = Comment.model_validate(data, update={'created_at': t, 'updated_at': t, 'user_id': active_user.id })
+    except ValidationError as error:
+        print(error)
+        raise HTTPException(status_code=500, detail="Input data not valid")
+    database.add(comment)
+    await database.commit()
+    await database.refresh(comment)
+
+    return comment
+
+@router.patch("/{article_id}/comments/{comment_id}", response_model=CommentPublic)
+async def update_comment( comment_id: int, data: CommentUpdate, database: Database, active_user: ActiveUser):
+    comment:Comment | None = await database.get(Comment, comment_id)
+    
+    if not comment:
+        raise HTTPException(status_code=404, detail="Comment not found")
+    #For now only allow the owner of the comment to remove it
+    if comment.user_id != active_user.id:
+        raise HTTPException(status_code=403, detail="Not authorized to edit this comment")
+    t = datetime.utcnow()
+    comment.sqlmodel_update(comment, update={'updated_at': t, 'commenttext': data.commenttext})
+
+    database.add(comment)
+    await database.commit()
+    await database.refresh(comment)
+
+    return comment
+
+@router.delete("/{article_id}/comments/{comment_id}", status_code=status.HTTP_204_NO_CONTENT)
+async def delete_comment(comment_id: int, database: Database, active_user: ActiveUser):
+    comment:Comment | None = await database.get(Comment, comment_id)
+
+    if not comment:
+        raise HTTPException(status_code=404, detail="Comment not found")
+    #For now only allow the owner of the comment to remove it
+    if comment.user_id != active_user.id:
+        raise HTTPException(status_code=403, detail="Not authorized to delete this comment")
+    await database.delete(comment)
+    await database.commit()
+    return
