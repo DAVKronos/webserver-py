@@ -5,7 +5,7 @@ from sqlmodel import SQLModel, select, func, and_, text
 from pydantic import BaseModel, ValidationError
 from ..dependencies import Database, ActiveUser
 from ..models.article import *
-from ..models.comment import CommentCreate, CommentPublic
+from ..models.comment import CommentCreate, CommentPublic, CommentUpdate
 
 router = APIRouter(prefix="/newsitems")
 
@@ -104,6 +104,24 @@ async def create_comment(data: CommentCreate, database: Database, active_user: A
     except ValidationError as error:
         print(error)
         raise HTTPException(status_code=500, detail="Input data not valid")
+    database.add(comment)
+    await database.commit()
+    await database.refresh(comment)
+
+    return comment
+
+@router.patch("/{article_id}/comments/{comment_id}", response_model=CommentPublic)
+async def update_comment( comment_id: int, data: CommentUpdate, database: Database, active_user: ActiveUser):
+    comment:Comment | None = await database.get(Comment, comment_id)
+    
+    if not comment:
+        raise HTTPException(status_code=404, detail="Comment not found")
+    #For now only allow the owner of the comment to remove it
+    if comment.user_id != active_user.id:
+        raise HTTPException(status_code=403, detail="Not authorized to edit this comment")
+    t = datetime.utcnow()
+    comment.sqlmodel_update(comment, update={'updated_at': t, 'commenttext': data.commenttext})
+
     database.add(comment)
     await database.commit()
     await database.refresh(comment)

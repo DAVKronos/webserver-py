@@ -18,6 +18,9 @@ class CommentCreate(SQLModel):
     commentable_type: str
     commenttext: str
 
+class CommentUpdate(SQLModel):
+    commenttext: str
+
 class Comment(CommentBase, table=True):
     __tablename__: str = "comments"
     id: int | None = Field(default=None, primary_key=True)
