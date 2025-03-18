@@ -27,7 +27,7 @@ class EventTypeBase(SQLModel):
 class EventCreate(SQLModel): #very complex do some other time :)
     event: str
     event_en: str
-    Agenda_item_id: id
+    Agenda_item_id: int
     data : time
 
 
