@@ -57,6 +57,23 @@ class AgendaItemCreate(SQLModel) :
     subscribe: bool 
     subscriptiondeadline: datetime | None
     maxsubscription: int | None
+
+
+class AgendaItemUpdate(SQLModel) :
+    name: str | None
+    name_en: str  | None
+    description: str  | None
+    description_en: str  | None
+    date: datetime  | None
+    location: str | None
+    commission_id: int | None
+    category: str | None 
+    intern: bool | None
+    agendaitemtype_id: int | None
+    url: str | None
+    subscribe: bool | None
+    subscriptiondeadline: datetime | None
+    maxsubscription: int | None
     
 
 

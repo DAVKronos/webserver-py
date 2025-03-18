@@ -1,6 +1,6 @@
 from typing import Annotated
 from datetime import datetime, date
-from fastapi import APIRouter, Request, Depends, Query, HTTPException , HTTPException 
+from fastapi import APIRouter, Request, Depends, Query, HTTPException , HTTPException , status
 from fastapi.responses import JSONResponse
 from sqlalchemy import column, func
 from sqlmodel import select
@@ -77,7 +77,7 @@ async def get(r: Request, id: int, database: Database):
 
 
 
-@router.post("/agendaitems/", response_model=AgendaitemBase)
+@router.post("/agendaitems", response_model=AgendaitemBase)
 async def create_agenda_item(data: AgendaItemCreate, database: Database, active_user: ActiveUser):
     t = datetime.utcnow()
     try:
@@ -99,3 +99,37 @@ async def create_agenda_item(data: AgendaItemCreate, database: Database, active_
     await database.refresh(agenda_item)
      
     return agenda_item.model_validate(agenda_item, update={"user":None})
+
+
+
+@router.delete("/agendaitems/{id}", status_code=status.HTTP_204_NO_CONTENT)
+async def delete_agendaitem(id: int, database: Database, active_user: ActiveUser):
+    agendaitem:Agendaitem | None = await database.get(Agendaitem, id)
+
+    if not agendaitem:
+        raise HTTPException(status_code=404, detail="Agendaitem not found")
+    #For now only allow the owner of the comment to remove it
+    if agendaitem.user_id != active_user.id:
+        raise HTTPException(status_code=403, detail="Not authorized to delete this Agendaitem")
+    await database.delete(agendaitem)
+    await database.commit()
+    return
+
+
+@router.patch("/agendaitems/{id}", response_model=AgendaitemResponse)
+async def update_Agendaitem( id: int, data: AgendaItemUpdate, database: Database, active_user: ActiveUser):
+    agendaitem:Agendaitem | None = await database.get(Agendaitem, id)
+    
+    if not agendaitem:
+        raise HTTPException(status_code=404, detail="Comment not found")
+    #For now only allow the owner of the comment to remove it
+    if agendaitem.user_id != active_user.id:
+        raise HTTPException(status_code=403, detail="Not authorized to edit this comment")
+    t = datetime.utcnow()
+    agendaitem.sqlmodel_update(agendaitem, update={'updated_at': t, 'commenttext': data.commenttext})
+
+    database.add(agendaitem)
+    await database.commit()
+    await database.refresh(agendaitem)
+
+    return agendaitem
