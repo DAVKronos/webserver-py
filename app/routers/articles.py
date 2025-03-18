@@ -102,7 +102,6 @@ async def create_comment(data: CommentCreate, database: Database, active_user: A
     try:
         comment = Comment.model_validate(data, update={'created_at': t, 'updated_at': t, 'user_id': active_user.id })
     except ValidationError as error:
-        print(error)
         raise HTTPException(status_code=500, detail="Input data not valid")
     database.add(comment)
     await database.commit()
