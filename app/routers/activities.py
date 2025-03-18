@@ -4,7 +4,8 @@ from fastapi import APIRouter, Request, Depends, Query, HTTPException , HTTPExce
 from fastapi.responses import JSONResponse
 from sqlalchemy import column, func
 from sqlmodel import select
-from ..dependencies import Database
+from pydantic import BaseModel, ValidationError
+from ..dependencies import Database , ActiveUser
 from ..models.agendaitem import *
 from ..models.subscription import *
 from ..models.agendaitemtype import AgendaitemTypeResponse
@@ -73,3 +74,28 @@ async def get(r: Request, id: int, database: Database):
     subscriptions = await database.exec(query)       
     
     return subscriptions
+
+
+
+@router.post("/agendaitems/", response_model=AgendaitemBase)
+async def create_agenda_item(data: AgendaItemCreate, database: Database, active_user: ActiveUser):
+    t = datetime.utcnow()
+    try:
+        agenda_item = Agendaitem.model_validate(data, update={'created_at': t, 'updated_at': t, 'user_id': active_user.id})
+    except ValidationError as e:
+        # log(e)
+        print(e)
+        raise HTTPException(status_code=500, detail="Input data not valid")
+    
+    if data.subscribe :
+        if  data.maxsubscription == None or  data.subscriptiondeadline == None:
+            raise HTTPException(status_code=500, detail="Input data not set")
+        #if data.maxsubscription <= 0 and data.subscriptiondeadline < t :
+        #    raise HTTPException(status_code=500, detail="Input data not valid")
+
+
+    database.add(agenda_item)
+    await database.commit()
+    await database.refresh(agenda_item)
+     
+    return agenda_item.model_validate(agenda_item, update={"user":None})

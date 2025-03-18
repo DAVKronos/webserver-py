@@ -40,5 +40,26 @@ class Agendaitem(AgendaitemBase, table=True):
     agendaitemtype: AgendaitemType = Relationship(back_populates="agendaitems", sa_relationship_kwargs={"lazy": "selectin"})
     subscriptions: list["Subscription"] = Relationship(back_populates="agendaitem",sa_relationship_kwargs={"lazy": "selectin"})
 
+
+
+class AgendaItemCreate(SQLModel) :
+    name: str 
+    name_en: str 
+    description: str 
+    description_en: str 
+    date: datetime 
+    location: str | None
+    commission_id: int | None
+    category: str 
+    intern: bool 
+    url: str | None
+    subscribe: bool 
+    subscriptiondeadline: datetime | None
+    maxsubscription: int | None
+    
+
+
+
+
 # Trick to deal with Pydantic circular dependencies
 from .subscription import SubscriptionResponse
