@@ -2,6 +2,7 @@ from sqlmodel import Field, Relationship,  SQLModel
 from datetime import datetime
 
 class AgendaitemTypeBase(SQLModel):
+    id: int
     created_at: datetime
     updated_at: datetime
     name: str

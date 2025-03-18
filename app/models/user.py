@@ -3,6 +3,7 @@ from datetime import date, datetime
 
 
 class UserBase(SQLModel):
+    id: int | None
     name: str
     initials: str
     email: str
@@ -28,7 +29,6 @@ class UserBase(SQLModel):
     aanvang: int | None
 
 class UserResponse(UserBase):
-    id: int | None
     commissions: list["CommissionResponse"] = []
     
 class User(UserBase, table=True):
@@ -40,6 +40,7 @@ class User(UserBase, table=True):
     subscriptions: list["Subscription"] = Relationship(back_populates="user", sa_relationship_kwargs={"lazy": "selectin"})
 
 class UserTypeBase(SQLModel):
+    id: int
     name: str | None
     name_en: str | None
     donor: bool | None
