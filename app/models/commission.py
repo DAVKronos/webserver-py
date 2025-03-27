@@ -33,26 +33,27 @@ class ComissionUpdate(SQLModel):
     description_en: Optional[str] = None
 
 class CommissionMembershipBase(SQLModel):
-    pass
-
-class CommissionMembership(CommissionMembershipBase, table=True):
-    __tablename__: str ="commission_memberships"
-    id: int | None = Field(default=None, primary_key=True)
-    created_at: datetime
-    updated_at: datetime
-    user_id: int = Field(foreign_key="users.id")
-    user: User = Relationship(back_populates="commission_memberships", sa_relationship_kwargs={"lazy": "selectin"})
-    commission_id: int = Field(foreign_key="commissions.id")
-    commission: Commission = Relationship(back_populates="commission_memberships", sa_relationship_kwargs={"lazy": "selectin"})
-    function: str
-    installed: bool
-
-class CommissionMembershipResponse(SQLModel):
     id: int
     created_at: datetime
     updated_at: datetime
     function: str
     installed: bool
-    commission_id: int
+
+class CommissionMembership(CommissionMembershipBase, table=True):
+    __tablename__: str ="commission_memberships"
+    id: int | None = Field(default=None, primary_key=True)
+    user_id: int = Field(foreign_key="users.id")
+    user: User = Relationship(back_populates="commission_memberships", sa_relationship_kwargs={"lazy": "selectin"})
+    commission_id: int = Field(foreign_key="commissions.id")
+    commission: Commission = Relationship(back_populates="commission_memberships", sa_relationship_kwargs={"lazy": "selectin"})
+
+
+class CommissionMembershipResponse(CommissionMembershipBase):
+    user: CompactUserResponse
+    commission: CompactCommissionResponse
     user_id: int
     user: CompactUserResponse
+
+class CommissionMembershipCreate(SQLModel):
+    user_id: int
+    function: str
