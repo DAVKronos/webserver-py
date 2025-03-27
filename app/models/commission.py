@@ -1,6 +1,6 @@
 from sqlmodel import Field, Relationship,  SQLModel
 from datetime import datetime
-from .user import User
+from .user import User, CompactUserResponse
 from typing import Optional
 
 class CommissionBase(SQLModel):
@@ -48,5 +48,11 @@ class CommissionMembership(CommissionMembershipBase, table=True):
     installed: bool
 
 class CommissionMembershipResponse(SQLModel):
-    name: str
-    name_en: str
+    id: int
+    created_at: datetime
+    updated_at: datetime
+    function: str
+    installed: bool
+    commission_id: int
+    user_id: int
+    user: CompactUserResponse

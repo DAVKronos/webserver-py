@@ -67,4 +67,9 @@ class UserType(UserTypeBase, table=True):
     created_at: datetime
     updated_at: datetime
 
+class CompactUserResponse(SQLModel):
+    id: int
+    name: str
+    initials: str
+
 from .commission import CommissionResponse, CompactCommissionResponse
