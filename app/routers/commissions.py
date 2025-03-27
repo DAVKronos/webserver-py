@@ -30,7 +30,8 @@ async def update_commission(id: int, data: ComissionUpdate, database: Database, 
         raise HTTPException(status_code=404, detail="Commission not found")
     
     t = datetime.utcnow().date()
-    commission.sqlmodel_update(commission, update={'updated_at': t, 'name': data.name, 'name_en': data.name_en, 'description': data.description, 'description_en': data.description_en})
+    commission_data = data.model_dump(exclude_unset=True)
+    commission.sqlmodel_update(commission, update={'updated_at': t, **commission_data})
 
     database.add(commission)
     await database.commit()
