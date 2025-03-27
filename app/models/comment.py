@@ -1,6 +1,7 @@
 from sqlmodel import Field, Relationship,  SQLModel
 from datetime import datetime
 from .user import User, UserResponse
+from typing import Optional
 
 class CommentBase(SQLModel):
     id:int
@@ -11,7 +12,7 @@ class CommentBase(SQLModel):
     commentable_type: str
 
 class CommentPublic(CommentBase):
-    user: UserResponse | None
+    user: Optional[UserResponse] = None
 
 class CommentCreate(SQLModel):
     commentable_id: int
@@ -19,7 +20,7 @@ class CommentCreate(SQLModel):
     commenttext: str
 
 class CommentUpdate(SQLModel):
-    commenttext: str
+    commenttext: Optional[str] = None
 
 class Comment(CommentBase, table=True):
     __tablename__: str = "comments"

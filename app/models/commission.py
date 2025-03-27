@@ -1,6 +1,8 @@
 from sqlmodel import Field, Relationship,  SQLModel
 from datetime import datetime
 from .user import User
+from typing import Optional
+
 class CommissionBase(SQLModel):
     id: int
     created_at: datetime
@@ -9,8 +11,8 @@ class CommissionBase(SQLModel):
     name_en: str
     description: str
     description_en: str
-    email: str | None
-    role: str | None
+    email: Optional[str] = None
+    role: Optional[str] = None
 
 class CommissionResponse(CommissionBase):
     pass
@@ -25,10 +27,10 @@ class Commission(CommissionBase, table=True):
     commission_memberships: list["CommissionMembership"] = Relationship(back_populates="commission")
 
 class ComissionUpdate(SQLModel):
-    name: str | None
-    name_en: str | None
-    description: str | None
-    description_en: str | None
+    name: Optional[str] = None
+    name_en: Optional[str] = None
+    description: Optional[str] = None
+    description_en: Optional[str] = None
 
 class CommissionMembershipBase(SQLModel):
     pass
