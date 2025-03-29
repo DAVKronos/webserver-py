@@ -1,32 +1,32 @@
 from sqlmodel import Field, Relationship,  SQLModel
 from datetime import date, datetime
-
+from typing import Optional
 
 class UserBase(SQLModel):
-    id: int | None
+    id: int
     name: str
     initials: str
     email: str
-    birthdate: date | None
-    address: str | None
-    postalcode: str | None
-    city: str | None
-    sex: str | None
-    licensenumber: str | None
-    papieren_kronometer: bool | None
+    birthdate: Optional[date]
+    address: Optional[str]
+    postalcode: Optional[str]
+    city: Optional[str]
+    sex: Optional[str]
+    licensenumber: Optional[str]
+    papieren_kronometer: Optional[bool]
     created_at: datetime
     updated_at: datetime
-    avatar_file_name: str | None
-    avatar_content_type: str | None
-    avatar_file_size: int | None
-    avatar_updated_at: datetime | None
+    avatar_file_name: Optional[str]
+    avatar_content_type: Optional[str]
+    avatar_file_size: Optional[int]
+    avatar_updated_at: Optional[datetime]
     encrypted_password: str
-    phonenumber: str | None
+    phonenumber: Optional[str]
     user_type_id: int
-    xtracard: str | None
-    studie: str | None
-    instelling: str | None
-    aanvang: int | None
+    xtracard: Optional[str]
+    studie: Optional[str]
+    instelling: Optional[str]
+    aanvang: Optional[int]
 
 class UserResponse(UserBase):
     commissions: list["CompactCommissionResponse"] = []
@@ -41,7 +41,6 @@ class User(UserBase, table=True):
     
     @property
     def commissions(self):
-        from .commission import CompactCommissionResponse
         return [
             CompactCommissionResponse(
                 name=membership.commission.name,
@@ -72,4 +71,4 @@ class CompactUserResponse(SQLModel):
     name: str
     initials: str
 
-from .commission import CommissionResponse, CompactCommissionResponse
+from .commission import CompactCommissionResponse

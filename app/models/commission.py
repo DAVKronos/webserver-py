@@ -26,6 +26,12 @@ class Commission(CommissionBase, table=True):
     id: int | None = Field(default=None, primary_key=True)
     commission_memberships: list["CommissionMembership"] = Relationship(back_populates="commission")
 
+class CommissionCreate(SQLModel):
+    name: str
+    name_en: str
+    description: str
+    description_en: str
+
 class ComissionUpdate(SQLModel):
     name: Optional[str] = None
     name_en: Optional[str] = None
@@ -51,7 +57,6 @@ class CommissionMembership(CommissionMembershipBase, table=True):
 class CommissionMembershipResponse(CommissionMembershipBase):
     user: CompactUserResponse
     commission: CompactCommissionResponse
-    user_id: int
     user: CompactUserResponse
 
 class CommissionMembershipCreate(SQLModel):
