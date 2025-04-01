@@ -43,6 +43,7 @@ class User(UserBase, table=True):
     def commissions(self):
         return [
             CompactCommissionResponse(
+                id=membership.commission.id,
                 name=membership.commission.name,
                 name_en=membership.commission.name_en
             ) 

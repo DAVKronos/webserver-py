@@ -4,7 +4,7 @@ from sqlmodel import select, or_
 from ..dependencies import Database
 from datetime import date
 from ..models.user import *
-
+from ..models.commission import CompactCommissionResponse, CommissionMembership
 router = APIRouter(prefix="/users")
 
 @router.get("", response_model=list[UserResponse])
@@ -43,3 +43,11 @@ async def get_one(id: int, r: Request, database: Database):
         raise HTTPException(status_code=404, detail="User not found")
 
     return user
+
+@router.get("/{id}/commissions", response_model=list[CompactCommissionResponse])
+async def get_comissions(id: int, r: Request, database: Database):
+    user: User | None = await database.get(User, id)
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+
+    return user.commissions

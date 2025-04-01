@@ -18,6 +18,7 @@ class CommissionResponse(CommissionBase):
     pass
 
 class CompactCommissionResponse(SQLModel):
+    id: int
     name: str
     name_en: str
 
@@ -57,7 +58,6 @@ class CommissionMembership(CommissionMembershipBase, table=True):
 class CommissionMembershipResponse(CommissionMembershipBase):
     user: CompactUserResponse
     commission: CompactCommissionResponse
-    user: CompactUserResponse
 
 class CommissionMembershipCreate(SQLModel):
     user_id: int
