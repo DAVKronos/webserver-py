@@ -24,11 +24,12 @@ class EventTypeBase(SQLModel):
     show_wind: bool | None
     important: bool | None
 
-class EventCreate(SQLModel):
+class EventCreate(SQLModel): #very complex do some other time :)
     event: str
     event_en: str
-    news: str
-    news_en: str
+    Agenda_item_id: int
+    data : time
+
 
 class EventTypeResponse(EventTypeBase):
     pass
