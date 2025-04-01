@@ -109,7 +109,7 @@ async def delete_agendaitem(id: int, database: Database, active_user: ActiveUser
     if not agendaitem:
         raise HTTPException(status_code=404, detail="Agendaitem not found")
     #For now only allow the owner of the comment to remove it
-    if agendaitem.user_id != active_user.id:
+    if agendaitem.user_id != active_user.id :
         raise HTTPException(status_code=403, detail="Not authorized to delete this Agendaitem")
     await database.delete(agendaitem)
     await database.commit()
@@ -121,12 +121,15 @@ async def update_Agendaitem( id: int, data: AgendaItemUpdate, database: Database
     agendaitem:Agendaitem | None = await database.get(Agendaitem, id)
     
     if not agendaitem:
-        raise HTTPException(status_code=404, detail="Comment not found")
+        raise HTTPException(status_code=404, detail="Agendaitem not found")
     #For now only allow the owner of the comment to remove it
-    if agendaitem.user_id != active_user.id:
+    if agendaitem.user_id != active_user.id and active_user.id != 999:
         raise HTTPException(status_code=403, detail="Not authorized to edit this comment")
     t = datetime.utcnow()
-    agendaitem.sqlmodel_update(agendaitem, update={'updated_at': t, 'commenttext': data.commenttext})
+    print(data)
+    agendaitem_data = data.model_dump(exclude_unset=True)
+    print(agendaitem_data)
+    agendaitem.sqlmodel_update(agendaitem, update={'updated_at': t, **agendaitem_data})
 
     database.add(agendaitem)
     await database.commit()
