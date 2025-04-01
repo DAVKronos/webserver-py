@@ -1,6 +1,7 @@
 from sqlmodel import Field, Relationship,  SQLModel
 from datetime import datetime
 from .agendaitemtype import AgendaitemType, AgendaitemTypeResponse
+from typing import Optional
 
 
 class AgendaitemBase(SQLModel):
