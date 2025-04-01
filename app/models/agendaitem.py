@@ -49,15 +49,15 @@ class AgendaItemCreate(SQLModel) :
     description: str 
     description_en: str 
     date: datetime 
-    location: str | None
-    commission_id: int | None
-    category: str | None 
-    intern: bool 
+    location: Optional[str] = None
+    commission_id: Optional[int] = None
+    category: Optional[str] = None 
+    intern: bool = False
     agendaitemtype_id: int
-    url: str | None
-    subscribe: bool 
-    subscriptiondeadline: datetime | None
-    maxsubscription: int | None
+    url: Optional[str] = None
+    subscribe: bool = False 
+    subscriptiondeadline: Optional[datetime] = None
+    maxsubscription: Optional[int] = None
 
 
 class AgendaItemUpdate(SQLModel) :
