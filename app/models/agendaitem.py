@@ -60,20 +60,20 @@ class AgendaItemCreate(SQLModel) :
 
 
 class AgendaItemUpdate(SQLModel) :
-    name: str | None
-    name_en: str  | None
-    description: str  | None
-    description_en: str  | None
-    date: datetime  | None
-    location: str | None
-    commission_id: int | None
-    category: str | None 
-    intern: bool | None
-    agendaitemtype_id: int | None
-    url: str | None
-    subscribe: bool | None
-    subscriptiondeadline: datetime | None
-    maxsubscription: int | None
+    name: Optional[str] = None
+    name_en: Optional[str] = None
+    description: Optional[str] = None
+    description_en: Optional[str] = None
+    date: Optional[datetime] = None
+    location: Optional[str] = None
+    commission_id: Optional[int] = None
+    category: Optional[str] = None
+    intern: Optional[bool] = None
+    agendaitemtype_id: Optional[int] = None
+    url: Optional[str] = None
+    subscribe: Optional[bool] = None
+    subscriptiondeadline: Optional[datetime] = None
+    maxsubscription: Optional[int] = None
     
 
 
