@@ -1,13 +1,8 @@
 
 
-# Getting started: local development
-
+# Getting started (using Docker)
 
 ```
-git clone docker-admin@kronos.nl:kronos-python.git
-python -m
-
-- installeer poetry
-- Install project dependencies using `poetry install`
-
-- Run using `python -m app.main`
+git clone git@github.com:DAVKronos/webserver-py.git
+docker compose up --build
+``
