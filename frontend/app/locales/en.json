@@ -1,0 +1,294 @@
+{
+  "generic": {
+    "add": "Add",
+    "addModel": "New {{model}}",
+    "edit": "Edit",
+    "editModel": "Edit {{model}}",
+    "remove": "Remove",
+    "save": "Save",
+    "cancel": "Cancel",
+    "empty": "Empty",
+    "create": "Create",
+    "new": "New",
+    "not_found": "Not found",
+    "previous": "Previous",
+    "next": "Next",
+    "back": "Back",
+    "allItems": "All",
+    "send": "Send",
+    "approve": "Approve",
+    "search": "Search",
+    "comment": "Leave a comment here"
+  },
+  "homepage": {
+    "readMore": "Read more",
+    "birthdays": "Birthdays",
+    "news": "News",
+    "newsitem": "Newsitem",
+    "hide": "Hide",
+    "cookiesMessage": "Cookies help us deliver our services. By using our services, you agree to our use of cookies."
+  },
+  "navigation": {
+    "association": "Association",
+    "trainings": "Training",
+    "matches": "Matches",
+    "agenda": "Agenda",
+    "results": "Results",
+    "photos": "Photos",
+    "contact": "Contact",
+    "users": "Users",
+    "committees": "Committees",
+    "kronometers": "Kronometers"
+  },
+  "loginMenu": {
+    "login": "Log in",
+    "logout": "Log out",
+    "rememberMe": "Remember me",
+    "email": "Email",
+    "password": "Password",
+    "kronosCloud": "Kronos cloud",
+    "admin": "Admin",
+    "forgotPassword": "Forgot password",
+    "resetPasswordSentMessage": "Password reset succesfull. An email is sent with instruction to proceed resetting your password.",
+    "resetPassword": "Reset password",
+    "incorrectCredentials": "Username or password incorrect."  
+  },
+  "footer": {
+    "sponsors": "Sponsors"
+  },
+  "photoAlbum": {
+    "no_photos": "No photos in this album"
+  },
+  "agendaItemPage": {
+    "header": "Agenda",
+    "subscriptions": {
+      "list": "Subscriptions",
+      "loginNotice": "You have to login to see subscriptions.",
+      "subscribe": "Subscribe",
+      "unsubscribe": "Unsubscribe",
+      "placesLeft": "{{places}} places remaining",
+      "closed": "Subscription closed"
+    }
+  },
+  "photoAlbumPage": {
+    "header": "Photo albums",
+    "editPhotos": "Edit Photos",
+    "upload": "Upload"
+  },
+  "resultPage": {
+    "header": "Results",
+    "eventPage": "Event page"
+  },
+  "committeePage": {
+    "headerText": "Kronos committees",
+    "pageDescription": "Below you can find an overview af all the current committees of Kronos.",
+    "name": "Name"
+  },
+  "kronometerPage": {
+    "mainFolder": "Main folder",
+    "subfolders": "Subfolders",
+    "documents": "Documents",
+    "edit": "Edit",
+    "delete": "Delete"
+  },
+  "userpage": {
+    "kronauts": "Kronauts",
+    "initials": "Initials",
+    "birthdate": "Date of birth",
+    "membertype": "Membertype",
+    "phonenumber": "Telephone number",
+    "address": "Address",
+    "postalcode": "Postal code",
+    "city": "City",
+    "study": "Study",
+    "institution": "Institution",
+    "sex": "Gender",
+    "licensenumber": "License number",
+    "unioncardnumber": "Unioncard number",
+    "paperkronometer": "Paper Kronometer",
+    "banknumber": "Bank-account number",
+    "createdat": "Created at",
+    "commissions": "Commissions",
+    "changePassword": "Change password",
+    "changePasswordSentMessage": "Password has been changed.",
+    "unEqualPassword": "Passwords not the same"
+  },
+  "contactPage": {
+    "title": "Send us a message"
+  },
+  "recordPage": {
+    "event": "Event",
+    "result": "Result",
+    "recordholder": "Recordholder",
+    "date": "Date",
+    "runningevents": "Running events",
+    "specialrunningevents": "Special running events",
+    "hurdles": "Hurdles",
+    "racewalking": "Race walking",
+    "hourrun": "One hour run",
+    "technicalevents": "Technical events",
+    "highjump": "High jump",
+    "polevault": "Pole vault",
+    "longjump": "Long jump",
+    "triplejump": "Triple jump",
+    "shotput": "Shot put",
+    "discusthrow": "Discus throw",
+    "hammerthrow": "Hammer throw",
+    "javelinthrow": "Javelin throw",
+    "decathlon": "Decathlon",
+    "relays": "Relays",
+    "swedishrelay": "Swedish relay",
+    "sprintmedleyrelay": "Sprint medley relay",
+    "heptathlon": "Heptathlon",
+    "pentathlon": "Pentathlon",
+    "men": "Men",
+    "women": "Women"
+  },
+  "newsItemPage": {
+    "news": "News",
+    "morenews": "More Newsitems",
+    "newsitem": "Newsitem",
+    "readMore": "Read more",
+    "new": "New Newsitem"
+  },
+  "models": {
+    "generic": {
+      "created_at": "Created at"
+    },
+    "modelNames": {
+      "result": "Result",
+      "result_plural": "Results",
+      "event": "Events",
+      "event_plural": "Events",
+      "no_events": "No Events",
+      "agendaItem": "Agenda item",
+      "agendaItem_plural": "Agenda items",
+      "agendaItemType": "Agenda item type",
+      "agendaItemType_plural": "Agenda item types",
+      "newsItem": "News item",
+      "newsItem_plural": "News items",
+      "page": "Page",
+      "page_plural": "Pages",
+      "photoAlbum": "Photo album",
+      "photoAlbum_plural": "Photo albums",
+      "mailingList": "Mailing list",
+      "mailingList_plural": "Mailing lists",
+      "alias": "Alias",
+      "alias_plural": "Aliases",
+      "commission": "Commission",
+      "commission_plural": "Commissions",
+      "folder": "Folder",
+      "folder_plural": "Folders",
+      "kronometer": "Kronometer",
+      "kronometer_plural": "Kronometers",
+      "user": "Member",
+      "user_plural": "Members",
+      "announcement": "Announcement",
+      "announcement_plural": "Announcements"
+    },
+    "agendaitem": {
+      "name": "Name (Dutch)",
+      "name_en": "Name (English)",
+      "date": "Date",
+      "agendaitemtype_id": "Agenda item type",
+      "intern": "Private",
+      "description": "Description (Dutch)",
+      "description_en": "Description (English)",
+      "location": "Location",
+      "url": "URL",
+      "commission_id": "Commission",
+      "subscribe": "Subscription",
+      "subscriptiondeadline": "Subscription deadline",
+      "maxsubscription": "Maximum subscriptions"
+    },
+    "newsitem": {
+      "title": "Title (Dutch)",
+      "title_en": "Title (English)",
+      "news": "News message (Dutch)",
+      "news_en": "News message (English)",
+      "articlephoto": "Photo"
+    },
+    "page": {
+      "pagetag": "Page tag",
+      "pagetag_en": "Page tag (English)",
+      "information": "Page content (Dutch)",
+      "information_en": "Page content (English)",
+      "menu": "Menu",
+      "highlight": "Highlight",
+      "public": "Public",
+      "sort_order": "Sort order"
+    },
+    "photoalbum": {
+      "name": "Name (Dutch)",
+      "name_en": "Name (English)",
+      "date": "Date",
+      "public": "Public",
+      "external_url": "External URL"
+    },
+    "contact": {
+      "name": "Name",
+      "email": "Email",
+      "message": "Message"
+    },
+    "mailingList": {
+      "name": "Name",
+      "description": "Description",
+      "local_part": "Local part",
+      "commission_id": "Commission",
+      "alias_ids": "Aliases",
+      "user_ids": "Members",
+      "mailinglist_ids": "Mailinglists"
+    },
+    "alias": {
+      "name": "Name",
+      "description": "Description",
+      "emailaddress": "Email Address"
+    },
+    "commission": {
+      "name": "Name (Dutch)",
+      "name_en": "Name (English)",
+      "description": "Description (Dutch)",
+      "description_en": "Description (English)"
+    },
+    "folder": {
+      "name": "Name",
+      "folder_id": "Parent folder"
+    },
+    "announcement": {
+      "title": "Title",
+      "message": "Message",
+      "background": "Background image",
+      "url": "Link",
+      "starts_at": "Starts at",
+      "ends_at": "Ends at"
+    },
+    "user": {
+      "name": "Name",
+      "avatar": "Avatar",
+      "email": "Email",
+      "initials": "Initials",
+      "birthdate": "Date of birth",
+      "user_type_id": "Membertype",
+      "phonenumber": "Telephone number",
+      "address": "Address",
+      "postalcode": "Postal code",
+      "city": "City",
+      "studie": "Study",
+      "instelling": "Institution",
+      "sex": "Gender",
+      "licensenumber": "License number",
+      "xtracard": "Unioncard number",
+      "papieren_kronometer": "Paper Kronometer",
+      "bank_account_number": "Bank-account number",
+      "iban": "IBAN bank account number",
+      "aanvang": "Study start"
+    },
+    "kronometer": {
+      "name": "Name",
+      "date": "Date",
+      "public": "Public",
+      "folder_id": "Parent folder",
+      "file": "File"
+    }
+  }
+}
