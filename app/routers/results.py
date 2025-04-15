@@ -25,9 +25,9 @@ async def get_all(
         .order_by(Agendaitem.created_at.desc())
     
     if year:
-        query = query.where(extract('year', Agendaitem.updated_at) == year)
+        query = query.where(extract('year', Agendaitem.date) == year)
     if month:
-        query = query.where(extract('month', Agendaitem.updated_at) == month)
+        query = query.where(extract('month', Agendaitem.date) == month)
     agendaItems = await db.exec(query)
     return [AgendaitemResponse.model_validate(agendaItem) for agendaItem in agendaItems.all()]
 
