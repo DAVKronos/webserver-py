@@ -1,5 +1,6 @@
 from sqlmodel import Field, Relationship,  SQLModel
 from datetime import datetime
+from typing import Optional
 
 class PhotoBase(SQLModel):
     id: int | None
@@ -42,3 +43,14 @@ class PhotoalbumResponse(PhotoalbumBase):
 class Photoalbum(PhotoalbumBase, table=True):
     __tablename__: str = "photoalbums"
     id: int | None = Field(default=None, primary_key=True)
+
+
+    
+
+
+class PhotoalbumUpdate(SQLModel):
+    name: Optional[str] = None
+    name_en: Optional[str] = None
+    eventdate: Optional[str] = None
+    url: Optional[str] = None
+    public: Optional[bool] = None

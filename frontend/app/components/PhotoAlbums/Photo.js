@@ -41,7 +41,7 @@ function Photo (props) {
       </Row>
       <Row>
         <Col className='photo'>
-          <Image src={getAPIHostUrl(photo.photo_url_original)} />
+         <Image src={`/static/photos/${photo.photo_url_original.split('/').pop()}`} />
         </Col>
       </Row>
       <Row className='row-margin'>

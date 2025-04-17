@@ -13,7 +13,7 @@ const PhotoItem = ({ item: photo }) => {
   return (
     <Link to={`/photoalbums/${photo.photoalbum_id}/${photo.id}`}>
       <Card>
-        <Card.Img src={getAPIHostUrl(photo.photo_url_thumb)} />
+        <Card.Img src={`/static/photos/${photo.photo_url_thumb?.split('/').pop()}`}  />
       </Card>
     </Link>
   )
