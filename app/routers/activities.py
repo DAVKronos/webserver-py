@@ -5,7 +5,8 @@ from fastapi.responses import JSONResponse
 from sqlalchemy import column, func
 from sqlmodel import select
 from pydantic import BaseModel, ValidationError
-from ..dependencies import Database , ActiveUser
+from ..authentication import ActiveUser
+from ..dependencies import Database
 from ..models.agendaitem import *
 from ..models.subscription import *
 from ..models.agendaitemtype import AgendaitemTypeResponse
@@ -27,8 +28,8 @@ async def get(
         .where(func.extract("month", Agendaitem.date) == month)
 
     agendaitems = await database.exec(query)
-    
     return agendaitems.all()
+
 
 @router.get("/agendaitems/{id}", response_model=AgendaitemResponse)
 async def get(id : int , r: Request, database: Database):

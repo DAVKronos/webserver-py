@@ -1,7 +1,8 @@
 from typing import Annotated
 from fastapi import APIRouter, Request, Depends, HTTPException, status
 from sqlmodel import select
-from ..dependencies import Database, ActiveUser
+from ..dependencies import Database
+from ..authentication import ActiveUser
 from ..models.commission import *
 from datetime import datetime
 
