@@ -63,27 +63,30 @@ function login (email, password, rememberMe) {
     form.append("username", email)
     form.append("password", password)
     return axios({method:"post", url:'/auth/login', data: form, headers: {"Content-Type": "multipart/form-data" }})
-	.then((response) => {
-    const auth_state = {}
-    if ('access_token' in response.data) {
-      auth_state.access_token = jwtDecode(response.data.access_token)
-      if (rememberMe) {
-        localStorage.setItem('kronos-auth', data.access_token)
-      }
-      setAuthDetails(auth_state)
-    }
-    //return updateAbilities(ability).then(() => {
-    //  return user
-    //})
-  })
+	    .then((response) => {
+        const auth_state = {}
+        const data = response.data
+        if ('access_token' in data) {
+          auth_state.access_token = jwtDecode(data.access_token)
+          if (rememberMe) {
+            localStorage.setItem('access_token', data.access_token)
+          }
+          setAuthDetails(auth_state)
+          return true
+        }
+         //return updateAbilities(ability).then(() => {
+        //  return user
+        //})
+        return false
+    })
 }
 
 function logout () {
-  return axios.delete('/auth/sign_out', { ...getConfig() })
+  return axios.post('/auth/logout', {}, config)
     .then(() => {
-      localStorage.removeItem('kronos-auth')
+      localStorage.removeItem('access_token')
       setAuthDetails(null)
-      return updateAbilities(ability)
+      return updateAbilities(null)
     })
     .catch(() => {
       return undefined
