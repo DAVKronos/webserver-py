@@ -1,10 +1,11 @@
-const {sassPlugin } = require("esbuild-sass-plugin");
+import * as esbuild from 'esbuild'
+import {sassPlugin} from 'esbuild-sass-plugin'
 
 /* handle dev vs production settings */
 const env = "development";
 const is_prod = (env==="production");
 
-require("esbuild").build({
+await esbuild.build({
     entryPoints: ["app/entrypoint.js"],
     outdir: "build",
     publicPath: "/static/react",
@@ -12,11 +13,13 @@ require("esbuild").build({
     bundle: true,
     minify: is_prod,
     sourcemap: !is_prod,
-    watch: ('--watch' === process.argv[2]),
+    watch: (process.argv.includes("--watch")),
     target: "es6",
     loader: {".js": "jsx",
 	     ".png": "file"},
     plugins: [sassPlugin()]
 })
-    .then(() => console.log("Done"))
-    .catch(() => process.exit(1));
+    .then(() => console.log("esbuild is running."))
+    .catch(() => process.exit(1))
+
+

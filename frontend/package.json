@@ -1,4 +1,5 @@
 {
+    "type":"module",
   "sideEffects": [
     "./src/utils/i18n.js",
     "./app/javascript/src/App.js"
