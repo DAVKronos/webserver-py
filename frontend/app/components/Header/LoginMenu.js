@@ -14,14 +14,14 @@ const LoginMenu = () => {
   const [rememberMe, setRememberMe] = useState(true)
   const [loading, setLoading] = useState(false)
   const [incorrectCredentials, setIncorrectCredentials] = useState(false)
-  const { setUserData } = useContext(authContext)
+  //const { setUserData } = useContext(authContext)
   const onFormSubmit = e => {
     e.preventDefault()
     setLoading(true)
     login(email, password, rememberMe).then((user) => {
       setLoading(false)
 	    setIncorrectCredentials(false)
-      setUserData(user)
+      //setUserData(user)
     })
       .catch((err) => {
 	    setLoading(false)

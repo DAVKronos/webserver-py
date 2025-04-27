@@ -5,8 +5,8 @@ from fastapi.responses import JSONResponse
 from sqlalchemy import column, func
 from sqlmodel import select
 from pydantic import BaseModel, ValidationError
-from ..authentication import ActiveUser
 from ..dependencies import Database
+from ..authentication import *
 from ..models.agendaitem import *
 from ..models.subscription import *
 from ..models.agendaitemtype import AgendaitemTypeResponse
@@ -29,7 +29,6 @@ async def get(
 
     agendaitems = await database.exec(query)
     return agendaitems.all()
-
 
 @router.get("/agendaitems/{id}", response_model=AgendaitemResponse)
 async def get(id : int , r: Request, database: Database):
@@ -79,7 +78,7 @@ async def get(r: Request, id: int, database: Database):
 
 
 @router.post("/agendaitems", response_model=AgendaitemResponse)
-async def create_agenda_item(data: AgendaItemCreate, database: Database, active_user: ActiveUser):
+async def create_agenda_item(data: AgendaItemCreate, database: Database):
     t = datetime.utcnow()
     agenda_item = Agendaitem.model_validate(data, update={'created_at': t, 'updated_at': t, 'user_id': active_user.id})
     
@@ -99,7 +98,7 @@ async def create_agenda_item(data: AgendaItemCreate, database: Database, active_
 
 
 @router.delete("/agendaitems/{id}", status_code=status.HTTP_204_NO_CONTENT)
-async def delete_agendaitem(id: int, database: Database, active_user: ActiveUser):
+async def delete_agendaitem(id: int, database: Database):
     agendaitem:Agendaitem | None = await database.get(Agendaitem, id)
 
     if not agendaitem:
@@ -113,7 +112,7 @@ async def delete_agendaitem(id: int, database: Database, active_user: ActiveUser
 
 
 @router.patch("/agendaitems/{id}", response_model=AgendaitemResponse)
-async def update_Agendaitem( id: int, data: AgendaItemUpdate, database: Database, active_user: ActiveUser):
+async def update_Agendaitem( id: int, data: AgendaItemUpdate, database: Database, active_user: Annotated[User, Depends(current_user)]):
     agendaitem:Agendaitem | None = await database.get(Agendaitem, id)
     
     if not agendaitem:

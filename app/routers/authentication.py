@@ -1,38 +1,34 @@
 from typing import Annotated
-from fastapi import APIRouter, Form, Depends, Request, Query
+from fastapi import APIRouter, Form, Depends, Request, Security, Query
 from fastapi.responses import Response
+from fastapi.security import OAuth2PasswordRequestForm
 from sqlmodel import select, func, column
 from ..authentication import *
 from ..models.user import User, UserResponse
-from ..dependencies import Database, ActiveUser
+from ..dependencies import Database
 from ..permissions import Ability, can, cannot
 from ..config import config
 
 router = APIRouter(prefix="/auth")
 
-@router.post("/login", response_model=UserResponse) #, response_model_exclude_unset=True
-async def login(username: Annotated[str, Form()] , password:Annotated[str, Form()], database: Database, response: Response):
+@router.post("/login") #, response_model_exclude_unset=True
+async def login(
+        form_data: Annotated[OAuth2PasswordRequestForm, Depends()],
+        database: Database, response: Response) -> Token:
+    
+    username = form_data.username
+    password = form_data.password
     query = select(User) \
         .where(func.lower(column("email")) == func.lower(username))
-    
     user = (await database.exec(query)).first()
-
+    
     if not user:
         return Response("", 403)
     if not verify_password(password, user.encrypted_password):
         return Response("", 403)
-
+    
     token = create_token(str(user.id))
-
-    if token is None:
-        # log login result
-        return Response("", 403)
-    else:
-        # log login result
-        response.set_cookie(key="v2-access-token", value=token, max_age=3600*24*30, secure=True, httponly=True)
-        response.headers["access-token"] = token
-        user = await database.get(User, user.id)
-        return UserResponse.model_validate(user, update={})
+    return Token(access_token=token, token_type="bearer")
 
 @router.post("/logout")
 async def logout():
@@ -42,31 +38,9 @@ async def logout():
     return Response(200)
 
 
-# class JWTMiddleware that will renew an access token / set a session token
-
-class PermissionCheck:
-    def __init__(self, required_scopes: [str]):
-        self.required_scopes = required_scopes
-    async def __call__(self, request: Request):
-        data = request.cookies["v2-access-token"]
-        token = await validate_token(data)
-        user_scopes = token["scopes"]
-
-        check = all(s in user_scopes for s in self.required_scopes)
-        print(check, user_scopes, self.required_scopes)
-        
-        
-@router.get("/scope")
-async def validate_scope(user: Annotated[str, Depends(PermissionCheck(config['permissions']['scopes']['test']))]):
-    return Response("",200)
-
-@router.get("/validate_token",response_model=UserResponse)
-async def validate(request: Request, database: Database, token: Annotated[str | None, Query(alias="access-token")] = None,  ):
-    #token = request.cookies["v2-access-token"]
-    payload = await validate_token(token)
-    user_id: str = payload.get("sub")
-    user = await database.get(User, int(user_id))
-    return UserResponse.model_validate(user, update={'id':user_id})
+@router.get("/current_user", response_model=UserResponse)
+async def current_user(current_user: Annotated[User, Depends(current_user)]):
+    return UserResponse.model_validate(current_user)
 
 
 # maybe this belongs more to user administration than authentication?
@@ -89,8 +63,11 @@ async def reset_password():
     # requires valid token that  has {can_reset_password:true }
     return Response(200)
 
+
+# TODO: don't need this anymore when the JWT contains scopes
 @router.get("/permissions", response_model= list[Ability], response_model_exclude_none=True)
-async def permissions(request: Request, database: Database, active_user: ActiveUser):
+async def permissions(request: Request, database: Database, current_user: Annotated[User, Depends(current_user)]):
+    current_user = User.model_validate(current_user)
     
     everyone = [can('read', 'all'),
                 can(['home', 'titleshow'], 'Page'),
@@ -109,7 +86,7 @@ async def permissions(request: Request, database: Database, active_user: ActiveU
 
     abilities = [] + everyone
 
-    if active_user is not None:
+    if current_user is not None:
         
         abilities += [can('read', 'all'),
                    can('read', 'Page'),
@@ -117,18 +94,18 @@ async def permissions(request: Request, database: Database, active_user: ActiveU
                    can('create', ['Photo','Newsitem','Agendaitem','Event','Result','Comment']),
                    can(['archief','wedstrijden','new_result','create_result', 'icalendar', 'duplicate'], 'Agendaitem'),
                    can(['read','create','update'], 'Photoalbum'),
-                   can(['create', 'update'], ['Subscription'], {'user_id': active_user.id}),
+                   can(['create', 'update'], ['Subscription'], {'user_id': current_user.id}),
                    can('display', 'Kronometer'),
-                   can('update', 'Agendaitem', {'user_id': active_user.id}),
-                   can(['update','editpassword'], 'User', {'id':active_user.id}),
+                   can('update', 'Agendaitem', {'user_id': current_user.id}),
+                   can(['update','editpassword'], 'User', {'id':current_user.id}),
                    can('birthdays', 'User'),
                    cannot('create', 'User')]
 
-        abilities += [can('destroy', 'Subscription', {'id':sub.id}) for sub in active_user.subscriptions if sub.agendaitem.is_before_deadline()]
+        abilities += [can('destroy', 'Subscription', {'id':sub.id}) for sub in current_user.subscriptions if sub.agendaitem.is_before_deadline()]
         
-        if len(active_user.commission_memberships) > 0:
+        if len(current_user.commission_memberships) > 0:
             abilities += [can('manage', 'Agendaitem', {'user_id': active_user.id})]           
-            abilities += [can('update', 'Agendaitem', {'commission_id': cm.commission_id}) for cm in active_user.commission_memberships]
+            abilities += [can('update', 'Agendaitem', {'commission_id': cm.commission_id}) for cm in current_user.commission_memberships]
             
             for cm in active_user.commission_memberships:
                 match cm.commission.role:

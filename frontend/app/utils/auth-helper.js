@@ -6,7 +6,7 @@ import { jwtDecode } from 'jwt-decode'
 
 
 function getAbilities () {
-  return axios.get(`/auth/permissions`).then(res => res.data)
+  return axios.get(`/auth/permissions`, getConfig()).then(res => res.data)
 }
 
 function updateAbilities (ability) {
@@ -23,31 +23,14 @@ function initializeAbilities () {
 }
 
 function getAuthentication () {
-  if (!localStorage.getItem('kronos-auth')) {
+  if (!localStorage.getItem('access_token')) {
     return null
   }
-  return JSON.parse(localStorage.getItem('kronos-auth'))
+  return JSON.parse(localStorage.getItem('access_token'))
 }
 
-async function validateToken () {
-  if (!localStorage.getItem('kronos-auth')) {
-    return null
-  } else {
-      const { uid, client } = authDetails
-      const access_token = authDetails['access-token']
-      return axios.get(`/auth/validate_token?access-token=${access_token}`).then(response => {
-	  const user = response.data
-	  return updateAbilities(ability).then(() => {
-	      return user
-	  })
-      }, (error) => {
-	  localStorage.removeItem('kronos-auth')
-	  return null
-      })
-  }
-}
 
-let authDetails = getAuthentication()
+let authDetails = {}
 const ability = initializeAbilities()
 
 function getAuthDetails () {
@@ -82,7 +65,7 @@ function login (email, password, rememberMe) {
 }
 
 function logout () {
-  return axios.post('/auth/logout', {}, config)
+  return axios.post('/auth/logout', {}, getConfig())
     .then(() => {
       localStorage.removeItem('access_token')
       setAuthDetails(null)
@@ -120,7 +103,6 @@ export {
   logout,
   ability,
   Can,
-  validateToken,
   getAuthDetails,
   forgotPassword,
   resetPassword,

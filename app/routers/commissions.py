@@ -2,7 +2,7 @@ from typing import Annotated
 from fastapi import APIRouter, Request, Depends, HTTPException, status
 from sqlmodel import select
 from ..dependencies import Database
-from ..authentication import ActiveUser
+from ..authentication import *
 from ..models.commission import *
 from datetime import datetime
 
@@ -33,7 +33,7 @@ async def get_membership(commission_id: int, r: Request, database: Database):
     return memberships.all()
 
 @router.post("/{commission_id}/commission_memberships", response_model=CommissionMembershipResponse)
-async def create_membership(commission_id: int, data: CommissionMembershipCreate, database: Database, active_user: ActiveUser):
+async def create_membership(commission_id: int, data: CommissionMembershipCreate, database: Database, active_user: Annotated[User, Depends(current_user)]):
     t = datetime.utcnow()
     membership = CommissionMembership.model_validate(data, update={'commission_id': commission_id, 'created_at': t, 'updated_at': t})
     database.add(membership)
@@ -43,7 +43,7 @@ async def create_membership(commission_id: int, data: CommissionMembershipCreate
     return membership
 
 @router.delete("/{commission_id}/commission_memberships/{membership_id}", status_code=status.HTTP_204_NO_CONTENT)
-async def delete_membership(commission_id: int, membership_id: int, database: Database, active_user: ActiveUser):
+async def delete_membership(commission_id: int, membership_id: int, database: Database, active_user: Annotated[User, Depends(current_user)]):
     membership = await database.get(CommissionMembership, membership_id)
     if not membership:
         raise HTTPException(status_code=404, detail="Commission membership not found")
@@ -53,7 +53,7 @@ async def delete_membership(commission_id: int, membership_id: int, database: Da
     await database.commit()
 
 @router.post("", response_model=CommissionResponse)
-async def create_commission(data: CommissionCreate, database: Database, active_user: ActiveUser):
+async def create_commission(data: CommissionCreate, database: Database, active_user: Annotated[User, Depends(current_user)]):
     t = datetime.utcnow()
     commission = Commission.model_validate(data, update={'created_at': t, 'updated_at': t})
     database.add(commission)
@@ -63,7 +63,7 @@ async def create_commission(data: CommissionCreate, database: Database, active_u
     return commission
 
 @router.patch("/{commission_id}", response_model=CommissionResponse)
-async def update_commission(commission_id: int, data: ComissionUpdate, database: Database, active_user: ActiveUser):
+async def update_commission(commission_id: int, data: ComissionUpdate, database: Database, active_user: Annotated[User, Depends(current_user)]):
     commission = await database.get(Commission, commission_id)
 
     if not commission:
@@ -80,7 +80,7 @@ async def update_commission(commission_id: int, data: ComissionUpdate, database:
     return commission
 
 @router.delete("/{commission_id}", status_code=status.HTTP_204_NO_CONTENT)
-async def delete_commission(commission_id: int, database: Database, active_user: ActiveUser):
+async def delete_commission(commission_id: int, database: Database, active_user: Annotated[User, Depends(current_user)]):
     commission = await database.get(Commission, commission_id)
     if not commission:
         raise HTTPException(status_code=404, detail="Commission not found")

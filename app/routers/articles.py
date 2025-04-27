@@ -3,14 +3,15 @@ from datetime import datetime, timezone
 from fastapi import APIRouter, Depends, Form, HTTPException, Request, status
 from sqlmodel import SQLModel, select, func, and_, text
 from pydantic import BaseModel, ValidationError
-from ..dependencies import Database, ActiveUser
+from ..dependencies import Database
+from ..authentication import *
 from ..models.article import *
 from ..models.comment import CommentCreate, CommentPublic, CommentUpdate
 
 router = APIRouter(prefix="/newsitems")
 
 @router.get("", response_model=list[ArticlePublicWithCommentCount])
-async def index(r: Request, database: Database, active_user: ActiveUser):
+async def index(r: Request, database: Database):
     query = select(Article) \
         .where(Article.agreed == True) \
         .limit(None) \
@@ -42,7 +43,7 @@ async def get_article(id: int, r: Request, database: Database):
     return from_article(article)
 
 @router.post("/", response_model=ArticlePublic)
-async def create_article(data: ArticleCreate, database: Database, active_user: ActiveUser):
+async def create_article(data: ArticleCreate, database: Database, active_user: Annotated[User, Depends(current_user)]):
     t = datetime.utcnow()
     try:
         article = Article.model_validate(data, update={'created_at': t, 'updated_at': t, 'agreed': False, 'user_id': active_user.id })
@@ -58,7 +59,7 @@ async def create_article(data: ArticleCreate, database: Database, active_user: A
     return ArticlePublic.model_validate(article, update={"user":None})
     
 @router.patch("/{id}", response_model=ArticlePublic)
-async def update_article(data: ArticleUpdate, database: Database, active_user: ActiveUser):
+async def update_article(data: ArticleUpdate, database: Database, active_user: Annotated[User, Depends(current_user)]):
     article = database.get(Article, id)
     if not article:
         raise HTTPException(status_code=404, detail="Article not found")
@@ -97,7 +98,7 @@ async def get(id: int, database: Database):
     return comments.all()
 
 @router.post("/{id}/comments", response_model=CommentPublic)
-async def create_comment(data: CommentCreate, database: Database, active_user: ActiveUser):
+async def create_comment(data: CommentCreate, database: Database, active_user: Annotated[User, Depends(current_user)]):
     t = datetime.utcnow()
     try:
         comment = Comment.model_validate(data, update={'created_at': t, 'updated_at': t, 'user_id': active_user.id })
@@ -110,7 +111,7 @@ async def create_comment(data: CommentCreate, database: Database, active_user: A
     return comment
 
 @router.patch("/{article_id}/comments/{comment_id}", response_model=CommentPublic)
-async def update_comment( comment_id: int, data: CommentUpdate, database: Database, active_user: ActiveUser):
+async def update_comment( comment_id: int, data: CommentUpdate, database: Database, active_user: Annotated[User, Depends(current_user)]):
     comment:Comment | None = await database.get(Comment, comment_id)
     
     if not comment:
@@ -128,7 +129,7 @@ async def update_comment( comment_id: int, data: CommentUpdate, database: Databa
     return comment
 
 @router.delete("/{article_id}/comments/{comment_id}", status_code=status.HTTP_204_NO_CONTENT)
-async def delete_comment(comment_id: int, database: Database, active_user: ActiveUser):
+async def delete_comment(comment_id: int, database: Database, active_user: Annotated[User, Depends(current_user)]):
     comment:Comment | None = await database.get(Comment, comment_id)
 
     if not comment:
