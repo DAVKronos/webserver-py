@@ -18,12 +18,19 @@ function convertToFormData (objectName, data) {
 }
 
 function getAuthHeader () {
-  return getAuthDetails() || {}
+  const token = localStorage.getItem("access_token");
+  if (token !== null) {
+    return {"Authorization": `Bearer ${token}`}
+  }
+  else {
+    return {}
+  }
 }
 
 function getConfig () {
   const cfg = { ...config }
   cfg.headers = { ...cfg.headers, ...getAuthHeader() }
+
   return cfg
 }
 
