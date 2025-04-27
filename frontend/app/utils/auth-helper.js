@@ -2,6 +2,8 @@ import axios from 'axios'
 import { getConfig, restCall } from './rest-helper'
 import { Ability } from '@casl/ability'
 import { createCanBoundTo } from '@casl/react'
+import { jwtDecode } from 'jwt-decode'
+
 
 function getAbilities () {
   return axios.get(`/auth/permissions`).then(res => res.data)
@@ -30,18 +32,19 @@ function getAuthentication () {
 async function validateToken () {
   if (!localStorage.getItem('kronos-auth')) {
     return null
+  } else {
+      const { uid, client } = authDetails
+      const access_token = authDetails['access-token']
+      return axios.get(`/auth/validate_token?access-token=${access_token}`).then(response => {
+	  const user = response.data
+	  return updateAbilities(ability).then(() => {
+	      return user
+	  })
+      }, (error) => {
+	  localStorage.removeItem('kronos-auth')
+	  return null
+      })
   }
-  const { uid, client } = authDetails
-  const access_token = authDetails['access-token']
-  return axios.get(`/auth/validate_token?access-token=${access_token}`).then(response => {
-    const user = response.data
-    return updateAbilities(ability).then(() => {
-      return user
-    })
-  }, (error) => {
-    localStorage.removeItem('kronos-auth')
-    return null
-  })
 }
 
 let authDetails = getAuthentication()
@@ -61,18 +64,18 @@ function login (email, password, rememberMe) {
     form.append("password", password)
     return axios({method:"post", url:'/auth/login', data: form, headers: {"Content-Type": "multipart/form-data" }})
 	.then((response) => {
-    const auth_data = {}
-    const user = response.data
-    auth_data['access-token'] = response.headers['access-token']
-    auth_data.uid = user.email
-    if (rememberMe) {
-      localStorage.setItem('kronos-auth', JSON.stringify(auth_data))
+    const auth_state = {}
+    if ('access_token' in response.data) {
+      auth_state.access_token = jwtDecode(response.data.access_token)
+      if (rememberMe) {
+        localStorage.setItem('kronos-auth', data.access_token)
+      }
+      setAuthDetails(auth_state)
     }
-    setAuthDetails(auth_data)
-    return updateAbilities(ability).then(() => {
-      return user
-    })
-	})
+    //return updateAbilities(ability).then(() => {
+    //  return user
+    //})
+  })
 }
 
 function logout () {
