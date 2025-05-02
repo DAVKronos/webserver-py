@@ -1,4 +1,4 @@
-from typing import Annotated
+from typing import Annotated, Optional
 from fastapi import APIRouter, Form, Depends, Request, Security, Query
 from fastapi.responses import Response
 from fastapi.security import OAuth2PasswordRequestForm
@@ -37,9 +37,8 @@ async def logout():
     # remove the session cookie
     return Response(200)
 
-
 @router.get("/current_user", response_model=UserResponse)
-async def current_user(current_user: Annotated[User, Depends(current_user)]):
+async def get_current_user(current_user: Annotated[Optional[User], Depends(current_user)]):
     return UserResponse.model_validate(current_user)
 
 
@@ -66,9 +65,7 @@ async def reset_password():
 
 # TODO: don't need this anymore when the JWT contains scopes
 @router.get("/permissions", response_model= list[Ability], response_model_exclude_none=True)
-async def permissions(request: Request, database: Database, current_user: Annotated[User, Depends(current_user)]):
-    current_user = User.model_validate(current_user)
-    
+async def permissions(request: Request, database: Database, user: Annotated[Optional[User], Depends(current_user)]):
     everyone = [can('read', 'all'),
                 can(['home', 'titleshow'], 'Page'),
                 can(['game'], 'Page'),
@@ -86,26 +83,27 @@ async def permissions(request: Request, database: Database, current_user: Annota
 
     abilities = [] + everyone
 
-    if current_user is not None:
-        
+    if user is not None:
+        # current_user = await User.model_validate(user)
+
         abilities += [can('read', 'all'),
                    can('read', 'Page'),
                    can('see_email', 'Commission'),
                    can('create', ['Photo','Newsitem','Agendaitem','Event','Result','Comment']),
                    can(['archief','wedstrijden','new_result','create_result', 'icalendar', 'duplicate'], 'Agendaitem'),
                    can(['read','create','update'], 'Photoalbum'),
-                   can(['create', 'update'], ['Subscription'], {'user_id': current_user.id}),
+                   can(['create', 'update'], ['Subscription'], {'user_id': user.id}),
                    can('display', 'Kronometer'),
-                   can('update', 'Agendaitem', {'user_id': current_user.id}),
-                   can(['update','editpassword'], 'User', {'id':current_user.id}),
+                   can('update', 'Agendaitem', {'user_id': user.id}),
+                   can(['update','editpassword'], 'User', {'id':user.id}),
                    can('birthdays', 'User'),
                    cannot('create', 'User')]
 
-        abilities += [can('destroy', 'Subscription', {'id':sub.id}) for sub in current_user.subscriptions if sub.agendaitem.is_before_deadline()]
+        abilities += [can('destroy', 'Subscription', {'id':sub.id}) for sub in user.subscriptions if sub.agendaitem.is_before_deadline()]
         
-        if len(current_user.commission_memberships) > 0:
+        if len(user.commission_memberships) > 0:
             abilities += [can('manage', 'Agendaitem', {'user_id': active_user.id})]           
-            abilities += [can('update', 'Agendaitem', {'commission_id': cm.commission_id}) for cm in current_user.commission_memberships]
+            abilities += [can('update', 'Agendaitem', {'commission_id': cm.commission_id}) for cm in user.commission_memberships]
             
             for cm in active_user.commission_memberships:
                 match cm.commission.role:
