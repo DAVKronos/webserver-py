@@ -15,7 +15,6 @@ async def lifespan(app: FastAPI):
     create_engine_fn = database.create_ssh_engine if ("ssh" in config["database"]) else database.create_engine
     
     with create_engine_fn() as engine:
-        print("engine:", engine)
         api.app.state.engine = engine
         app.state.engine = engine
         yield
