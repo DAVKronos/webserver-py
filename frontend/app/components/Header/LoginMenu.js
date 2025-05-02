@@ -14,18 +14,19 @@ const LoginMenu = () => {
   const [rememberMe, setRememberMe] = useState(true)
   const [loading, setLoading] = useState(false)
   const [incorrectCredentials, setIncorrectCredentials] = useState(false)
-  //const { setUserData } = useContext(authContext)
+  const { auth, setAuth } = useContext(authContext)
   const onFormSubmit = e => {
     e.preventDefault()
     setLoading(true)
-    login(email, password, rememberMe).then((user) => {
+    login(email, password, rememberMe).then((token) => {
       setLoading(false)
 	    setIncorrectCredentials(false)
-      //setUserData(user)
+      setAuth(token, persist=rememberMe)
     })
       .catch((err) => {
 	    setLoading(false)
 	    setIncorrectCredentials(true)
+      
       })
   }
 
@@ -80,10 +81,10 @@ const LoggedInMenu = ({ user }) => {
   const history = useHistory()
   const firstName = user.name.split(' ')[0]
   const { t } = useTranslation('loginMenu')
-  const { setUserData } = useContext(authContext)
+  const { setAuth } = useContext(authContext)
   const onClickLogout = () => {
     logout().then(() => {
-      setUserData(null)
+      setAuth(null)
 	    history.push('/')
     })
   }
@@ -105,6 +106,7 @@ const LoggedInMenu = ({ user }) => {
 }
 
 const UserMenu = () => {
+  ctx = useContext(authContext)
   const { user } = useContext(authContext)
 
   if (user) {

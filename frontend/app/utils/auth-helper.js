@@ -2,8 +2,6 @@ import axios from 'axios'
 import { getConfig, restCall } from './rest-helper'
 import { Ability } from '@casl/ability'
 import { createCanBoundTo } from '@casl/react'
-import { jwtDecode } from 'jwt-decode'
-
 
 function getAbilities () {
   return axios.get(`/auth/permissions`, getConfig()).then(res => res.data)
@@ -22,12 +20,6 @@ function initializeAbilities () {
   return ability
 }
 
-function getAuthentication () {
-  if (!localStorage.getItem('access_token')) {
-    return null
-  }
-  return JSON.parse(localStorage.getItem('access_token'))
-}
 
 
 let authDetails = {}
@@ -47,20 +39,11 @@ function login (email, password, rememberMe) {
     form.append("password", password)
     return axios({method:"post", url:'/auth/login', data: form, headers: {"Content-Type": "multipart/form-data" }})
 	    .then((response) => {
-        const auth_state = {}
         const data = response.data
         if ('access_token' in data) {
-          auth_state.access_token = jwtDecode(data.access_token)
-          if (rememberMe) {
-            localStorage.setItem('access_token', data.access_token)
-          }
-          setAuthDetails(auth_state)
-          return true
+          return data.access_token
         }
-         //return updateAbilities(ability).then(() => {
-        //  return user
-        //})
-        return false
+        return null
     })
 }
 
@@ -68,8 +51,8 @@ function logout () {
   return axios.post('/auth/logout', {}, getConfig())
     .then(() => {
       localStorage.removeItem('access_token')
-      setAuthDetails(null)
-      return updateAbilities(null)
+      setAuth(null)
+      return true
     })
     .catch(() => {
       return undefined
