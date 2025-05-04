@@ -1,55 +1,46 @@
-import React, { createContext, useState, useEffect } from 'react'
+import React, { createContext, useState, useEffect, useContext } from 'react'
 import { jwtDecode } from 'jwt-decode'
 import {  } from './auth-helper'
-import axios from 'axios'
-import { getConfig } from './rest-helper'
+import { axiosInstance } from './rest-helper'
 
 export const authContext = createContext({})
 
 
 async function read_current_user() {
-  // TODO: don't make he request if you don't have a valid access token anyways
-  return axios.get('/auth/current_user', getConfig()).then(res => {
+  return axiosInstance.get('/auth/current_user').then(res => {
     const user = res.data
     return user
   })
 }
 
-function authFromLocalStorage () {
-  try {
-    return jwtDecode(localStorage.getItem('access_token'))
-  }
-  catch(e) {
-    console.log(e)
-    localStorage.removeItem('access_token')
-    return null
-  }
-}
-const initial_auth = authFromLocalStorage();
-
-const AuthProvider = ({ children }) => {
+export const AuthProvider = ({ children }) => {
   // Auth provider manages persistence of the access token, 
   // making that e.g. login function further downstream doesn't need to deal with those details.
-  
-  const [auth, setAuthInner] = useState(initial_auth) 
+  const [token, setToken] = useState(null) 
   const [user, setUser] = useState(null)
   const [loading, setLoading] = useState(true)
 
 
-  const setAuth = function(token, persist=false) {
-    try {
-      setAuthInner(jwtDecode(token))
-      if (persist) localStorage.setItem('access_token', token)
-    }
-    catch (e) {
-      setAuthInner(null)
-      localStorage.removeItem('access_token')
-    }
+  const login = function(token, persist=false) {
+    setToken(token);
+    if (persist) localStorage.setItem('access_token', token);
+  }
+  const logout = function() {
+    setToken(null);
+    localStorage.removeItem('access_token');
   }
 
   useEffect(() => {
+    const storedToken = localStorage.getItem('access_token');
+    if (storedToken && !token) {
+      setToken(storedToken);
+    }
+  }, []);
+
+
+  useEffect(() => {
     // Update current user after updating the access token.
-    if (auth !== null) {
+    if (token !== null) {
       read_current_user().then((user) => {
         setUser(user)
       }).catch((error) => {
@@ -67,17 +58,14 @@ const AuthProvider = ({ children }) => {
       }
       setLoading(false)
     }
-  }, [auth])
+  }, [token])
 
-  const setUserData = (user) => {
-    setUser(user)
-  }
 
   return (
-    <authContext.Provider value={{ auth, setAuth, user, setUser }}>
+    <authContext.Provider value={{ token, user, login, logout }}>
       {!loading && children}
     </authContext.Provider>
   )
 }
 
-export default AuthProvider
+export const useAuth = () => useContext(authContext);

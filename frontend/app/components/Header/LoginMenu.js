@@ -1,7 +1,7 @@
 import React, { useState, useContext } from 'react'
 import { Alert, Button, Form, NavDropdown, Image, Col } from 'react-bootstrap'
 import { useTranslation } from 'react-i18next'
-import { login, logout, Can } from '../../utils/auth-helper'
+import { login as loginRequest, logout as logoutRequest, Can } from '../../utils/auth-helper'
 import { authContext } from '../../utils/AuthContext'
 import { BsPersonFill, BsBoxArrowRight, BsFillCloudFill, BsFillGearFill } from 'react-icons/bs'
 import DefaultSpinner from '../Generic/Spinner'
@@ -14,14 +14,14 @@ const LoginMenu = () => {
   const [rememberMe, setRememberMe] = useState(true)
   const [loading, setLoading] = useState(false)
   const [incorrectCredentials, setIncorrectCredentials] = useState(false)
-  const { auth, setAuth } = useContext(authContext)
+  const { login, logout } = useContext(authContext)
   const onFormSubmit = e => {
     e.preventDefault()
     setLoading(true)
-    login(email, password, rememberMe).then((token) => {
+    loginRequest(email, password, rememberMe).then((token) => {
       setLoading(false)
 	    setIncorrectCredentials(false)
-      setAuth(token, persist=rememberMe)
+      login(token, persist=rememberMe)
     })
       .catch((err) => {
 	    setLoading(false)
@@ -81,10 +81,10 @@ const LoggedInMenu = ({ user }) => {
   const history = useHistory()
   const firstName = user.name.split(' ')[0]
   const { t } = useTranslation('loginMenu')
-  const { setAuth } = useContext(authContext)
+  const { logout } = useContext(authContext)
   const onClickLogout = () => {
-    logout().then(() => {
-      setAuth(null)
+    logoutRequest().finally(() => {
+      logout()
 	    history.push('/')
     })
   }
@@ -106,7 +106,6 @@ const LoggedInMenu = ({ user }) => {
 }
 
 const UserMenu = () => {
-  ctx = useContext(authContext)
   const { user } = useContext(authContext)
 
   if (user) {

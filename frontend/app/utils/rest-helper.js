@@ -1,5 +1,8 @@
 import axios from 'axios'
-import { getAuthDetails } from './auth-helper'
+
+const axiosInstance = axios.create({
+    baseURL: '/',
+});
 
 const API_HOST = '/api/v1'
 
@@ -43,6 +46,7 @@ function getAPIHostUrl (url) {
 }
 
 export {
+  axiosInstance,
   restCall,
   API_HOST,
   getAPIHostUrl,

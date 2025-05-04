@@ -49,14 +49,6 @@ function login (email, password, rememberMe) {
 
 function logout () {
   return axios.post('/auth/logout', {}, getConfig())
-    .then(() => {
-      localStorage.removeItem('access_token')
-      setAuth(null)
-      return true
-    })
-    .catch(() => {
-      return undefined
-    })
 }
 
 function forgotPassword (email) {
