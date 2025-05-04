@@ -1,12 +1,11 @@
 import React, { createContext, useState, useEffect, useContext } from 'react'
 import { jwtDecode } from 'jwt-decode'
-import {  } from './auth-helper'
+import { updateAbility} from './auth-helper'
 import { axiosInstance } from './rest-helper'
 
 export const authContext = createContext({})
 
-
-async function read_current_user() {
+function getCurrentUser() {
   return axiosInstance.get('/auth/current_user').then(res => {
     const user = res.data
     return user
@@ -17,7 +16,7 @@ export const AuthProvider = ({ children }) => {
   // Auth provider manages persistence of the access token, 
   // making that e.g. login function further downstream doesn't need to deal with those details.
   const [token, setToken] = useState(null) 
-  const [user, setUser] = useState(null)
+  const [user, setUser] = useState(null) 
   const [loading, setLoading] = useState(true)
 
 
@@ -41,7 +40,7 @@ export const AuthProvider = ({ children }) => {
   useEffect(() => {
     // Update current user after updating the access token.
     if (token !== null) {
-      read_current_user().then((user) => {
+      getCurrentUser().then((user) => {
         setUser(user)
       }).catch((error) => {
           console.log(error)
@@ -49,7 +48,7 @@ export const AuthProvider = ({ children }) => {
           setUser(null)
       }).finally(() => {
         setLoading(false)
-      })
+      })   
     } 
     else {
       if(user !== null) {
@@ -58,6 +57,7 @@ export const AuthProvider = ({ children }) => {
       }
       setLoading(false)
     }
+    updateAbility()
   }, [token])
 
 
