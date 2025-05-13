@@ -84,8 +84,6 @@ async def permissions(request: Request, database: Database, user: Annotated[Opti
     abilities = [] + everyone
 
     if user is not None:
-        # current_user = await User.model_validate(user)
-
         abilities += [can('read', 'all'),
                    can('read', 'Page'),
                    can('see_email', 'Commission'),
@@ -102,10 +100,10 @@ async def permissions(request: Request, database: Database, user: Annotated[Opti
         abilities += [can('destroy', 'Subscription', {'id':sub.id}) for sub in user.subscriptions if sub.agendaitem.is_before_deadline()]
         
         if len(user.commission_memberships) > 0:
-            abilities += [can('manage', 'Agendaitem', {'user_id': active_user.id})]           
+            abilities += [can('manage', 'Agendaitem', {'user_id': user.id})]           
             abilities += [can('update', 'Agendaitem', {'commission_id': cm.commission_id}) for cm in user.commission_memberships]
             
-            for cm in active_user.commission_memberships:
+            for cm in user.commission_memberships:
                 match cm.commission.role:
                     case "KRONOMETER_ADMIN":
                         abilities += [can('kronometer_list', 'User'),
