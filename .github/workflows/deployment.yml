@@ -28,7 +28,9 @@ jobs:
           key: ${{ secrets.SSH_KEY }}
           script: |
             echo "Cleaning up docker images that are not currently running."
-            docker images --filter="reference=kronos/server:*" --format '{{.Repository}}:{{.Tag}}' |  grep -v "$(docker ps --format {{.Image}})" | xargs -r docker rmi       
+            docker images --filter="reference=kronos/server:*" --format '{{.Repository}}:{{.Tag}}' |  grep -v "$(docker ps --format {{.Image}})" | xargs -r docker rmi
+            docker system prune -f
+    
   deploy:
     runs-on: ubuntu-latest
     env:
