@@ -38,6 +38,9 @@
         "standard": "^17.0.0"
     },
     "scripts": {
-        "build": "node esbuild.js"
+	"build": "node esbuild.js",
+	"build:dev": "NODE_ENV=development node esbuild.js",
+	"build:prod": "NODE_ENV=production node esbuild.js"
     }
+
 }

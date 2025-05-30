@@ -1,9 +1,8 @@
 import * as esbuild from 'esbuild'
 import {sassPlugin} from 'esbuild-sass-plugin'
 
-/* handle dev vs production settings */
-const env = "development";
-const is_prod = (env==="production");
+const is_prod = process.env.NODE_ENV === 'production';
+
 
 await esbuild.build({
     entryPoints: ["app/entrypoint.js"],
@@ -13,6 +12,9 @@ await esbuild.build({
     bundle: true,
     minify: is_prod,
     sourcemap: !is_prod,
+    define: {
+      'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV || 'development'),
+    },
     watch: (process.argv.includes("--watch")),
     target: "es6",
     loader: {".js": "jsx",

@@ -4,7 +4,7 @@ COPY frontend/package.json frontend/package-lock.json frontend/esbuild.js ./
 RUN npm ci
 
 COPY ./frontend/app ./app
-RUN node esbuild.js
+RUN npm run build:prod
 
 FROM python:3.11 AS builder
 ENV POETRY_VERSION=1.8.3 \
