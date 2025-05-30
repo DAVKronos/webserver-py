@@ -132,12 +132,7 @@ const FieldControl = ({ type, value, setValue, required, itemQuery, ...props }) 
     }
 
     return (
-      <DatePicker
-        selected={value}
-        locale={i18n.locale}
-        className='form-control form-control-sm'
-        onChange={date => setValue(date)}
-      />
+      <DatePicker selected={value} locale={lang} className='form-control form-control-sm' onChange={(date) => setValue(date)} />
     )
   } else if (type === 'boolean') {
     return <Form.Check type='checkbox' checked={value} onChange={() => setValue(!value)} {...props} />
