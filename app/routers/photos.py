@@ -10,10 +10,14 @@ import hashlib
 import os
 from starlette.status import HTTP_404_NOT_FOUND, HTTP_405_METHOD_NOT_ALLOWED
 from pathlib import Path
+from sqlalchemy import func
+
+
 router = APIRouter(prefix="/photoalbums")
 
 PHOTO_DIR = Path("static/photos")
 PHOTO_DIR.mkdir(parents=True, exist_ok=True)
+
 
 @router.get("", response_model=list[PhotoalbumResponse])
 async def get_all(r: Request, database: Database):
@@ -28,22 +32,50 @@ async def get_one(id: int, r: Request, database: Database):
         raise HTTPException(status_code=404, detail="Photoalbum not found")
     return photoalbum
 
+
 @router.get("/{album_id}/photos", response_model=list[PhotoResponse])
-async def get_photos(album_id: int, r: Request, database: Database):
+async def get_photos(album_id: int, database: Database):
     try:
         query = select(Photo).where(Photo.photoalbum_id == album_id).order_by(Photo.created_at.desc())
-        photos = await database.exec(query)
-        if photos is None:
-            raise HTTPException(status_code=500, detail="Database query failed")
+        result = await database.exec(query)
+        photos = result.all()
 
-        photos_list = photos.all()
-        print(f"📸 Found {len(photos_list)} photos in album {album_id}")
+        photo_responses = []
 
-        return photos_list
+        for photo in photos:
+            tag_links = await database.exec(
+                select(PhotoTag, Tag)
+                .join(Tag, Tag.id == PhotoTag.tag_id)
+                .where(PhotoTag.photo_id == photo.id)
+            )
+            tag_names = [tag.name for _, tag in tag_links]
+
+            # ✅ Construct proper PhotoResponse
+            photo_response = PhotoResponse(
+                id=photo.id,
+                created_at=photo.created_at,
+                updated_at=photo.updated_at,
+                photoalbum_id=photo.photoalbum_id,
+                processing=photo.processing,
+                exif_date=photo.exif_date,
+                youtube_id=photo.youtube_id,
+                caption=photo.caption,
+                photo_file_name=photo.photo_file_name,
+                photo_content_type=photo.photo_content_type,
+                photo_file_size=photo.photo_file_size,
+                photo_updated_at=photo.photo_updated_at,
+                photo_url_original=photo.photo_url_original,
+                photo_url_thumb=photo.photo_url_thumb,
+                tags=tag_names
+            )
+            photo_responses.append(photo_response)
+
+        return photo_responses
 
     except Exception as e:
-        print(f"Error fetching photos2: {str(e)}")  # Logs error
-        raise HTTPException(status_code=500, detail="Internal Server Error, Error fetching photos")
+        print("Error fetching photos with tags:", str(e))
+        raise HTTPException(status_code=500, detail="Failed to fetch photos")
+
     
 
 
@@ -230,3 +262,122 @@ async def delete_photo(
     except Exception as e:
         print(f"❌ Error deleting photo: {e}")
         raise HTTPException(status_code=500, detail="Failed to delete photo")
+    
+
+
+
+
+class TagToPhotoPayload(SQLModel):
+    tag: str  # name of the tag, e.g. "sunset"
+
+class Tag(SQLModel, table=True):
+    __tablename__ = "tag_"
+    id: Optional[int] = Field(default=None, primary_key=True)
+    name: str
+class PhotoTag(SQLModel, table=True):
+    __tablename__ = "photo_tags"
+    photo_id: int = Field(foreign_key="photos.id", primary_key=True)
+    tag_id: int = Field(foreign_key="tag_.id", primary_key=True)
+
+
+
+
+@router.post("/{album_id}/{photo_id}/tags")
+async def add_tag_to_photo(
+    album_id: int,
+    photo_id: int,
+    payload: TagToPhotoPayload,
+    database: Database
+):
+    print("▶️ Received payload:", payload)
+    # Step 1: Check that the photo exists and belongs to the album
+    photo = await database.get(Photo, photo_id)
+    if not photo:
+        raise HTTPException(status_code=404, detail="Photo not found")
+    if photo.photoalbum_id != album_id:
+        raise HTTPException(status_code=400, detail="Photo does not belong to this album")
+
+    # Step 2: Ensure tag exists in `tag_` table (create if not)
+    query = select(Tag).where(Tag.name == payload.tag)
+    result = await database.exec(query)
+    tag = result.one_or_none()
+
+    if not tag:
+        tag = Tag(name=payload.tag)
+        database.add(tag)
+        await database.commit()
+        await database.refresh(tag)
+
+    # Step 3: Add entry to `photo_tags` if not already linked
+    # Check if photo-tag link exists
+    link_check = await database.exec(
+        select(PhotoTag)
+        .where(PhotoTag.photo_id == photo_id)
+        .where(PhotoTag.tag_id == tag.id)
+    )
+    if link_check.one_or_none():
+        raise HTTPException(status_code=400, detail="Tag already linked to photo")
+
+    # Create new link
+    new_link = PhotoTag(photo_id=photo_id, tag_id=tag.id)
+    database.add(new_link)
+    await database.commit()
+
+    return {"status": "success", "tag": tag.name}
+
+
+
+
+@router.get("/photos/search", response_model=list[PhotoResponse])
+async def search_photos_by_tag(tag: str, database: Database):
+    try:
+        print(f"🔎 Searching photos with tag like: {tag}")
+
+        tag_pattern = f"%{tag.lower()}%"
+
+        query = (
+            select(Photo)
+            .join(PhotoTag, Photo.id == PhotoTag.photo_id)
+            .join(Tag, Tag.id == PhotoTag.tag_id)
+            .where(func.lower(Tag.name).like(tag_pattern))
+            .distinct()
+        )
+
+        result = await database.exec(query)
+        photos = result.all()
+        print(f"🔍 Found {len(photos)} matching photo(s)")
+
+        photo_responses = []
+
+        for photo in photos:
+            tag_links = await database.exec(
+                select(PhotoTag, Tag)
+                .join(Tag, Tag.id == PhotoTag.tag_id)
+                .where(PhotoTag.photo_id == photo.id)
+            )
+            tag_names = [tag.name for _, tag in tag_links]
+
+            photo_response = PhotoResponse(
+                id=photo.id,
+                created_at=photo.created_at,
+                updated_at=photo.updated_at,
+                photoalbum_id=photo.photoalbum_id,
+                processing=photo.processing,
+                exif_date=photo.exif_date,
+                youtube_id=photo.youtube_id,
+                caption=photo.caption,
+                photo_file_name=photo.photo_file_name,
+                photo_content_type=photo.photo_content_type,
+                photo_file_size=photo.photo_file_size,
+                photo_updated_at=photo.photo_updated_at,
+                photo_url_original=photo.photo_url_original,
+                photo_url_thumb=photo.photo_url_thumb,
+                tags=tag_names
+            )
+            photo_responses.append(photo_response)
+
+        return photo_responses
+
+    except Exception as e:
+        print(f"❌ Error searching photos by tag '{tag}': {e}")
+        raise HTTPException(status_code=500, detail="Failed to search photos")

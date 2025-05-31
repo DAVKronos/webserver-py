@@ -58,4 +58,31 @@ function deletePhoto (photoAlbumId, photoId) {
   return restCall(`photoalbums/${photoAlbumId}/photos/${photoId}`, { method: 'DELETE' }).then(res => res.data)
 }
 
+
+
+export function addTagToPhoto(photoAlbumId, photoId, tag) {
+  return fetch(`/api/v1/photoalbums/${photoAlbumId}/${photoId}/tags`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({ tag })
+  }).then(async (res) => {
+    if (!res.ok) {
+      const error = await res.json()
+      throw new Error(error.detail || 'Failed to add tag')
+    }
+    return res.json()
+  })
+}
+
+export async function getPhotosByTagSearch(tag) {
+  const response = await fetch(`/api/v1/photoalbums/photos/search?tag=${encodeURIComponent(tag)}`);
+  if (!response.ok) {
+    throw new Error('Failed to search photos by tag');
+  }
+  return response.json();
+}
+
+
 export { getPhotoAlbums, getPhotoAlbum, createPhotoAlbum, updatePhotoAlbum, removePhotoAlbum, getPhotos, addPhotosToAlbums, deletePhoto }

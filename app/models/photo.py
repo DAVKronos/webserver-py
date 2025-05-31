@@ -1,6 +1,7 @@
 from sqlmodel import Field, Relationship,  SQLModel
 from datetime import datetime
 from typing import Optional
+from typing import  List
 
 class PhotoBase(SQLModel):
     id: int | None
@@ -18,8 +19,9 @@ class PhotoBase(SQLModel):
     photo_url_original: str | None
     photo_url_thumb: str | None
 
+
 class PhotoResponse(PhotoBase):
-    pass
+    tags: list[str] = []
 
 class Photo(PhotoBase, table=True):
     __tablename__: str = "photos"
