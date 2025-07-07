@@ -1,4 +1,4 @@
-import React from 'react'
+import React from 'react';
 import { useQuery } from 'react-query'
 import { getUnapprovedNewsItems } from './queries'
 import { Table } from 'react-bootstrap'
@@ -25,16 +25,20 @@ const ApproveNews = () => {
           </tr>
         </thead>
         <tbody>
-          {newsitems && newsitems.map(newsitem => {
-            return (
+          {newsitems && newsitems.length > 0 ? (
+            newsitems.map(newsitem => (
               <tr key={newsitem.id}>
                 <td>{newsitem.title}</td>
                 <td>{newsitem.user.name}</td>
                 <td>{newsitem.updated_at}</td>
                 <td><Link to={`/newsitems/${newsitem.id}`}>Bekijken</Link></td>
               </tr>
-            )
-          })}
+            ))
+          ) : (
+            <tr>
+              <td colSpan="4" className='text-center'>No newsitems available</td>
+            </tr>
+          )}
         </tbody>
       </Table>
     </>

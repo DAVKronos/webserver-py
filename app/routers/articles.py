@@ -55,7 +55,7 @@ async def get_article(id: int, r: Request, database: Database):
         'comment_count': len(a.comments)})
     return from_article(article)
 
-@router.get("/{id}/agree", response_model=ArticlePublicWithCommentCount)
+@router.get("/{id}/agree", response_model=ArticlePublic)
 async def agree_article(id: int, r: Request, database: Database):
     article = await database.get(Article, id)
     if not article:
