@@ -3,9 +3,14 @@ import { useQuery } from 'react-query'
 import { getUnapprovedNewsItems } from './queries'
 import { Table } from 'react-bootstrap'
 import { Link } from 'react-router-dom'
+import DefaultSpinner from '../Generic/Spinner';
 
 const ApproveNews = () => {
   const { isLoading, isError, data: newsitems, error } = useQuery('unapproved-newsitems', getUnapprovedNewsItems)
+  if (isLoading){
+    return <DefaultSpinner />
+  }
+
   return (
     <>
       <h1>Nieuwsitems goedkeuren</h1>

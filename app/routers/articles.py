@@ -101,9 +101,15 @@ async def update_article(id: int, data: ArticleUpdate, database: Database, activ
     return article
 
 
-@router.delete("/{id}")
-async def delete(r: Request, database: Database):
-    pass
+@router.delete("/{id}", status_code=status.HTTP_204_NO_CONTENT)
+async def delete(id: int, database: Database):
+    article = await database.get(Article, id)
+
+    if not article:
+        raise HTTPException(status_code=404, detail="Article not found")
+    await database.delete(article)
+    await database.commit()
+    return
 
 @router.put("/{id}/photo")
 async def insert_photo(r: Request, database: Database):
