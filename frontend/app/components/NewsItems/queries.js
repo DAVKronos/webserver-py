@@ -24,7 +24,7 @@ function removeNewsItem (id) {
 
 function approveNewsItem (id) {
   
-  return restCall(`newsitems/${id}/agreed`, { method: 'GET' })
+  return restCall(`newsitems/${id}/agree`, { method: 'GET' })
 }
 
 function getNewsItemComments (queryKey, newsItemId) {

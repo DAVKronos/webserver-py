@@ -55,6 +55,20 @@ async def get_article(id: int, r: Request, database: Database):
         'comment_count': len(a.comments)})
     return from_article(article)
 
+@router.get("/{id}/agree", response_model=ArticlePublicWithCommentCount)
+async def agree_article(id: int, r: Request, database: Database):
+    article = await database.get(Article, id)
+    if not article:
+        raise HTTPException(status_code=404, detail="Article not found")
+    
+    t = datetime.utcnow()
+    article.sqlmodel_update(article, update = {'updated_at': t, 'agreed': True})
+    database.add(article)
+
+    await database.commit()
+    await database.refresh(article)
+    return article
+
 @router.post("/", response_model=ArticlePublic)
 async def create_article(data: ArticleCreate, database: Database, active_user: Annotated[User, Depends(current_user)]):
     t = datetime.utcnow()
