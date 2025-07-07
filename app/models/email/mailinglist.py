@@ -1,10 +1,15 @@
 from sqlmodel import Field, Relationship,  SQLModel
 from datetime import datetime
+from ..commission import CommissionResponse, Commission
 
 class MailinglistBase(SQLModel):
     id: int | None
     created_at: datetime | None
     updated_at: datetime | None
+    name: str | None
+    description: str | None
+    local_part: str | None
+    commission_id: int| None
 
 
 class MailinglistResponse(MailinglistBase):

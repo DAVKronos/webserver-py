@@ -7,9 +7,6 @@ import DefaultSpinner from '../Generic/Spinner';
 
 const ApproveNews = () => {
   const { isLoading, isError, data: newsitems, error } = useQuery('unapproved-newsitems', getUnapprovedNewsItems)
-  if (isLoading){
-    return <DefaultSpinner />
-  }
 
   return (
     <>
@@ -30,7 +27,7 @@ const ApproveNews = () => {
           </tr>
         </thead>
         <tbody>
-          {newsitems && newsitems.length > 0 ? (
+          {isLoading ? <DefaultSpinner /> : newsitems && newsitems.length > 0 ? (
             newsitems.map(newsitem => (
               <tr key={newsitem.id}>
                 <td>{newsitem.title}</td>
