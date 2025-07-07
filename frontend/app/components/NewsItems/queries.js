@@ -15,7 +15,7 @@ function createNewsItem (data) {
 
 function updateNewsItem (id, data) {
   const formData = convertToFormData('newsitem', data)
-  return restCall(`newsitems/${id}`, { method: 'PUT', data: formData }).then(res => res.data)
+  return restCall(`newsitems/${id}`, { method: 'PATCH', data }).then(res => res.data)
 }
 
 function removeNewsItem (id) {
@@ -23,6 +23,7 @@ function removeNewsItem (id) {
 }
 
 function approveNewsItem (id) {
+  
   return restCall(`newsitems/${id}/agreed`, { method: 'GET' })
 }
 
@@ -39,13 +40,6 @@ function createNewsItemComment (newsItemId, data) {
 }
 
 export {
-  getNewsItem,
-  getNewsItems,
-  getNewsItemComments,
-  createNewsItem,
-  updateNewsItem,
-  removeNewsItem,
-  approveNewsItem,
-  removeNewsItemComment,
-  createNewsItemComment
+  approveNewsItem, createNewsItem, createNewsItemComment, getNewsItem, getNewsItemComments, getNewsItems, removeNewsItem, removeNewsItemComment, updateNewsItem
 }
+

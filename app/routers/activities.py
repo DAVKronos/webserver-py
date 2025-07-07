@@ -121,9 +121,7 @@ async def update_Agendaitem( id: int, data: AgendaItemUpdate, database: Database
     if agendaitem.user_id != active_user.id and active_user.id != 999:
         raise HTTPException(status_code=403, detail="Not authorized to edit this comment")
     t = datetime.utcnow()
-    print(data)
     agendaitem_data = data.model_dump(exclude_unset=True)
-    print(agendaitem_data)
     agendaitem.sqlmodel_update(agendaitem, update={'updated_at': t, **agendaitem_data})
 
     database.add(agendaitem)

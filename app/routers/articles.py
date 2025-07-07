@@ -1,10 +1,12 @@
-from typing import Annotated, Optional
 from datetime import datetime, timezone
+from typing import Annotated, Optional
+
 from fastapi import APIRouter, Depends, Form, HTTPException, Request, status
-from sqlmodel import SQLModel, select, func, and_, text
 from pydantic import BaseModel, ValidationError
-from ..dependencies import Database
+from sqlmodel import SQLModel, and_, func, select, text
+
 from ..authentication import *
+from ..dependencies import Database
 from ..models.article import *
 from ..models.comment import CommentCreate, CommentPublic, CommentUpdate
 
@@ -26,12 +28,23 @@ async def index(r: Request, database: Database):
     
     return map(from_article, articles.all())
 
+@router.get("/agree", response_model=list[ArticlePublic])
+async def get_to_be_agreed(r: Request, database: Database):
+    #TODO: Add permission check
+
+    query = select(Article) \
+        .where(Article.agreed == False) \
+    
+    articles = await database.exec(query)
+    
+    return articles.all()
+
 @router.get("/{id}", response_model=ArticlePublicWithCommentCount)
 async def get_article(id: int, r: Request, database: Database):
     # TODO filter agreed depending on permission
     query = select(Article) \
-        .where(Article.agreed == True) \
         .where(Article.id == id)
+        # .where(Article.agreed == True) \
     
     article = (await database.exec(query)).first()
     
@@ -59,17 +72,20 @@ async def create_article(data: ArticleCreate, database: Database, active_user: A
     return ArticlePublic.model_validate(article, update={"user":None})
     
 @router.patch("/{id}", response_model=ArticlePublic)
-async def update_article(data: ArticleUpdate, database: Database, active_user: Annotated[User, Depends(current_user)]):
-    article = database.get(Article, id)
+async def update_article(id: int, data: ArticleUpdate, database: Database, active_user: Annotated[User, Depends(current_user)]):
+    article = await database.get(Article, id)
     if not article:
         raise HTTPException(status_code=404, detail="Article not found")
     
+    t = datetime.utcnow()
     article_dict = data.model_dump(exclude_unset=True)
-    article.sqlmodel_update(article_dict, update = {updated_at: datetime.now(timezone.utc)})
+    article.sqlmodel_update(article, update = {'updated_at': t, **article_dict})
     database.add(article)
-    database.commit()
-    database.refresh(article)
+
+    await database.commit()
+    await database.refresh(article)
     return article
+
 
 @router.delete("/{id}")
 async def delete(r: Request, database: Database):
@@ -140,3 +156,4 @@ async def delete_comment(comment_id: int, database: Database, active_user: Annot
     await database.delete(comment)
     await database.commit()
     return
+
