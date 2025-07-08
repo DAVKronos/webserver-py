@@ -1,11 +1,14 @@
 from sqlmodel import Field, Relationship,  SQLModel
 from datetime import datetime
+from fastapi import File
 
 class AnnouncementBase(SQLModel):
     id: int | None
     message: str | None
     title: str | None
     url: str | None
+    background_file_name: str | None
+    background_content_type: str | None
     starts_at: datetime | None
     ends_at: datetime | None
 
@@ -20,3 +23,17 @@ class Announcement(AnnouncementBase, table=True):
 
 class AnnouncementResponse(AnnouncementBase):
     pass
+
+class AnnouncementUpdate(SQLModel):
+    title: str | None
+    message: str | None
+    url: str | None
+    starts_at: datetime | None
+    ends_at: datetime | None
+
+class AnnouncementCreate(SQLModel):
+    title: str
+    message: str
+    url: str
+    starts_at: datetime
+    ends_at: datetime

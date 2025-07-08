@@ -9,13 +9,11 @@ function getAnnouncements (queryKey) {
 }
 
 function createAnnouncement (data) {
-  const formData = convertToFormData('announcement', data)
-  return restCall('announcements/', { method: 'POST', data: formData }).then(res => res.data)
+  return restCall('announcements', { method: 'POST', data }).then(res => res.data)
 }
 
 function updateAnnouncement (id, data) {
-  const formData = convertToFormData('announcement', data)
-  return restCall(`announcements/${id}`, { method: 'PUT', data: formData }).then(res => res.data)
+  return restCall(`announcements/${id}`, { method: 'PATCH', data }).then(res => res.data)
 }
 
 function removeAnnouncement (id) {

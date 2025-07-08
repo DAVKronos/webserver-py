@@ -9,7 +9,7 @@ from ..authentication import *
 from ..dependencies import Database
 from ..models.email.mailinglist import Mailinglist, MailinglistResponse
 from ..models.email.alias import Alias, AliasResponse
-from ..models.announcement import Announcement, AnnouncementResponse
+from ..models.announcement import Announcement, AnnouncementResponse, AnnouncementUpdate, AnnouncementCreate
 
 router = APIRouter()
 
@@ -44,19 +44,3 @@ async def get_article(id: int, database: Database):
         raise HTTPException(status_code=404, detail="Mailinglist not found")
     
     return mailinglist
-
-@router.get("/announcements", response_model=list[AnnouncementResponse])
-async def index(r: Request, database: Database):
-    query = select(Announcement)
-    announcements = await database.exec(query)
-    
-    return announcements.all()
-
-@router.get("/announcements/{id}", response_model=AnnouncementResponse)
-async def get_article(id: int, database: Database):
-    announcement = await database.get(Announcement, id)
-    
-    if announcement is None:
-        raise HTTPException(status_code=404, detail="Announcement not found")
-    
-    return announcement
