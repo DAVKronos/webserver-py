@@ -27,6 +27,16 @@ async def index(r: Request, database: Database):
     
     return announcements.all()
 
+@router.get("/current", response_model=list[AnnouncementResponse])
+async def current(r: Request, database: Database):
+    query = select(Announcement) \
+        .order_by(Announcement.created_at.desc())
+    
+    announcements = await database.exec(query)
+
+    moment = datetime.now()
+    return [a for a in announcements if a.is_active_during(moment)]
+
 @router.get("/{id}", response_model=AnnouncementResponse)
 async def get_article(id: int, database: Database):
     announcement = await database.get(Announcement, id)
@@ -53,6 +63,8 @@ async def create_announcement(data: AnnouncementCreate, backgound: UploadFile, d
      
     return announcement
 
+
+
 @router.patch("/{id}", response_model=AnnouncementResponse)
 async def update_announcement(id: int, data: AnnouncementUpdate, database: Database, active_user: Annotated[User, Depends(current_user)]):
     announcement = await database.get(Announcement, id)
@@ -78,12 +90,4 @@ async def delete_announcement(id: int, database: Database, active_user: Annotate
     await database.commit()
     return
 
-@router.get("/current", response_model=list[AnnouncementResponse])
-async def current(r: Request, database: Database):
-    query = select(Announcement) \
-        .order_by(Announcement.created_at.desc())
-    
-    announcements = await database.exec(query)
 
-    moment = datetime.now()
-    return [a for a in announcements if a.is_active_during(moment)]
