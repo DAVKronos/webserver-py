@@ -15,14 +15,11 @@ function getPageByPageTag (queryKey, pagetag) {
 }
 
 function createPage (data) {
-  console.log(data)
-  const formData = convertToFormData('page', data)
-  return restCall('pages/', { method: 'POST', data: formData }).then(res => res.data)
+  return restCall('pages/', { method: 'POST', data }).then(res => res.data)
 }
 
 function updatePage (id, data) {
-  const formData = convertToFormData('page', data)
-  return restCall(`pages/${id}`, { method: 'PUT', data: formData }).then(res => res.data)
+  return restCall(`pages/${id}`, { method: 'PATCH', data }).then(res => res.data)
 }
 
 function removePage (id) {

@@ -17,6 +17,26 @@ class PageBase(SQLModel):
 class PageResponse(PageBase):
     pass
 
+class PageUpdate(SQLModel):
+    public: bool | None
+    highlight: bool | None
+    sort_order: int | None
+    information: str | None
+    information_en: str | None
+    pagetag: str | None
+    pagetag_en: str | None
+    menu: str | None
+
+class PageCreate(SQLModel):
+    public: bool = False
+    highlight: bool = False
+    sort_order: int | None = None
+    information: str
+    information_en: str
+    pagetag: str
+    pagetag_en: str
+    menu: str
+
 class Page(PageBase, table=True):
     __tablename__: str = "pages"
     id: int | None = Field(default=None, primary_key=True)
