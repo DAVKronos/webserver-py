@@ -17,7 +17,7 @@ async def get_all(r: Request, database: Database):
 
 @router.get("/{id}", response_model=PageResponse)
 async def get(id: int, r: Request, database: Database):
-    page = database.get(page, id)
+    page = await database.get(Page, id)
     if not page:
         raise HTTPException(status_code=404, detail="Page not found")
     return page

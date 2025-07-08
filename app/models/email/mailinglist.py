@@ -1,6 +1,9 @@
 from sqlmodel import Field, Relationship,  SQLModel
 from datetime import datetime
 from ..commission import CommissionResponse, Commission
+from .alias import AliasResponse
+from ..user import UserResponse
+from typing import List
 
 class MailinglistBase(SQLModel):
     id: int | None
@@ -11,9 +14,9 @@ class MailinglistBase(SQLModel):
     local_part: str | None
     commission_id: int| None
 
-
 class MailinglistResponse(MailinglistBase):
-    pass
+    aliases: List[AliasResponse] = []
+    users: List[UserResponse] = []
 
 class Mailinglist(MailinglistBase, table=True):
     __tablename__: str = "mailinglists"
