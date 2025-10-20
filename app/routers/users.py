@@ -1,10 +1,13 @@
-from fastapi import APIRouter, Request, HTTPException
+from fastapi import APIRouter, Request, HTTPException, Depends
 from sqlalchemy.sql import extract
 from sqlmodel import select, or_
 from ..dependencies import Database
 from datetime import date
 from ..models.user import *
 from ..models.commission import CompactCommissionResponse, CommissionMembership
+from typing import Annotated
+from ..authentication import current_user
+
 router = APIRouter(prefix="/users")
 
 @router.get("", response_model=list[UserResponse])
@@ -44,6 +47,22 @@ async def get_one(id: int, r: Request, database: Database):
 
     return user
 
+@router.patch("/{user_id}", response_model=UserResponse)
+async def get_one(user_id: int, data: UserUpdate, database: Database, active_user: Annotated[User, Depends(current_user)]):
+    user: User | None = await database.get(User, user_id)
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    
+    t = datetime.utcnow().date()
+    user_data = data.model_dump(exclude_unset=True)
+    user.sqlmodel_update(user, update={'updated_at': t, **user_data})
+
+    database.add(user)
+    await database.commit()
+    await database.refresh(user)
+
+    return user
+
 @router.get("/{id}/commissions", response_model=list[CompactCommissionResponse])
 async def get_comissions(id: int, r: Request, database: Database):
     user: User | None = await database.get(User, id)
@@ -51,3 +70,4 @@ async def get_comissions(id: int, r: Request, database: Database):
         raise HTTPException(status_code=404, detail="User not found")
 
     return user.commissions
+

@@ -1,4 +1,4 @@
-import { restCall, convertToFormData } from '../../utils/rest-helper'
+import { restCall, convertToFormData, filterJson } from '../../utils/rest-helper'
 
 function getMemberships (querykey, userId) {
   return restCall(`users/${userId}/commissions`).then((res) => res.data)
@@ -28,10 +28,11 @@ function createUser (data) {
 }
 
 function updateUser (id, data) {
-  const formData = convertToFormData('user', data)
+  const userData = filterJson(data)
+
   return restCall(`users/${id}`, {
-    method: 'PUT',
-    data: formData
+    method: 'PATCH',
+    data: userData
   }).then((res) => res.data)
 }
 

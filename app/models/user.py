@@ -28,6 +28,27 @@ class UserBase(SQLModel):
     instelling: Optional[str]
     aanvang: Optional[int]
 
+class UserUpdate(SQLModel):
+    name: Optional[str] = None
+    initials: Optional[str] = None
+    email: Optional[str] = None
+    birthdate: Optional[date] = None
+    address: Optional[str] = None
+    postalcode: Optional[str] = None
+    city: Optional[str] = None
+    sex: Optional[str] = None
+    licensenumber: Optional[str]
+    papieren_kronometer: Optional[bool] 
+    avatar_file_name: Optional[str] = None
+    avatar_content_type: Optional[str] = None
+    avatar_file_size: Optional[int] = None
+    avatar_updated_at: Optional[datetime] = None
+    phonenumber: Optional[str] = None
+    xtracard: Optional[str] = None
+    studie: Optional[str] = None
+    instelling: Optional[str] = None
+    aanvang: Optional[int] = None
+
 class UserResponse(UserBase):
     commissions: list["CompactCommissionResponse"] = []
     
