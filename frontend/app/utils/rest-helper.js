@@ -20,6 +20,27 @@ function convertToFormData (objectName, data) {
   return formData
 }
 
+function filterJson(data) {
+  const filteredJson = {};
+
+  Object.keys(data).forEach((field) => {
+    const value = data[field];
+
+    if (value !== undefined && value !== null) {
+      if (typeof value === 'string') {
+        filteredJson[field] = value.trim() || null;
+      } else {
+        filteredJson[field] = value;
+      }
+    }
+  });
+
+  return filteredJson;
+}
+
+
+
+
 function getAuthHeader () {
   const token = localStorage.getItem("access_token");
   if (token !== null) {
@@ -51,5 +72,6 @@ export {
   API_HOST,
   getAPIHostUrl,
   getConfig,
-  convertToFormData
+  convertToFormData,
+  filterJson
 }

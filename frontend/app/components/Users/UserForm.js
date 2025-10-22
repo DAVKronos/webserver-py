@@ -43,7 +43,7 @@ const userFields = [
   },
   {
     name: 'aanvang',
-    type: 'text'
+    type: 'number'
   },
 
   {
