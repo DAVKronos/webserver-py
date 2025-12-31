@@ -1,10 +1,12 @@
-from fastapi import APIRouter, Request, HTTPException
+from fastapi import APIRouter, Request, HTTPException, Depends
 from sqlalchemy.sql import extract
 from sqlmodel import select, or_
 from ..dependencies import Database
 from datetime import date
 from ..models.user import *
 from ..models.commission import CompactCommissionResponse, CommissionMembership
+from typing import Annotated
+from ..authentication import current_user
 router = APIRouter(prefix="/users")
 
 @router.get("", response_model=list[UserResponse])
