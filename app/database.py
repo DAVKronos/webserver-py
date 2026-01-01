@@ -19,7 +19,7 @@ def create_engine():
     )
 
 @contextmanager
-def create_ssh_engine():
+def create_ssh_engine(database_name_config = "database"):
     with open_tunnel(
             ('kronos.nl', 22),
             ssh_username=config['database']['ssh']['username'],
@@ -36,7 +36,7 @@ def create_ssh_engine():
                 port = con.local_bind_port,
                 user=config['database']['username'],
                 password=config['database']['password'],
-                database = config['database']['database']),        
+                database = config['database'][database_name_config]),        
             echo=False,
             future=True
         )
