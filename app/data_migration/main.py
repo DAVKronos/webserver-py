@@ -1,3 +1,4 @@
+### TO RUN THIS FILE: docker compose run --rm python python3 -m app.data_migration.main
 import asyncio
 
 from sqlalchemy import text
@@ -10,11 +11,14 @@ async def run_with_connection(func, old_db_name, new_db_name):
             async with new_engine.connect() as new_conn:
                 await func(old_conn, new_conn)
 
-# Test function 
-async def print_users(old_conn, new_conn):
+async def migrate(old_conn, new_conn):
+    await migrate_users(old_conn, new_conn)
+
+async def migrate_users(old_conn, new_conn):
     result = await old_conn.execute(text("SELECT * FROM users"))
     rows = [dict(row) for row in result.mappings().all()]
     print(rows)
 
-
-asyncio.run(run_with_connection(print_users, 'database_old'))
+# Run the migration
+# May need to empty the new database first
+asyncio.run(run_with_connection(migrate, 'database_old', 'database'))
