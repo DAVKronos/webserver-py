@@ -1,0 +1,435 @@
+-- public.agendaitem_types definition
+
+-- Drop table
+
+-- DROP TABLE public.agendaitem_types;
+
+CREATE TABLE public.agendaitem_types (
+	id int4 NOT NULL,
+	name_nl varchar NULL,
+	name_en varchar NULL,
+	created_at varchar NULL,
+	updated_at varchar NULL,
+	CONSTRAINT agendaitem_types_pkey PRIMARY KEY (id)
+);
+
+
+-- public.committees definition
+
+-- Drop table
+
+-- DROP TABLE public.committees;
+
+CREATE TABLE public.committees (
+	id int4 NOT NULL,
+	name_nl varchar NULL,
+	name_en varchar NULL,
+	description_nl varchar NULL,
+	description_en varchar NULL,
+	email varchar NULL,
+	"role" varchar NULL,
+	created_at timestamp NULL,
+	updated_at timestamp NULL,
+	CONSTRAINT committees_pkey PRIMARY KEY (id)
+);
+
+
+-- public.files definition
+
+-- Drop table
+
+-- DROP TABLE public.files;
+
+CREATE TABLE public.files (
+	id int4 NOT NULL,
+	file_name varchar NULL,
+	content_type varchar NULL,
+	file_size int4 NULL,
+	created_at timestamp NULL,
+	updated_at timestamp NULL,
+	CONSTRAINT files_pkey PRIMARY KEY (id)
+);
+
+
+-- public.mail_aliases definition
+
+-- Drop table
+
+-- DROP TABLE public.mail_aliases;
+
+CREATE TABLE public.mail_aliases (
+	id int4 NOT NULL,
+	"name" varchar NULL,
+	email_address varchar NULL,
+	description varchar NULL,
+	created_at timestamp NULL,
+	updated_at timestamp NULL,
+	CONSTRAINT mail_aliases_pkey PRIMARY KEY (id)
+);
+
+
+-- public.pages definition
+
+-- Drop table
+
+-- DROP TABLE public.pages;
+
+CREATE TABLE public.pages (
+	id int4 NOT NULL,
+	content_nl varchar NULL,
+	content_en varchar NULL,
+	page_title_nl varchar NULL,
+	page_title_en varchar NULL,
+	menu_item varchar NULL,
+	is_highlight bool NULL,
+	is_public bool NULL,
+	created_at timestamp NULL,
+	updated_at timestamp NULL,
+	CONSTRAINT pages_pkey PRIMARY KEY (id)
+);
+
+
+-- public.photo_tags definition
+
+-- Drop table
+
+-- DROP TABLE public.photo_tags;
+
+CREATE TABLE public.photo_tags (
+	id int4 NOT NULL,
+	"name" varchar NULL,
+	created_at timestamp NULL,
+	updated_at timestamp NULL,
+	CONSTRAINT photo_tags_pkey PRIMARY KEY (id)
+);
+
+
+-- public.user_types definition
+
+-- Drop table
+
+-- DROP TABLE public.user_types;
+
+CREATE TABLE public.user_types (
+	id int4 NOT NULL,
+	name_nl varchar NULL,
+	name_en varchar NULL,
+	is_donor bool NULL,
+	is_competition bool NULL,
+	created_at varchar NULL,
+	updated_at varchar NULL,
+	CONSTRAINT user_types_pkey PRIMARY KEY (id)
+);
+
+
+-- public.document_folders definition
+
+-- Drop table
+
+-- DROP TABLE public.document_folders;
+
+CREATE TABLE public.document_folders (
+	id int4 NOT NULL,
+	"name" varchar NULL,
+	parent_folder_id int4 NULL,
+	CONSTRAINT document_folders_pkey PRIMARY KEY (id),
+	CONSTRAINT fk_document_folders_parent FOREIGN KEY (parent_folder_id) REFERENCES public.document_folders(id)
+);
+
+
+-- public.documents definition
+
+-- Drop table
+
+-- DROP TABLE public.documents;
+
+CREATE TABLE public.documents (
+	id int4 NOT NULL,
+	"name" varchar NULL,
+	"date" varchar NULL,
+	file_id int4 NULL,
+	folder_id int4 NULL,
+	is_public bool NULL,
+	created_at timestamp NULL,
+	updated_at timestamp NULL,
+	CONSTRAINT documents_pkey PRIMARY KEY (id),
+	CONSTRAINT fk_documents_file FOREIGN KEY (file_id) REFERENCES public.files(id),
+	CONSTRAINT fk_documents_folder FOREIGN KEY (folder_id) REFERENCES public.document_folders(id)
+);
+
+
+-- public.mailing_lists definition
+
+-- Drop table
+
+-- DROP TABLE public.mailing_lists;
+
+CREATE TABLE public.mailing_lists (
+	id int4 NOT NULL,
+	"name" varchar NULL,
+	description varchar NULL,
+	local_part varchar NULL,
+	committee_id int4 NULL,
+	created_at timestamp NULL,
+	updated_at timestamp NULL,
+	CONSTRAINT mailing_lists_pkey PRIMARY KEY (id),
+	CONSTRAINT fk_mailing_lists_committee FOREIGN KEY (committee_id) REFERENCES public.committees(id)
+);
+
+
+-- public.users definition
+
+-- Drop table
+
+-- DROP TABLE public.users;
+
+CREATE TABLE public.users (
+	id int4 NOT NULL,
+	"name" varchar NULL,
+	initials varchar NULL,
+	email varchar NULL,
+	birthdate varchar NULL,
+	address varchar NULL,
+	postalcode varchar NULL,
+	city varchar NULL,
+	sex varchar NULL,
+	"password" varchar NULL,
+	allow_password_change bool NULL,
+	avatar_id int4 NULL,
+	phonenumber varchar NULL,
+	user_type_id int4 NULL,
+	bank_account_number varchar NULL,
+	unioncard_number varchar NULL,
+	institution varchar NULL,
+	joined_in int4 NULL,
+	tokens varchar NULL,
+	confirmed_at timestamp NULL,
+	created_at timestamp NULL,
+	updated_at timestamp NULL,
+	CONSTRAINT users_pkey PRIMARY KEY (id),
+	CONSTRAINT fk_users_user_type FOREIGN KEY (user_type_id) REFERENCES public.user_types(id)
+);
+
+
+-- public.committee_members definition
+
+-- Drop table
+
+-- DROP TABLE public.committee_members;
+
+CREATE TABLE public.committee_members (
+	id int4 NOT NULL,
+	"function" varchar NULL,
+	user_id int4 NULL,
+	committee_id int4 NULL,
+	created_at timestamp NULL,
+	updated_at timestamp NULL,
+	CONSTRAINT committee_members_pkey PRIMARY KEY (id),
+	CONSTRAINT fk_committee_members_committee FOREIGN KEY (committee_id) REFERENCES public.committees(id),
+	CONSTRAINT fk_committee_members_user FOREIGN KEY (user_id) REFERENCES public.users(id)
+);
+
+
+-- public.mailing_list_members definition
+
+-- Drop table
+
+-- DROP TABLE public.mailing_list_members;
+
+CREATE TABLE public.mailing_list_members (
+	id int4 NOT NULL,
+	user_id int4 NULL,
+	mailing_list_id int4 NULL,
+	CONSTRAINT mailing_list_members_pkey PRIMARY KEY (id),
+	CONSTRAINT fk_mailing_list_members_list FOREIGN KEY (mailing_list_id) REFERENCES public.mailing_lists(id),
+	CONSTRAINT fk_mailing_list_members_user FOREIGN KEY (user_id) REFERENCES public.users(id)
+);
+
+
+-- public.reset_password_actions definition
+
+-- Drop table
+
+-- DROP TABLE public.reset_password_actions;
+
+CREATE TABLE public.reset_password_actions (
+	id int4 NOT NULL,
+	user_id int4 NULL,
+	"token" varchar NULL,
+	sent_at varchar NULL,
+	remember_created_at varchar NULL,
+	CONSTRAINT reset_password_actions_pkey PRIMARY KEY (id),
+	CONSTRAINT fk_reset_password_user FOREIGN KEY (user_id) REFERENCES public.users(id)
+);
+
+
+-- public.agendaitems definition
+
+-- Drop table
+
+-- DROP TABLE public.agendaitems;
+
+CREATE TABLE public.agendaitems (
+	id int4 NOT NULL,
+	name_nl varchar NULL,
+	name_en varchar NULL,
+	description_nl varchar NULL,
+	description_en varchar NULL,
+	"date" timestamp NULL,
+	"location" varchar NULL,
+	committee_id int4 NULL,
+	is_internal bool NULL,
+	agendaitem_type_id int4 NULL,
+	url varchar NULL,
+	created_by_user_id int4 NULL,
+	can_subscribe bool NULL,
+	subscription_deadline timestamp NULL,
+	max_subscriptions int4 NULL,
+	created_at timestamp NULL,
+	updated_at timestamp NULL,
+	CONSTRAINT agendaitems_pkey PRIMARY KEY (id),
+	CONSTRAINT fk_agendaitems_committee_member FOREIGN KEY (committee_id) REFERENCES public.committee_members(id),
+	CONSTRAINT fk_agendaitems_creator FOREIGN KEY (created_by_user_id) REFERENCES public.users(id),
+	CONSTRAINT fk_agendaitems_type FOREIGN KEY (agendaitem_type_id) REFERENCES public.agendaitem_types(id)
+);
+
+
+-- public.photo_albums definition
+
+-- Drop table
+
+-- DROP TABLE public.photo_albums;
+
+CREATE TABLE public.photo_albums (
+	id int4 NOT NULL,
+	name_nl varchar NULL,
+	name_en varchar NULL,
+	agendaitem_id int4 NULL,
+	is_public bool NULL,
+	event_date timestamp NULL,
+	url varchar NULL,
+	created_at timestamp NULL,
+	updated_at timestamp NULL,
+	CONSTRAINT photo_albums_pkey PRIMARY KEY (id),
+	CONSTRAINT fk_photo_albums_agendaitem FOREIGN KEY (agendaitem_id) REFERENCES public.agendaitems(id)
+);
+
+
+-- public.photos definition
+
+-- Drop table
+
+-- DROP TABLE public.photos;
+
+CREATE TABLE public.photos (
+	id int4 NOT NULL,
+	file_id int4 NULL,
+	photoalbum_id int4 NULL,
+	exif_date timestamp NULL,
+	url varchar NULL,
+	thumbnail_url varchar NULL,
+	created_at timestamp NULL,
+	updated_at timestamp NULL,
+	CONSTRAINT photos_pkey PRIMARY KEY (id),
+	CONSTRAINT fk_photos_album FOREIGN KEY (photoalbum_id) REFERENCES public.photo_albums(id),
+	CONSTRAINT fk_photos_file FOREIGN KEY (file_id) REFERENCES public.files(id)
+);
+
+
+-- public.subsciptions definition
+
+-- Drop table
+
+-- DROP TABLE public.subsciptions;
+
+CREATE TABLE public.subsciptions (
+	id int4 NOT NULL,
+	user_id int4 NULL,
+	"comment" varchar NULL,
+	agendaitem_id int4 NULL,
+	created_at timestamp NULL,
+	updated_at timestamp NULL,
+	CONSTRAINT subsciptions_pkey PRIMARY KEY (id),
+	CONSTRAINT fk_subscriptions_agendaitem FOREIGN KEY (agendaitem_id) REFERENCES public.agendaitems(id),
+	CONSTRAINT fk_subscriptions_user FOREIGN KEY (user_id) REFERENCES public.users(id)
+);
+
+
+-- public.announcements definition
+
+-- Drop table
+
+-- DROP TABLE public.announcements;
+
+CREATE TABLE public.announcements (
+	id int4 NOT NULL,
+	title varchar NULL,
+	"content" varchar NULL,
+	starts_at timestamp NULL,
+	ends_at timestamp NULL,
+	photo_id int4 NULL,
+	url varchar NULL,
+	created_at timestamp NULL,
+	updated_at timestamp NULL,
+	CONSTRAINT announcements_pkey PRIMARY KEY (id),
+	CONSTRAINT fk_announcements_photo FOREIGN KEY (photo_id) REFERENCES public.photos(id)
+);
+
+
+-- public.has_tags definition
+
+-- Drop table
+
+-- DROP TABLE public.has_tags;
+
+CREATE TABLE public.has_tags (
+	photo_id int4 NOT NULL,
+	tag_id int4 NOT NULL,
+	CONSTRAINT has_tags_pkey PRIMARY KEY (photo_id, tag_id),
+	CONSTRAINT fk_has_tags_photo FOREIGN KEY (photo_id) REFERENCES public.photos(id),
+	CONSTRAINT fk_has_tags_tag FOREIGN KEY (tag_id) REFERENCES public.photo_tags(id)
+);
+
+
+-- public.news_items definition
+
+-- Drop table
+
+-- DROP TABLE public.news_items;
+
+CREATE TABLE public.news_items (
+	id int4 NOT NULL,
+	title_nl varchar NULL,
+	title_en varchar NULL,
+	content_nl varchar NULL,
+	content_en varchar NULL,
+	photo_id int4 NULL,
+	approved bool NULL,
+	approved_by int4 NULL,
+	creator_id int4 NULL,
+	created_at int4 NULL,
+	updated_at int4 NULL,
+	CONSTRAINT news_items_pkey PRIMARY KEY (id),
+	CONSTRAINT fk_news_approved_by FOREIGN KEY (approved_by) REFERENCES public.users(id),
+	CONSTRAINT fk_news_creator FOREIGN KEY (creator_id) REFERENCES public.users(id),
+	CONSTRAINT fk_news_photo FOREIGN KEY (photo_id) REFERENCES public.photos(id)
+);
+
+
+-- public.news_comments definition
+
+-- Drop table
+
+-- DROP TABLE public.news_comments;
+
+CREATE TABLE public.news_comments (
+	id int4 NOT NULL,
+	user_id int4 NULL,
+	newsitem_id int4 NULL,
+	"content" varchar NULL,
+	created_at timestamp NULL,
+	updated_at timestamp NULL,
+	CONSTRAINT news_comments_pkey PRIMARY KEY (id),
+	CONSTRAINT fk_news_comments_newsitem FOREIGN KEY (newsitem_id) REFERENCES public.news_items(id),
+	CONSTRAINT fk_news_comments_user FOREIGN KEY (user_id) REFERENCES public.users(id)
+);

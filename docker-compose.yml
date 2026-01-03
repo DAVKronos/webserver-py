@@ -8,7 +8,7 @@ services:
       - ./config.toml:/app/config.toml
       - ./app:/app/app
     ports:
-      - 8001:8001
+      - 8000:8000
   
   frontend:
     build:

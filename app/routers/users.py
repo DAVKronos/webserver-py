@@ -11,7 +11,9 @@ from ..authentication import current_user
 router = APIRouter(prefix="/users")
 
 @router.get("", response_model=list[UserResponse])
-async def get_all(r: Request, database: Database):
+async def get_all(r: Request, database: Database,active_user: Annotated[User, Depends(current_user)]):
+    if active_user is None:
+        raise HTTPException(status.HTTP_401_UNAUTHORIZED)
     query = select(User) \
         .order_by(User.name.asc())
         #The users table currently has 2 problematic entries, id 479 & 340
@@ -40,7 +42,9 @@ async def get_birthdays(r: Request, database: Database):
     return users.all()
 
 @router.get("/{id}", response_model=UserResponse)
-async def get_one(id: int, r: Request, database: Database):
+async def get_one(id: int, r: Request, database: Database, active_user: Annotated[User, Depends(current_user)]):
+    if active_user is None:
+        raise HTTPException(status.HTTP_401_UNAUTHORIZED)
     user: User | None = await database.get(User, id)
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
@@ -70,4 +74,3 @@ async def get_comissions(id: int, r: Request, database: Database):
         raise HTTPException(status_code=404, detail="User not found")
 
     return user.commissions
-

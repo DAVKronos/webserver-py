@@ -1,18 +1,23 @@
 from sqlmodel import Field, Relationship,  SQLModel
 from datetime import datetime
+from typing import Optional
 
 class PageBase(SQLModel):
     id: int | None
-    created_at: datetime | None
-    updated_at: datetime | None
-    public: bool | None
-    highlight: bool | None
-    sort_order: int | None
-    information: str | None
-    information_en: str | None
-    pagetag: str | None
-    pagetag_en: str | None
-    menu: str | None
+
+    content_nl: Optional[str] = None
+    content_en: Optional[str] = None
+
+    page_title_nl: Optional[str] = None
+    page_title_en: Optional[str] = None
+
+    menu_item: Optional[str] = None
+
+    is_highlight: Optional[bool] = None
+    is_public: Optional[bool] = None
+
+    created_at: Optional[datetime] = None
+    updated_at: Optional[datetime] = None
 
 class PageResponse(PageBase):
     pass
