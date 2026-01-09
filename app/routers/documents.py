@@ -2,23 +2,24 @@ from typing import Annotated
 from fastapi import APIRouter, Request, HTTPException
 from sqlmodel import select
 from ..dependencies import Database
-from ..models.documents import *
+from ..models.document import *
+from ..models.file import *
 
 router = APIRouter(prefix="")
 
-@router.get("/folders", response_model=list[FolderResponse])
+@router.get("/folders", response_model=list[DocumentFolderResponse])
 async def get_all(r: Request, database: Database):
-    query = select(Folder) \
-        .order_by(Folder.name.desc())
+    query = select(DocumentFolder) \
+        .order_by(DocumentFolder.name.desc())
 
     folders = await database.exec(query)
     return folders.all()
 
-@router.get("/folders/{id}", response_model=FolderResponse)
+@router.get("/folders/{id}", response_model=DocumentFolderResponse)
 async def get_one(id: int, r: Request, database: Database):
     folder = await database.get(folder, id)
     if not folder:
-        raise HTTPException(status_code=404, detail="Folder not found")
+        raise HTTPException(status_code=404, detail="DocumentFolder not found")
     return folder
 
 @router.get("/kronometers", response_model=list[FileResponse])

@@ -43,9 +43,9 @@ const ShortNewsItem = ({item}) => {
             </Col>
             <Col md={9}>
                 <header>
-                    <Link to={`/newsitems/${item.id}`}><h2><MultiLanguageText nl={item.title} en={item.title_en}/></h2>
+                    <Link to={`/newsitems/${item.id}`}><h2><MultiLanguageText nl={item.title_nl} en={item.title_en}/></h2>
                     </Link>
-                    <p>{format(item.created_at, 'PPP p', i18n.language)} | {item.user.name}{commentCount}</p>
+                    <p>{format(item.created_at, 'PPP p', i18n.language)} | {item.creator.name}{commentCount}</p>
                 </header>
                 <div>
                     <MultiLanguageText nl={item.news} en={item.news_en} renderFunction={renderNews}/>
@@ -61,7 +61,7 @@ const ShortNewsItem = ({item}) => {
                     <Button size='sm' variant='danger' onClick={onClickRemove}>{t('remove')}</Button>
                 </Can>
             </Col>
-            <Col md={2}>
+            <Col md={2}> 
 
             </Col>
         </Row>

@@ -19,17 +19,17 @@ PHOTO_DIR = Path("static/photos")
 PHOTO_DIR.mkdir(parents=True, exist_ok=True)
 
 
-@router.get("", response_model=list[PhotoalbumResponse])
+@router.get("", response_model=list[PhotoAlbumResponse])
 async def get_all(r: Request, database: Database):
-    query = select(Photoalbum).order_by(Photoalbum.name.desc())
+    query = select(PhotoAlbum).order_by(PhotoAlbum.name.desc())
     photoalbums = await database.exec(query)  # Ensure async execution
     return photoalbums.all()
 
-@router.get("/{id}", response_model=PhotoalbumResponse)
+@router.get("/{id}", response_model=PhotoAlbumResponse)
 async def get_one(id: int, r: Request, database: Database):
-    photoalbum = await database.get(Photoalbum, id)  # Fixed model reference
+    photoalbum = await database.get(PhotoAlbum, id)  # Fixed model reference
     if not photoalbum:
-        raise HTTPException(status_code=404, detail="Photoalbum not found")
+        raise HTTPException(status_code=404, detail="PhotoAlbum not found")
     return photoalbum
 
 
@@ -44,9 +44,9 @@ async def get_photos(album_id: int, database: Database):
 
         for photo in photos:
             tag_links = await database.exec(
-                select(PhotoTag, Tag)
-                .join(Tag, Tag.id == PhotoTag.tag_id)
-                .where(PhotoTag.photo_id == photo.id)
+                select(HasTag, Tag)
+                .join(Tag, Tag.id == HasTag.tag_id)
+                .where(HasTag.photo_id == photo.id)
             )
             tag_names = [tag.name for _, tag in tag_links]
 
@@ -139,16 +139,16 @@ async def add_photo(
         raise HTTPException(status_code=500, detail="Failed to upload photo")
 
 
-@router.post("/", response_model=PhotoalbumResponse, status_code=status.HTTP_201_CREATED)
+@router.post("/", response_model=PhotoAlbumResponse, status_code=status.HTTP_201_CREATED)
 async def create_photoalbum(
-    data: Photoalbum,
+    data: PhotoAlbum,
     database: Database
 ):
     try:
         album_data = data.dict()
         print("📥 Received create payload:", album_data)
 
-        new_album = Photoalbum(
+        new_album = PhotoAlbum(
             **data.dict(exclude_unset=True),
             created_at=datetime.now(timezone.utc).replace(tzinfo=None),
             updated_at=datetime.now(timezone.utc).replace(tzinfo=None)
@@ -169,22 +169,22 @@ async def create_photoalbum(
 
     
 
-@router.put("/{album_id}", response_model=PhotoalbumResponse)
+@router.put("/{album_id}", response_model=PhotoAlbumResponse)
 async def update_photoalbum(
     album_id: int,
-    data: PhotoalbumUpdate,
+    data: PhotoAlbumUpdate,
     database: Database,
 ):
     print("hoi")
     print(data.dict())
 
-    album = await database.get(Photoalbum, album_id)
+    album = await database.get(PhotoAlbum, album_id)
     if not album:
-        raise HTTPException(status_code=404, detail="Photoalbum not found")
+        raise HTTPException(status_code=404, detail="PhotoAlbum not found")
 
     try:
         # Create update model from parsed Pydantic model
-        album_update = PhotoalbumUpdate(**data.dict())
+        album_update = PhotoAlbumUpdate(**data.dict())
     except Exception as e:
         raise HTTPException(status_code=400, detail=f"Invalid update data: {e}")
 
@@ -209,7 +209,7 @@ async def delete_photoalbum(
 ):
     print(f"🗑️ Deleting photo album {album_id}")
 
-    album = await database.get(Photoalbum, album_id)
+    album = await database.get(PhotoAlbum, album_id)
     if not album:
         raise HTTPException(status_code=404, detail="Photo album not found")
 
@@ -262,22 +262,7 @@ async def delete_photo(
     except Exception as e:
         print(f"❌ Error deleting photo: {e}")
         raise HTTPException(status_code=500, detail="Failed to delete photo")
-    
 
-
-
-
-class TagToPhotoPayload(SQLModel):
-    tag: str  # name of the tag, e.g. "sunset"
-
-class Tag(SQLModel, table=True):
-    __tablename__ = "tag_"
-    id: Optional[int] = Field(default=None, primary_key=True)
-    name: str
-class PhotoTag(SQLModel, table=True):
-    __tablename__ = "photo_tags"
-    photo_id: int = Field(foreign_key="photos.id", primary_key=True)
-    tag_id: int = Field(foreign_key="tag_.id", primary_key=True)
 
 
 
@@ -286,7 +271,7 @@ class PhotoTag(SQLModel, table=True):
 async def add_tag_to_photo(
     album_id: int,
     photo_id: int,
-    payload: TagToPhotoPayload,
+    payload: PhotoTag,
     database: Database
 ):
     print("▶️ Received payload:", payload)
@@ -298,12 +283,12 @@ async def add_tag_to_photo(
         raise HTTPException(status_code=400, detail="Photo does not belong to this album")
 
     # Step 2: Ensure tag exists in `tag_` table (create if not)
-    query = select(Tag).where(Tag.name == payload.tag)
+    query = select(PhotoTag).where(PhotoTag.name == payload.tag)
     result = await database.exec(query)
     tag = result.one_or_none()
 
     if not tag:
-        tag = Tag(name=payload.tag)
+        tag = PhotoTag(name=payload.tag)
         database.add(tag)
         await database.commit()
         await database.refresh(tag)
@@ -311,9 +296,9 @@ async def add_tag_to_photo(
     # Step 3: Add entry to `photo_tags` if not already linked
     # Check if photo-tag link exists
     link_check = await database.exec(
-        select(PhotoTag)
-        .where(PhotoTag.photo_id == photo_id)
-        .where(PhotoTag.tag_id == tag.id)
+        select(HasTag)
+        .where(HasTag.photo_id == photo_id)
+        .where(HasTag.tag_id == tag.id)
     )
     if link_check.one_or_none():
         raise HTTPException(status_code=400, detail="Tag already linked to photo")
@@ -337,9 +322,9 @@ async def search_photos_by_tag(tag: str, database: Database):
 
         query = (
             select(Photo)
-            .join(PhotoTag, Photo.id == PhotoTag.photo_id)
-            .join(Tag, Tag.id == PhotoTag.tag_id)
-            .where(func.lower(Tag.name).like(tag_pattern))
+            .join(HasTag, Photo.id == HasTag.photo_id)
+            .join(PhotoTag, PhotoTag.id == HasTag.tag_id)
+            .where(func.lower(PhotoTag.name).like(tag_pattern))
             .distinct()
         )
 
@@ -351,9 +336,9 @@ async def search_photos_by_tag(tag: str, database: Database):
 
         for photo in photos:
             tag_links = await database.exec(
-                select(PhotoTag, Tag)
-                .join(Tag, Tag.id == PhotoTag.tag_id)
-                .where(PhotoTag.photo_id == photo.id)
+                select(HasTag, PhotoTag)
+                .join(PhotoTag, PhotoTag.id == HasTag.tag_id)
+                .where(HasTag.photo_id == photo.id)
             )
             tag_names = [tag.name for _, tag in tag_links]
 

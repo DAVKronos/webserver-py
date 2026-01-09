@@ -1,58 +1,82 @@
-from sqlmodel import Field, Relationship,  SQLModel
+
+############### UPDATED #################
+from typing import Optional, List
 from datetime import datetime
-from typing import Optional
-from typing import  List
+from sqlmodel import Field, SQLModel, Relationship
 
+############## TAGS
+class HasTag(SQLModel, table=True):
+    __tablename__ = "has_tags"
+    photo_id: int = Field(foreign_key="photos.id", primary_key=True)
+    tag_id: int = Field(foreign_key="photo_tags.id", primary_key=True)
+
+class PhotoTagBase(SQLModel):
+    name: Optional[str] = None
+    created_at: Optional[datetime] = None
+    updated_at: Optional[datetime] = None
+
+class PhotoTag(PhotoTagBase, table=True):
+    __tablename__ = "photo_tags"
+    id: Optional[int] = Field(default=None, primary_key=True)
+    
+    photos: List["Photo"] = Relationship(back_populates="tags", link_model=HasTag)
+
+class PhotoTagCreate(SQLModel):
+    name: str
+
+#################### PHOTO
 class PhotoBase(SQLModel):
-    id: int | None
-    created_at: datetime | None
-    updated_at: datetime | None
-    photoalbum_id: int | None
-    processing: bool | None
-    exif_date: datetime | None
-    youtube_id: str | None
-    caption: str | None
-    photo_file_name: str | None
-    photo_content_type: str | None
-    photo_file_size: int | None
-    photo_updated_at: datetime | None
-    photo_url_original: str | None
-    photo_url_thumb: str | None
-
-
-class PhotoResponse(PhotoBase):
-    tags: list[str] = []
+    file_id: Optional[int] = Field(default=None, foreign_key="files.id")
+    photoalbum_id: Optional[int] = Field(default=None, foreign_key="photo_albums.id")
+    exif_date: Optional[datetime] = None
+    url: Optional[str] = None
+    thumbnail_url: Optional[str] = None
+    created_at: Optional[datetime] = None
+    updated_at: Optional[datetime] = None
 
 class Photo(PhotoBase, table=True):
-    __tablename__: str = "photos"
-    id: int | None = Field(default=None, primary_key=True)
+    __tablename__ = "photos"
+    id: Optional[int] = Field(default=None, primary_key=True)
+    
+    # Relationships
+    album: Optional["PhotoAlbum"] = Relationship(back_populates="photos")
+    file: Optional["File"] = Relationship(sa_relationship_kwargs={"lazy": "selectin"})
+    
+    # Many-to-many relationship to tags
+    tags: List[PhotoTag] = Relationship(back_populates="photos", link_model=HasTag)
 
+class PhotoResponse(PhotoBase):
+    id: int
 
-class PhotoalbumBase(SQLModel):
-    id: int | None
-    created_at: datetime | None
-    updated_at: datetime | None
-    agendaitem_id: int | None
-    public: bool | None
-    name: str | None
-    name_en: str | None
-    eventdate: datetime | None
-    url: str | None
+class PhotoTagResponse(PhotoTagBase):
+    id: int
 
-class PhotoalbumResponse(PhotoalbumBase):
+################## PHOTO ALBUMS
+
+class PhotoAlbumBase(SQLModel):
+    id: int
+    name_nl: Optional[str] = None
+    name_en: Optional[str] = None
+    agendaitem_id: Optional[int] = Field(default=None, foreign_key="agendaitems.id")
+    is_public: Optional[bool] = False
+    event_date: Optional[datetime] = None
+    url: Optional[str] = None
+    created_at: Optional[datetime] = None
+    updated_at: Optional[datetime] = None
+
+class PhotoAlbum(PhotoAlbumBase, table=True):
+    __tablename__ = "photo_albums"
+    id: Optional[int] = Field(default=None, primary_key=True)
+
+    # Relationships
+    photos: List[Photo] = Relationship(back_populates="album", sa_relationship_kwargs={"lazy": "selectin"})
+
+class PhotoAlbumResponse(PhotoAlbumBase):
     pass
 
-class Photoalbum(PhotoalbumBase, table=True):
-    __tablename__: str = "photoalbums"
-    id: int | None = Field(default=None, primary_key=True)
-
-
-    
-
-
-class PhotoalbumUpdate(SQLModel):
-    name: Optional[str] = None
+class PhotoAlbumUpdate(SQLModel):
+    name_nl: Optional[str] = None
     name_en: Optional[str] = None
-    eventdate: Optional[str] = None
+    event_date: Optional[str] = None
     url: Optional[str] = None
-    public: Optional[bool] = None
+    is_public: Optional[bool] = None

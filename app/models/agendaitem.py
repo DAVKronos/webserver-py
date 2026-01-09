@@ -1,84 +1,103 @@
-from sqlmodel import Field, Relationship,  SQLModel
-from datetime import datetime
-from .agendaitemtype import AgendaitemType, AgendaitemTypeResponse
+############### UPDATED #################
 from typing import Optional
+from datetime import datetime
+from sqlmodel import Field, SQLModel, Relationship
 
-
-class AgendaitemBase(SQLModel):
+############ AGENDA ITEMS
+class AgendaItemBase(SQLModel):
     id: int
-    name: str | None
-    description: str | None
-    date: datetime | None
-    location: str | None
-    subscribe: bool | None
-    subscriptiondeadline: datetime | None
-    commission_id: int | None
-    created_at: datetime | None
-    updated_at: datetime | None
-    category: str | None
-    intern: bool | None
-    url: str | None
-    user_id: int | None
-    name_en: str | None
-    description_en: str | None
-    maxsubscription: int | None
-    agendaitemtype_id: int
-
-    def is_before_deadline(self):
-        if self.subscriptiondeadline is None:
-            return False
-        else:
-            return datetime.now() < self.subscriptiondeadline
-    
-class AgendaitemResponse(AgendaitemBase):
-    agendaitemtype: AgendaitemTypeResponse | None = None
-    subscriptions: list["SubscriptionResponse"] = []
-
-class Agendaitem(AgendaitemBase, table=True):
-    __tablename__: str = "agendaitems"
-    id: int | None = Field(default=None, primary_key=True)
-    agendaitemtype_id: int | None = Field(default=None, foreign_key="agendaitemtypes.id")
-    agendaitemtype: AgendaitemType = Relationship(back_populates="agendaitems", sa_relationship_kwargs={"lazy": "selectin"})
-    subscriptions: list["Subscription"] = Relationship(back_populates="agendaitem",sa_relationship_kwargs={"lazy": "selectin"})
-
-
-
-class AgendaItemCreate(SQLModel) :
-    name: str 
-    name_en: str 
-    description: str 
-    description_en: str 
-    date: datetime 
-    location: Optional[str] = None
-    commission_id: Optional[int] = None
-    category: Optional[str] = None 
-    intern: bool = False
-    agendaitemtype_id: int
-    url: Optional[str] = None
-    subscribe: bool = False 
-    subscriptiondeadline: Optional[datetime] = None
-    maxsubscription: Optional[int] = None
-
-
-class AgendaItemUpdate(SQLModel) :
-    name: Optional[str] = None
+    name_nl: Optional[str] = None
     name_en: Optional[str] = None
-    description: Optional[str] = None
+    description_nl: Optional[str] = None
     description_en: Optional[str] = None
     date: Optional[datetime] = None
     location: Optional[str] = None
-    commission_id: Optional[int] = None
-    category: Optional[str] = None
-    intern: Optional[bool] = None
-    agendaitemtype_id: Optional[int] = None
+    committee_id: Optional[int] = Field(default=None, foreign_key="committees.id")
+    is_internal: Optional[bool] = None
+    agendaitem_type_id: Optional[int] = Field(default=None, foreign_key="agendaitem_types.id")
     url: Optional[str] = None
-    subscribe: Optional[bool] = None
-    subscriptiondeadline: Optional[datetime] = None
-    maxsubscription: Optional[int] = None
-    
+    created_by_user_id: Optional[int] = Field(default=None, foreign_key="users.id")
+    can_subscribe: Optional[bool] = None
+    subscription_deadline: Optional[datetime] = None
+    max_subscriptions: Optional[int] = None
+    created_at: Optional[datetime] = None
+    updated_at: Optional[datetime] = None
 
+    def is_before_deadline(self):
+        if self.subscription_deadline is None:
+            return False
+        else:
+            return datetime.now() < self.subscription_deadline
 
+class AgendaItem(AgendaItemBase, table=True):
+    __tablename__ = "agendaitems"
+    id: Optional[int] = Field(default=None, primary_key=True)
+    subscriptions: list["Subscription"] = Relationship(back_populates="agendaitem",sa_relationship_kwargs={"lazy": "selectin"})
 
+class AgendaItemResponse(AgendaItemBase):
+    pass
 
-# Trick to deal with Pydantic circular dependencies
-from .subscription import SubscriptionResponse
+class AgendaItemCreate(SQLModel):
+    id: int
+    name_nl: str
+    name_en: str
+    description_nl: str
+    description_en: str
+    date: datetime
+    location: Optional[str]
+    committee_id: Optional[int] = Field(default=None, foreign_key="committees.id")
+    is_internal: bool
+    url: Optional[str]
+    can_subscribe: bool
+    subscription_deadline: Optional[datetime] = None
+    max_subscriptions: Optional[int] = None
+
+class AgendaItemUpdate(SQLModel):
+    id: int  # Required to identify the record
+    name_nl: Optional[str] = None
+    name_en: Optional[str] = None
+    description_nl: Optional[str] = None
+    description_en: Optional[str] = None
+    date: Optional[datetime] = None
+    location: Optional[str] = None
+    committee_id: Optional[int] = None
+    is_internal: Optional[bool] = None
+    url: Optional[str] = None
+    can_subscribe: Optional[bool] = None
+    subscription_deadline: Optional[datetime] = None
+    max_subscriptions: Optional[int] = None
+
+############ AGENDA ITEM TYPES
+
+class AgendaItemTypeBase(SQLModel):
+    id: int
+    name_nl: Optional[str] = None
+    name_en: Optional[str] = None
+    created_at: Optional[datetime] = None
+    updated_at: Optional[datetime] = None
+
+class AgendaItemType(AgendaItemTypeBase, table=True):
+    __tablename__ = "agendaitem_types"
+    id: Optional[int] = Field(default=None, primary_key=True)
+
+class AgendaItemTypeResponse(AgendaItemTypeBase):
+    pass
+
+############# SUBSCRIPTIONS
+
+class SubscriptionBase(SQLModel):
+    id: int
+    user_id: Optional[int] = Field(default=None, foreign_key="users.id")
+    agendaitem_id: Optional[int] = Field(default=None, foreign_key="agendaitems.id")
+    comment: Optional[str] = None
+    created_at: Optional[datetime] = None
+    updated_at: Optional[datetime] = None
+
+class Subscription(SubscriptionBase, table=True):
+    __tablename__ = "subscriptions"
+    id: Optional[int] = Field(default=None, primary_key=True)
+    agendaitem: "AgendaItem" = Relationship(back_populates="subscriptions",sa_relationship_kwargs={"lazy": "selectin"})
+    user: "User" = Relationship(back_populates="subscriptions",sa_relationship_kwargs={"lazy": "selectin"})
+
+class SubscriptionResponse(SubscriptionBase):
+    pass

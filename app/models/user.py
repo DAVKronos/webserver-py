@@ -1,75 +1,80 @@
-from sqlmodel import Field, Relationship,  SQLModel
-from datetime import date, datetime
+############### UPDATED #################
 from typing import Optional
+from datetime import datetime, date
+from sqlmodel import Field, SQLModel, Relationship
+from .email.mailinglist import MailingListMember
 
+################ USERS
 class UserBase(SQLModel):
     id: int
-    name: str
-    initials: str
-    email: str
-    birthdate: Optional[date]
-    address: Optional[str]
-    postalcode: Optional[str]
-    city: Optional[str]
-    sex: Optional[str]
-    licensenumber: Optional[str]
-    papieren_kronometer: Optional[bool]
-    created_at: datetime
-    updated_at: datetime
-    avatar_file_name: Optional[str]
-    avatar_content_type: Optional[str]
-    avatar_file_size: Optional[int]
-    avatar_updated_at: Optional[datetime]
-    encrypted_password: str
-    phonenumber: Optional[str]
-    user_type_id: int
-    xtracard: Optional[str]
-    studie: Optional[str]
-    instelling: Optional[str]
-    aanvang: Optional[int]
+    name: Optional[str] = None
+    initials: Optional[str] = None
+    email: Optional[str] = None
+    birthdate: Optional[date] = None
+    address: Optional[str] = None
+    postalcode: Optional[str] = None
+    city: Optional[str] = None
+    sex: Optional[str] = None
+    allow_password_change: Optional[bool] = None
+    avatar_file_id: Optional[int] = Field(default=None, foreign_key="files.id")
+    phonenumber: Optional[str] = None
+    user_type_id: Optional[int] = Field(default=None, foreign_key="user_types.id")
+    bank_account_number: Optional[str] = None
+    unioncard_number: Optional[str] = None
+    institution: Optional[str] = None
+    joined_in: Optional[int] = None
+    confirmed_at: Optional[datetime] = None
+    created_at: Optional[datetime] = None
+    updated_at: Optional[datetime] = None
+
+class User(UserBase, table=True):
+    __tablename__ = "users"
+    id: Optional[int] = Field(default=None, primary_key=True)
+    committee_memberships: list["CommitteeMember"] = Relationship(back_populates="user", sa_relationship_kwargs={"lazy": "selectin"})
+    news_items: list["NewsItem"] = Relationship(back_populates="creator", sa_relationship_kwargs={"foreign_keys": "[NewsItem.creator_id]"})
+    comments: list["NewsComment"] = Relationship(back_populates="user")
+    subscriptions: list["Subscription"] = Relationship(back_populates="user", sa_relationship_kwargs={"lazy": "selectin"})
+    mailing_list_memberships: list["MailingListMember"] = Relationship(back_populates="user", sa_relationship_kwargs={"lazy": "selectin"})
+    avatar_file: "File" = Relationship(sa_relationship_kwargs={"lazy": "selectin"})
+    password: Optional[str] = None
+    tokens: Optional[str] = None
+
+class UserCreate(UserBase):
+    password: str
 
 class UserResponse(UserBase):
-    commissions: list["CompactCommissionResponse"] = []
-    
-class User(UserBase, table=True):
-    __tablename__: str = "users"
-    id: int | None = Field(default=None, primary_key=True)
-    articles: list["Article"] = Relationship(back_populates="user")
-    comments: list["Comment"] = Relationship(back_populates="user")
-    commission_memberships: list["CommissionMembership"] = Relationship(back_populates="user", sa_relationship_kwargs={"lazy": "selectin"})
-    subscriptions: list["Subscription"] = Relationship(back_populates="user", sa_relationship_kwargs={"lazy": "selectin"})
-    
-    @property
-    def commissions(self):
-        return [
-            CompactCommissionResponse(
-                id=membership.commission.id,
-                name=membership.commission.name,
-                name_en=membership.commission.name_en
-            ) 
-            for membership in self.commission_memberships
-        ]
+    id: int
+
+################# USER TYPES
 
 class UserTypeBase(SQLModel):
     id: int
-    name: str | None
-    name_en: str | None
-    donor: bool | None
-    competition: bool | None
-    
+    name_nl: Optional[str] = None
+    name_en: Optional[str] = None
+    is_donor: Optional[bool] = None
+    is_competition: Optional[bool] = None
+    created_at: Optional[datetime] = None
+    updated_at: Optional[datetime] = None
+
+class UserType(UserTypeBase, table=True):
+    __tablename__ = "user_types"
+    id: Optional[int] = Field(default=None, primary_key=True)
 
 class UserTypeResponse(UserTypeBase):
     pass
-    
-class UserType(UserTypeBase, table=True):
-    __tablename__: str = "user_types"
-    id: int | None = Field(default=None, primary_key=True)
-    created_at: datetime
-    updated_at: datetime
 
-class CompactUserResponse(SQLModel):
+######### PASSWORD ACTIONS
+
+class ResetPasswordActionBase(SQLModel):
     id: int
-    name: str
-    initials: str
+    user_id: Optional[int] = Field(default=None, foreign_key="users.id")
+    token: Optional[str] = None
+    sent_at: Optional[datetime] = None
+    remember_created_at: Optional[datetime] = None
 
-from .commission import CompactCommissionResponse
+class ResetPasswordAction(ResetPasswordActionBase, table=True):
+    __tablename__ = "reset_password_actions"
+    id: Optional[int] = Field(default=None, primary_key=True)
+
+class ResetPasswordActionResponse(ResetPasswordActionBase):
+    pass

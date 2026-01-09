@@ -5,50 +5,43 @@ from sqlmodel import SQLModel, select, func, and_, text
 from pydantic import BaseModel, ValidationError
 from ..dependencies import Database
 from ..authentication import *
-from ..models.article import *
-from ..models.comment import CommentCreate, CommentPublic, CommentUpdate
+from ..models.news_item import *
+from ..models.user import *
 
 router = APIRouter(prefix="/newsitems")
 
-@router.get("", response_model=list[ArticlePublicWithCommentCount])
+@router.get("", response_model=list[NewsItemPublic])
 async def index(r: Request, database: Database):
-    query = select(Article) \
-        .where(Article.agreed == True) \
+    query = select(NewsItem) \
+        .where(NewsItem.approved == True) \
         .limit(None) \
         .offset(None) \
-        .order_by(Article.created_at.desc())
+        .order_by(NewsItem.created_at.desc())
     
     articles = await database.exec(query)
     
-    # TODO: Make it DRY by using a computed field in the pydantic model?
-    from_article = lambda a: ArticlePublicWithCommentCount.model_validate(a, update= {
-        'comment_count': len(a.comments)})
-    
-    return map(from_article, articles.all())
+    return articles.all()
 
-@router.get("/{id}", response_model=ArticlePublicWithCommentCount)
+@router.get("/{id}", response_model=NewsItemPublic)
 async def get_article(id: int, r: Request, database: Database):
     # TODO filter agreed depending on permission
-    query = select(Article) \
-        .where(Article.agreed == True) \
-        .where(Article.id == id)
+    query = select(NewsItem) \
+        .where(NewsItem.approved == True) \
+        .where(NewsItem.id == id)
     
     article = (await database.exec(query)).first()
     
     if article is None:
-        raise HTTPException(status_code=404, detail="Article not found")
+        raise HTTPException(status_code=404, detail="NewsItem not found")
     
-    from_article = lambda a: ArticlePublicWithCommentCount.model_validate(a, update= {
-        'comment_count': len(a.comments)})
-    return from_article(article)
+    return article
 
-@router.post("/", response_model=ArticlePublic)
-async def create_article(data: ArticleCreate, database: Database, active_user: Annotated[User, Depends(current_user)]):
+@router.post("/", response_model=NewsItemPublic)
+async def create_article(data: NewsItemCreate, database: Database, active_user: Annotated[User, Depends(current_user)]):
     t = datetime.utcnow()
     try:
-        article = Article.model_validate(data, update={'created_at': t, 'updated_at': t, 'agreed': False, 'user_id': active_user.id })
+        article = NewsItem.model_validate(data, update={'created_at': t, 'updated_at': t, 'user_id': active_user.id })
     except ValidationError as e:
-        # log(e)
         print(e)
         raise HTTPException(status_code=500, detail="Input data not valid")
     
@@ -56,13 +49,13 @@ async def create_article(data: ArticleCreate, database: Database, active_user: A
     await database.commit()
     await database.refresh(article)
      
-    return ArticlePublic.model_validate(article, update={"user":None})
+    return NewsItemPublic.model_validate(article, update={"user":None})
     
-@router.patch("/{id}", response_model=ArticlePublic)
-async def update_article(data: ArticleUpdate, database: Database, active_user: Annotated[User, Depends(current_user)]):
-    article = database.get(Article, id)
+@router.patch("/{id}", response_model=NewsItemPublic)
+async def update_article(data: NewsItemUpdate, database: Database, active_user: Annotated[User, Depends(current_user)]):
+    article = database.get(NewsItem, id)
     if not article:
-        raise HTTPException(status_code=404, detail="Article not found")
+        raise HTTPException(status_code=404, detail="NewsItem not found")
     
     article_dict = data.model_dump(exclude_unset=True)
     article.sqlmodel_update(article_dict, update = {updated_at: datetime.now(timezone.utc)})
@@ -83,25 +76,25 @@ async def insert_photo(r: Request, database: Database):
 async def delete_photo(r: Request, database: Database):
     pass
 
-@router.get("/{id}/comments", response_model=list[CommentPublic])
+@router.get("/{id}/comments", response_model=list[NewsCommentPublic])
 async def get(id: int, database: Database):
     # todo: comments are not public!
-    query = select(Comment) \
+    query = select(NewsComment) \
         .where(
-            Comment.commentable_id == id,
-            # Article.agreed == True
+            NewsComment.newsitem_id == id,
+            # NewsItem.agreed == True
         ).limit(None) \
         .offset(None) \
-        .order_by(Comment.created_at.desc())
+        .order_by(NewsComment.created_at.desc())
     
     comments = await database.exec(query)
     return comments.all()
 
-@router.post("/{id}/comments", response_model=CommentPublic)
-async def create_comment(data: CommentCreate, database: Database, active_user: Annotated[User, Depends(current_user)]):
+@router.post("/{id}/comments", response_model=NewsCommentPublic)
+async def create_comment(data: NewsCommentCreate, database: Database, active_user: Annotated[User, Depends(current_user)]):
     t = datetime.utcnow()
     try:
-        comment = Comment.model_validate(data, update={'created_at': t, 'updated_at': t, 'user_id': active_user.id })
+        comment = NewsComment.model_validate(data, update={'created_at': t, 'updated_at': t, 'user_id': active_user.id })
     except ValidationError as error:
         raise HTTPException(status_code=500, detail="Input data not valid")
     database.add(comment)
@@ -110,12 +103,12 @@ async def create_comment(data: CommentCreate, database: Database, active_user: A
 
     return comment
 
-@router.patch("/{article_id}/comments/{comment_id}", response_model=CommentPublic)
-async def update_comment( comment_id: int, data: CommentUpdate, database: Database, active_user: Annotated[User, Depends(current_user)]):
-    comment:Comment | None = await database.get(Comment, comment_id)
+@router.patch("/{article_id}/comments/{comment_id}", response_model=NewsCommentPublic)
+async def update_comment( comment_id: int, data: NewsCommentUpdate, database: Database, active_user: Annotated[User, Depends(current_user)]):
+    comment:NewsComment | None = await database.get(NewsComment, comment_id)
     
     if not comment:
-        raise HTTPException(status_code=404, detail="Comment not found")
+        raise HTTPException(status_code=404, detail="NewsComment not found")
     #For now only allow the owner of the comment to remove it
     if comment.user_id != active_user.id:
         raise HTTPException(status_code=403, detail="Not authorized to edit this comment")
@@ -130,11 +123,12 @@ async def update_comment( comment_id: int, data: CommentUpdate, database: Databa
 
 @router.delete("/{article_id}/comments/{comment_id}", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_comment(comment_id: int, database: Database, active_user: Annotated[User, Depends(current_user)]):
-    comment:Comment | None = await database.get(Comment, comment_id)
+    comment:NewsComment | None = await database.get(NewsComment, comment_id)
 
     if not comment:
-        raise HTTPException(status_code=404, detail="Comment not found")
-    #For now only allow the owner of the comment to remove it
+        raise HTTPException(status_code=404, detail="NewsComment not found")
+    # For now only allow the owner of the comment to remove it
+    # TODO: Admins can remove comments
     if comment.user_id != active_user.id:
         raise HTTPException(status_code=403, detail="Not authorized to delete this comment")
     await database.delete(comment)
