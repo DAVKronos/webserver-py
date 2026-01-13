@@ -10,7 +10,7 @@ from ..models.user import *
 
 router = APIRouter(prefix="/newsitems")
 
-@router.get("", response_model=list[NewsItemPublic])
+@router.get("", response_model=list[NewsItemPublicResponse])
 async def index(r: Request, database: Database):
     query = select(NewsItem) \
         .where(NewsItem.approved == True) \
@@ -22,7 +22,7 @@ async def index(r: Request, database: Database):
     
     return articles.all()
 
-@router.get("/{id}", response_model=NewsItemPublic)
+@router.get("/{id}", response_model=NewsItemPublicResponse)
 async def get_article(id: int, r: Request, database: Database):
     # TODO filter agreed depending on permission
     query = select(NewsItem) \
@@ -36,7 +36,7 @@ async def get_article(id: int, r: Request, database: Database):
     
     return article
 
-@router.post("/", response_model=NewsItemPublic)
+@router.post("/", response_model=NewsItemPublicResponse)
 async def create_article(data: NewsItemCreate, database: Database, active_user: Annotated[User, Depends(current_user)]):
     t = datetime.utcnow()
     try:
@@ -51,7 +51,7 @@ async def create_article(data: NewsItemCreate, database: Database, active_user: 
      
     return NewsItemPublic.model_validate(article, update={"user":None})
     
-@router.patch("/{id}", response_model=NewsItemPublic)
+@router.patch("/{id}", response_model=NewsItemPublicResponse)
 async def update_article(data: NewsItemUpdate, database: Database, active_user: Annotated[User, Depends(current_user)]):
     article = database.get(NewsItem, id)
     if not article:

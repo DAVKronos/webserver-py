@@ -4,6 +4,7 @@ from datetime import datetime
 from sqlmodel import Field, SQLModel, Relationship, and_
 from sqlalchemy.orm import foreign
 from .user import *
+from .file import FileResponse
 
 ################### NEWS COMMENT
 class NewsCommentBase(SQLModel):
@@ -73,10 +74,12 @@ class NewsItemUpdate(SQLModel):
     content_nl: str | None = None
     content_en: str | None = None
 
-class NewsItemPublic(NewsItemBase):
-    creator: Optional["UserResponse"] = None
+
 
 class NewsItemResponse(NewsItemBase):
-    pass
+    photo_file: Optional["FileResponse"] = None
+
+class NewsItemPublicResponse(NewsItemResponse):
+    creator: Optional["UserResponse"] = None
 
 
