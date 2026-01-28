@@ -1,7 +1,11 @@
 ############### UPDATED #################
-from typing import Optional
+from typing import Optional, TYPE_CHECKING
 from datetime import datetime
 from sqlmodel import Field, SQLModel, Relationship
+
+# Resolve circular imports
+if TYPE_CHECKING:
+    from .file import File
 
 class AnnouncementBase(SQLModel):
     id: int
@@ -23,4 +27,6 @@ class Announcement(AnnouncementBase, table=True):
     photo_file: "File" = Relationship(sa_relationship_kwargs={"lazy": "selectin"})
 
 class AnnouncementResponse(AnnouncementBase):
-    pass
+    photo_file: Optional["File"] = None
+
+Announcement.model_rebuild() 

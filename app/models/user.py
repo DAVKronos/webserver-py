@@ -1,8 +1,15 @@
 ############### UPDATED #################
-from typing import Optional
+from typing import Optional, TYPE_CHECKING
 from datetime import datetime, date
 from sqlmodel import Field, SQLModel, Relationship
-from .email.mailinglist import MailingListMember
+
+# Resolve circular imports
+if TYPE_CHECKING:
+    from .email.mailinglist import MailingListMember
+    from .committee import CommitteeMember
+    from .file import File
+    from .news_item import NewsItem, NewsComment, Subscription
+
 
 ################ USERS
 class UserBase(SQLModel):
@@ -43,7 +50,9 @@ class UserCreate(UserBase):
     password: str
 
 class UserResponse(UserBase):
-    id: int
+    user_type: Optional["UserType"] = None
+    avatar_file: Optional["File"] = None
+
 
 ################# USER TYPES
 

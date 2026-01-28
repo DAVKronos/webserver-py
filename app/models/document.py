@@ -1,7 +1,11 @@
 ############### UPDATED #################
-from typing import Optional
+from typing import Optional, TYPE_CHECKING
 from datetime import date, datetime
 from sqlmodel import Field, SQLModel, Relationship
+
+# Resolve circular imports
+if TYPE_CHECKING:
+    from .file import File
 
 ########## DOCUMENTS FOLDERS
 class DocumentFolderBase(SQLModel):
@@ -37,3 +41,6 @@ class Document(DocumentBase, table=True):
 
 class DocumentResponse(DocumentBase):
     id: int
+
+DocumentFolder.model_rebuild()
+Document.model_rebuild()

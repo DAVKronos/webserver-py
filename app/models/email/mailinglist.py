@@ -1,7 +1,10 @@
 ############### UPDATED #################
-from typing import Optional
+from typing import Optional, TYPE_CHECKING
 from datetime import datetime
 from sqlmodel import Field, SQLModel, Relationship
+
+if TYPE_CHECKING:
+    from ..user import UserResponse, User
 
 ############ MAILING LIST
 class MailingListBase(SQLModel):
@@ -36,4 +39,5 @@ class MailingListMember(MailingListMemberBase, table=True):
     mailing_list: "MailingList" = Relationship(back_populates="members", sa_relationship_kwargs={"lazy": "selectin"})
 
 class MailingListMemberResponse(MailingListMemberBase):
-    pass
+    user: "UserResponse"
+    mailing_list: "MailingList"

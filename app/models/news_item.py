@@ -1,10 +1,12 @@
 ############### UPDATED #################
-from typing import Optional
+from typing import Optional, TYPE_CHECKING
 from datetime import datetime
-from sqlmodel import Field, SQLModel, Relationship, and_
-from sqlalchemy.orm import foreign
-from .user import *
-from .file import FileResponse
+from sqlmodel import Field, SQLModel, Relationship
+
+# Resolve circular imports
+if TYPE_CHECKING:
+    from .file import File, FileResponse
+    from .user import UserResponse, User
 
 ################### NEWS COMMENT
 class NewsCommentBase(SQLModel):
@@ -52,7 +54,7 @@ class NewsItem(NewsItemBase, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
     creator: "User" = Relationship(back_populates="news_items", sa_relationship_kwargs={"lazy": "selectin", "foreign_keys": "[NewsItem.creator_id]"})
     approver: Optional["User"] = Relationship(sa_relationship_kwargs={"lazy": "selectin", "foreign_keys": "[NewsItem.approved_by]"})
-    comments: list[NewsComment] = Relationship(sa_relationship_kwargs = {"lazy": "selectin" })
+    comments: list["NewsComment"] = Relationship(sa_relationship_kwargs = {"lazy": "selectin" })
     photo_file: "File" = Relationship(sa_relationship_kwargs={"lazy": "selectin"})
     
     
@@ -75,11 +77,11 @@ class NewsItemUpdate(SQLModel):
     content_en: str | None = None
 
 
-
 class NewsItemResponse(NewsItemBase):
     photo_file: Optional["FileResponse"] = None
 
 class NewsItemPublicResponse(NewsItemResponse):
     creator: Optional["UserResponse"] = None
-
+    approver: Optional["User"] = None
+    comments: list["NewsComment"] = None
 

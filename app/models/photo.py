@@ -1,8 +1,12 @@
 
 ############### UPDATED #################
-from typing import Optional, List
+from typing import Optional, List, TYPE_CHECKING
 from datetime import datetime
 from sqlmodel import Field, SQLModel, Relationship
+
+# Resolve circular imports
+if TYPE_CHECKING:
+    from .file import File
 
 ############## TAGS
 class HasTag(SQLModel, table=True):
@@ -80,3 +84,8 @@ class PhotoAlbumUpdate(SQLModel):
     event_date: Optional[str] = None
     url: Optional[str] = None
     is_public: Optional[bool] = None
+
+PhotoAlbum.model_rebuild()
+Photo.model_rebuild()
+PhotoTag.model_rebuild()
+HasTag.model_rebuild()

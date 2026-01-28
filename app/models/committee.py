@@ -1,7 +1,11 @@
 ############### UPDATED #################
-from typing import Optional
+from typing import Optional, TYPE_CHECKING
 from datetime import datetime
 from sqlmodel import Field, SQLModel, Relationship
+
+# Resolve circular imports
+if TYPE_CHECKING:
+    from .user import User
 
 ############ COMMITTEES
 class CommitteeBase(SQLModel):
@@ -51,3 +55,6 @@ class CommitteeMemberResponse(CommitteeMemberBase):
 class CommitteeMemberCreate(SQLModel):
     id: int
     function: str
+
+Committee.model_rebuild()
+CommitteeMember.model_rebuild()

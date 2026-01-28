@@ -21,3 +21,5 @@ class Page(PageBase, table=True):
 
 class PageResponse(PageBase):
     pass
+
+Page.model_rebuild()

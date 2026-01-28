@@ -2,6 +2,8 @@ from typing import Optional
 from datetime import datetime
 from sqlmodel import Field, SQLModel
 
+
+
 class FileBase(SQLModel):
     id: int
     file_name: Optional[str] = None
@@ -17,3 +19,5 @@ class File(FileBase, table=True):
 
 class FileResponse(FileBase):
     pass
+
+File.model_rebuild()

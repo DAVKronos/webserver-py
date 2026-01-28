@@ -1,7 +1,13 @@
 ############### UPDATED #################
-from typing import Optional
+from typing import Optional, TYPE_CHECKING
 from datetime import datetime
 from sqlmodel import Field, SQLModel, Relationship
+
+# Resolve circular imports
+if TYPE_CHECKING:
+    from .user import User
+    from .agendaitem import AgendaItemType
+    from .committee import Committee
 
 ############ AGENDA ITEMS
 class AgendaItemBase(SQLModel):
@@ -33,9 +39,15 @@ class AgendaItem(AgendaItemBase, table=True):
     __tablename__ = "agendaitems"
     id: Optional[int] = Field(default=None, primary_key=True)
     subscriptions: list["Subscription"] = Relationship(back_populates="agendaitem",sa_relationship_kwargs={"lazy": "selectin"})
+    created_by: "User" = Relationship(sa_relationship_kwargs={"lazy": "selectin"})
+    agendaitem_type: "AgendaItemType" = Relationship(sa_relationship_kwargs={"lazy": "selectin"})
+    committee: "Committee" = Relationship(sa_relationship_kwargs={"lazy": "selectin"})
 
 class AgendaItemResponse(AgendaItemBase):
-    pass
+    subscriptions: Optional[list["Subscription"]] = None
+    agendaitem_type: Optional["AgendaItemType"] = None
+    created_by: Optional["User"] = None
+    committee: Optional["Committee"] = None
 
 class AgendaItemCreate(SQLModel):
     id: int
@@ -101,3 +113,7 @@ class Subscription(SubscriptionBase, table=True):
 
 class SubscriptionResponse(SubscriptionBase):
     pass
+
+Subscription.model_rebuild()
+AgendaItem.model_rebuild()
+AgendaItemType.model_rebuild()
