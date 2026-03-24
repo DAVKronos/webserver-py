@@ -4,6 +4,7 @@ from sqlmodel import select, or_
 from ..dependencies import Database
 from datetime import date
 from ..models.user import *
+from ..schemas.user import *
 from ..models.committee import CommitteeResponse
 from typing import Annotated
 from ..authentication import current_user
@@ -50,7 +51,7 @@ async def get_one(id: int, r: Request, database: Database, active_user: Annotate
 
     return user
 
-@router.get("/{id}/commissions", response_model=list[CommitteeResponse])
+@router.get("/{id}/committees", response_model=list[CommitteeResponse])
 async def get_comissions(id: int, r: Request, database: Database):
     user: User | None = await database.get(User, id)
     if not user:

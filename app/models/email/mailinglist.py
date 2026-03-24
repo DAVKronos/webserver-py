@@ -20,9 +20,6 @@ class MailingList(MailingListBase, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
     members: "MailingListMember" = Relationship(back_populates="mailing_list",sa_relationship_kwargs={"lazy": "selectin"})
 
-class MailingListResponse(MailingListBase):
-    pass
-
 ################ MAILING LIST MEMBERSHIPS
 
 class MailingListMemberBase(SQLModel):
@@ -37,7 +34,3 @@ class MailingListMember(MailingListMemberBase, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
     user: "User" = Relationship(back_populates="mailing_list_memberships",sa_relationship_kwargs={"lazy": "selectin"})
     mailing_list: "MailingList" = Relationship(back_populates="members", sa_relationship_kwargs={"lazy": "selectin"})
-
-class MailingListMemberResponse(MailingListMemberBase):
-    user: "UserResponse"
-    mailing_list: "MailingList"

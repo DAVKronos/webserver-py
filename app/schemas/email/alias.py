@@ -11,6 +11,5 @@ class MailAliasBase(SQLModel):
     created_at: Optional[datetime] = None
     updated_at: Optional[datetime] = None
 
-class MailAlias(MailAliasBase, table=True):
-    __tablename__ = "mail_aliases"
-    id: Optional[int] = Field(default=None, primary_key=True)
+class MailAliasResponse(MailAliasBase):
+    pass

@@ -1,13 +1,13 @@
 from typing import Annotated
 from datetime import datetime, date
-from fastapi import APIRouter, Request, Depends, Query, HTTPException , HTTPException , status
+from fastapi import APIRouter, Request, Depends, Query, HTTPException, HTTPException, status
 from fastapi.responses import JSONResponse
 from sqlalchemy import column, func
 from sqlmodel import select
-from pydantic import BaseModel, ValidationError
 from ..dependencies import Database
 from ..authentication import *
-from ..models.agendaitem import *
+from ..schemas.agendaitem import *
+from ..models.agendaitem import AgendaItem,AgendaItemType, Subscription
 
 router = APIRouter()
 

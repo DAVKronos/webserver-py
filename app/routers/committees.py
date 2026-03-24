@@ -4,6 +4,7 @@ from sqlmodel import select
 from ..dependencies import Database
 from ..authentication import *
 from ..models.committee import *
+from ..schemas.committee import *
 from datetime import datetime
 
 router = APIRouter(prefix="/committees")

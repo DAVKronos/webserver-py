@@ -11,7 +11,7 @@ class FileBase(SQLModel):
     file_size: Optional[int] = None
     created_at: Optional[datetime] = None
     updated_at: Optional[datetime] = None
+ 
 
-class File(FileBase, table=True):
-    __tablename__ = "files"
-    id: Optional[int] = Field(default=None, primary_key=True)
+class FileResponse(FileBase):
+    pass

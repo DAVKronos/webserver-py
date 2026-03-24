@@ -25,9 +25,6 @@ class PhotoTag(PhotoTagBase, table=True):
     
     photos: List["Photo"] = Relationship(back_populates="tags", link_model=HasTag)
 
-class PhotoTagCreate(SQLModel):
-    name: str
-
 #################### PHOTO
 class PhotoBase(SQLModel):
     file_id: Optional[int] = Field(default=None, foreign_key="files.id")
@@ -41,19 +38,9 @@ class PhotoBase(SQLModel):
 class Photo(PhotoBase, table=True):
     __tablename__ = "photos"
     id: Optional[int] = Field(default=None, primary_key=True)
-    
-    # Relationships
     album: Optional["PhotoAlbum"] = Relationship(back_populates="photos")
     file: Optional["File"] = Relationship(sa_relationship_kwargs={"lazy": "selectin"})
-    
-    # Many-to-many relationship to tags
     tags: List[PhotoTag] = Relationship(back_populates="photos", link_model=HasTag)
-
-class PhotoResponse(PhotoBase):
-    id: int
-
-class PhotoTagResponse(PhotoTagBase):
-    id: int
 
 ################## PHOTO ALBUMS
 
@@ -71,21 +58,4 @@ class PhotoAlbumBase(SQLModel):
 class PhotoAlbum(PhotoAlbumBase, table=True):
     __tablename__ = "photo_albums"
     id: Optional[int] = Field(default=None, primary_key=True)
-
-    # Relationships
     photos: List[Photo] = Relationship(back_populates="album", sa_relationship_kwargs={"lazy": "selectin"})
-
-class PhotoAlbumResponse(PhotoAlbumBase):
-    pass
-
-class PhotoAlbumUpdate(SQLModel):
-    name_nl: Optional[str] = None
-    name_en: Optional[str] = None
-    event_date: Optional[str] = None
-    url: Optional[str] = None
-    is_public: Optional[bool] = None
-
-PhotoAlbum.model_rebuild()
-Photo.model_rebuild()
-PhotoTag.model_rebuild()
-HasTag.model_rebuild()

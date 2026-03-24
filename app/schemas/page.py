@@ -15,6 +15,5 @@ class PageBase(SQLModel):
     created_at: Optional[datetime] = None
     updated_at: Optional[datetime] = None
 
-class Page(PageBase, table=True):
-    __tablename__ = "pages"
-    id: Optional[int] = Field(default=None, primary_key=True)
+class PageResponse(PageBase):
+    pass

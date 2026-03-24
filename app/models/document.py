@@ -20,8 +20,6 @@ class DocumentFolder(DocumentFolderBase, table=True):
     subfolders: list["DocumentFolder"] = Relationship(back_populates="parent_folder")
     documents: list["Document"] = Relationship(back_populates="folder")
 
-class DocumentFolderResponse(DocumentFolderBase):
-    pass
 
 ########## DOCUMENTS
 class DocumentBase(SQLModel):
@@ -38,9 +36,3 @@ class Document(DocumentBase, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
     folder: Optional[DocumentFolder] = Relationship(back_populates="documents")
     file: Optional["File"] = Relationship(sa_relationship_kwargs={"lazy": "selectin"})
-
-class DocumentResponse(DocumentBase):
-    id: int
-
-DocumentFolder.model_rebuild()
-Document.model_rebuild()

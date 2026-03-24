@@ -13,7 +13,7 @@ class AnnouncementBase(SQLModel):
     content: Optional[str] = None
     starts_at: Optional[datetime] = None
     ends_at: Optional[datetime] = None
-    photo_file_id: Optional[int] = Field(default=None, foreign_key="files.id")
+    photo_file_id: Optional[int] = None
     url: Optional[str] = None
     created_at: Optional[datetime] = None
     updated_at: Optional[datetime] = None
@@ -21,7 +21,5 @@ class AnnouncementBase(SQLModel):
     def is_active_during(self, moment: datetime):
         return self.starts_at <= moment and self.ends_at >= moment
 
-class Announcement(AnnouncementBase, table=True):
-    __tablename__ = "announcements"
-    id: Optional[int] = Field(default=None, primary_key=True)
-    photo_file: "File" = Relationship(sa_relationship_kwargs={"lazy": "selectin"})
+class AnnouncementResponse(AnnouncementBase):
+    photo_file: Optional["File"] = None

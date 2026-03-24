@@ -4,6 +4,7 @@ from fastapi import APIRouter, Request, Depends, HTTPException
 from sqlmodel import select
 from ..dependencies import Database
 from ..models.page import *
+from ..schemas.page import *
 
 router = APIRouter(prefix="/pages")
 

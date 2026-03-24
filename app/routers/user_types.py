@@ -2,6 +2,7 @@ from fastapi import APIRouter, Request, HTTPException
 from sqlmodel import select
 from ..dependencies import Database
 from ..models.user import *
+from ..schemas.user import *
 
 router = APIRouter(prefix="/user_types")
 

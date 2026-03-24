@@ -46,13 +46,6 @@ class User(UserBase, table=True):
     password: Optional[str] = None
     tokens: Optional[str] = None
 
-class UserCreate(UserBase):
-    password: str
-
-class UserResponse(UserBase):
-    user_type: Optional["UserType"] = None
-    avatar_file: Optional["File"] = None
-
 
 ################# USER TYPES
 
@@ -69,9 +62,6 @@ class UserType(UserTypeBase, table=True):
     __tablename__ = "user_types"
     id: Optional[int] = Field(default=None, primary_key=True)
 
-class UserTypeResponse(UserTypeBase):
-    pass
-
 ######### PASSWORD ACTIONS
 
 class ResetPasswordActionBase(SQLModel):
@@ -84,6 +74,3 @@ class ResetPasswordActionBase(SQLModel):
 class ResetPasswordAction(ResetPasswordActionBase, table=True):
     __tablename__ = "reset_password_actions"
     id: Optional[int] = Field(default=None, primary_key=True)
-
-class ResetPasswordActionResponse(ResetPasswordActionBase):
-    pass

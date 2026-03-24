@@ -4,6 +4,8 @@ from sqlmodel import select
 from ..dependencies import Database
 from ..models.document import *
 from ..models.file import *
+from ..schemas.document import *
+from ..schemas.file import *
 
 router = APIRouter(prefix="")
 

@@ -7,6 +7,8 @@ from ..dependencies import Database
 from ..authentication import *
 from ..models.news_item import *
 from ..models.user import *
+from ..schemas.news_item import *
+from ..schemas.user import *
 
 router = APIRouter(prefix="/newsitems")
 

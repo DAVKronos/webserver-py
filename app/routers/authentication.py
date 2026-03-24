@@ -4,7 +4,8 @@ from fastapi.responses import Response
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlmodel import select, func, column
 from ..authentication import *
-from ..models.user import User, UserResponse
+from ..models.user import User
+from ..schemas.user import UserResponse
 from ..dependencies import Database
 from ..permissions import Ability, can, cannot
 from ..config import config

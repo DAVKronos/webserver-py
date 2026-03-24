@@ -1,14 +1,13 @@
 from typing import Annotated
-from fastapi import APIRouter, Request, Depends, HTTPException, UploadFile, File, Body, Form
+from fastapi import APIRouter, Request, Depends, HTTPException, UploadFile, File, Form
 from sqlmodel import select
 from ..dependencies import Database
 from ..models.photo import *
+from ..schemas.photo import *
 from datetime import datetime, timezone
 from fastapi import status
-from sqlmodel.ext.asyncio.session import AsyncSession
 import hashlib
 import os
-from starlette.status import HTTP_404_NOT_FOUND, HTTP_405_METHOD_NOT_ALLOWED
 from pathlib import Path
 from sqlalchemy import func
 
@@ -44,8 +43,8 @@ async def get_photos(album_id: int, database: Database):
 
         for photo in photos:
             tag_links = await database.exec(
-                select(HasTag, Tag)
-                .join(Tag, Tag.id == HasTag.tag_id)
+                select(HasTag, PhotoTag)
+                .join(PhotoTag, PhotoTag.id == HasTag.tag_id)
                 .where(HasTag.photo_id == photo.id)
             )
             tag_names = [tag.name for _, tag in tag_links]
