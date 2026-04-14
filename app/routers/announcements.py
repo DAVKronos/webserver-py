@@ -4,7 +4,6 @@ from fastapi import APIRouter, Request, Depends
 from sqlmodel import select
 from ..dependencies import Database
 from ..models.announcement import *
-from ..schemas.announcement import *
 
 router = APIRouter(prefix="/announcements")
 

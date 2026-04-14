@@ -1,10 +1,9 @@
 from sqlmodel import select
 from typing import Annotated
-from fastapi import APIRouter, Request, Depends, HTTPException
+from fastapi import APIRouter, Request, HTTPException
 from sqlmodel import select
 from ..dependencies import Database
 from ..models.page import *
-from ..schemas.page import *
 
 router = APIRouter(prefix="/pages")
 

@@ -6,8 +6,7 @@ from sqlalchemy import column, func
 from sqlmodel import select
 from ..dependencies import Database
 from ..authentication import *
-from ..schemas.agendaitem import *
-from ..models.agendaitem import AgendaItem,AgendaItemType, Subscription
+from ..models.agendaitem import *
 
 router = APIRouter()
 
@@ -34,14 +33,14 @@ async def get(id : int , r: Request, database: Database):
     return agendaitem
 
 #/agendaitemtypes
-@router.get("/agendaitemtypes/{id}", response_model=AgendaItemTypeResponse)
+@router.get("/agendaitemtypes/{id}", response_model=AgendaItemResponse)
 async def get(id : int , r: Request, database: Database):
     agendaitemType = await database.get(AgendaItemType, id) 
     if agendaitemType is None : 
         raise HTTPException(status_code=404, detail="Agenda item type not found")
     return agendaitemType
 
-@router.get("/agendaitemtypes", response_model=list[AgendaItemTypeResponse])
+@router.get("/agendaitemtypes", response_model=list[AgendaItem])
 async def get(r: Request, database: Database):
     query = select(AgendaItemType)
     agendaitemTypes = await database.exec(query) 

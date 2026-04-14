@@ -7,24 +7,22 @@ from ..dependencies import Database
 from ..authentication import *
 from ..models.news_item import *
 from ..models.user import *
-from ..schemas.news_item import *
-from ..schemas.user import *
 
 router = APIRouter(prefix="/newsitems")
 
-@router.get("", response_model=list[NewsItemPublicResponse])
+@router.get("", response_model=list[NewsItemResponse])
 async def index(r: Request, database: Database):
     query = select(NewsItem) \
         .where(NewsItem.approved == True) \
         .limit(None) \
         .offset(None) \
         .order_by(NewsItem.created_at.desc())
-    
+    # 
     articles = await database.exec(query)
     
     return articles.all()
 
-@router.get("/{id}", response_model=NewsItemPublicResponse)
+@router.get("/{id}", response_model=NewsItemResponse)
 async def get_article(id: int, r: Request, database: Database):
     # TODO filter agreed depending on permission
     query = select(NewsItem) \
@@ -38,7 +36,7 @@ async def get_article(id: int, r: Request, database: Database):
     
     return article
 
-@router.post("/", response_model=NewsItemPublicResponse)
+@router.post("/", response_model=NewsItemResponse)
 async def create_article(data: NewsItemCreate, database: Database, active_user: Annotated[User, Depends(current_user)]):
     t = datetime.utcnow()
     try:
@@ -53,7 +51,7 @@ async def create_article(data: NewsItemCreate, database: Database, active_user: 
      
     return NewsItemPublic.model_validate(article, update={"user":None})
     
-@router.patch("/{id}", response_model=NewsItemPublicResponse)
+@router.patch("/{id}", response_model=NewsItemResponse)
 async def update_article(data: NewsItemUpdate, database: Database, active_user: Annotated[User, Depends(current_user)]):
     article = database.get(NewsItem, id)
     if not article:
@@ -78,7 +76,7 @@ async def insert_photo(r: Request, database: Database):
 async def delete_photo(r: Request, database: Database):
     pass
 
-@router.get("/{id}/comments", response_model=list[NewsCommentPublic])
+@router.get("/{id}/comments", response_model=list[NewsCommentResponse])
 async def get(id: int, database: Database):
     # todo: comments are not public!
     query = select(NewsComment) \
@@ -92,7 +90,7 @@ async def get(id: int, database: Database):
     comments = await database.exec(query)
     return comments.all()
 
-@router.post("/{id}/comments", response_model=NewsCommentPublic)
+@router.post("/{id}/comments", response_model=NewsCommentResponse)
 async def create_comment(data: NewsCommentCreate, database: Database, active_user: Annotated[User, Depends(current_user)]):
     t = datetime.utcnow()
     try:
@@ -105,23 +103,6 @@ async def create_comment(data: NewsCommentCreate, database: Database, active_use
 
     return comment
 
-@router.patch("/{article_id}/comments/{comment_id}", response_model=NewsCommentPublic)
-async def update_comment( comment_id: int, data: NewsCommentUpdate, database: Database, active_user: Annotated[User, Depends(current_user)]):
-    comment:NewsComment | None = await database.get(NewsComment, comment_id)
-    
-    if not comment:
-        raise HTTPException(status_code=404, detail="NewsComment not found")
-    #For now only allow the owner of the comment to remove it
-    if comment.user_id != active_user.id:
-        raise HTTPException(status_code=403, detail="Not authorized to edit this comment")
-    t = datetime.utcnow()
-    comment.sqlmodel_update(comment, update={'updated_at': t, 'commenttext': data.commenttext})
-
-    database.add(comment)
-    await database.commit()
-    await database.refresh(comment)
-
-    return comment
 
 @router.delete("/{article_id}/comments/{comment_id}", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_comment(comment_id: int, database: Database, active_user: Annotated[User, Depends(current_user)]):

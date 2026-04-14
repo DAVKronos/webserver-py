@@ -1,20 +1,19 @@
-############### UPDATED #################
 from typing import Optional
-from datetime import datetime
-from sqlmodel import Field, SQLModel
+from sqlmodel import Field
+from .base import TimestampModel
 
-class PageBase(SQLModel):
-    id: int
+class PageBase(TimestampModel):
     content_nl: Optional[str] = None
     content_en: Optional[str] = None
-    page_title_nl: Optional[str] = None
-    page_title_en: Optional[str] = None
+    page_title_nl: str
+    page_title_en: str
     menu_item: Optional[str] = None
-    is_highlight: Optional[bool] = False
-    is_public: Optional[bool] = False
-    created_at: Optional[datetime] = None
-    updated_at: Optional[datetime] = None
+    is_highlight: bool = False
+    is_public: bool = True
 
 class Page(PageBase, table=True):
     __tablename__ = "pages"
     id: Optional[int] = Field(default=None, primary_key=True)
+
+class PageResponse(PageBase):
+    id: int

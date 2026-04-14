@@ -1,47 +1,76 @@
-############### UPDATED #################
-from typing import Optional, TYPE_CHECKING
-from datetime import datetime
-from sqlmodel import Field, SQLModel, Relationship
+from typing import Optional, List, TYPE_CHECKING
+from sqlmodel import Field, Relationship, SQLModel
+from .base import TimestampModel
 
-# Resolve circular imports
 if TYPE_CHECKING:
-    from .file import File, FileResponse
-    from .user import UserResponse, User
+    from .user import User
 
-################### NEWS COMMENT
-class NewsCommentBase(SQLModel):
-    id: int
-    user_id: Optional[int] = Field(default=None, foreign_key="users.id")
-    newsitem_id: Optional[int] = Field(default=None, foreign_key="news_items.id")
-    content: Optional[str] = None
-    created_at: Optional[datetime] = None
-    updated_at: Optional[datetime] = None
+class NewsItemBase(TimestampModel):
+    title_nl: str
+    title_en: str
+    content_nl: str
+    content_en: str
+    approved: bool = False
+    photo_file_id: Optional[int] = None
 
-class NewsComment(NewsCommentBase, table=True):
-    __tablename__ = "news_comments"
-    id: Optional[int] = Field(default=None, primary_key=True)
-    user: "User" = Relationship(back_populates="comments", sa_relationship_kwargs={"lazy": "selectin"})
-
-######## NEWS ITEMS
-class NewsItemBase(SQLModel):
-    id: int
-    title_nl: Optional[str] = None
-    title_en: Optional[str] = None
-    content_nl: Optional[str] = None
-    content_en: Optional[str] = None
-    photo_file_id: Optional[int] = Field(default=None, foreign_key="files.id")
-    approved: Optional[bool] = False
-    approved_by: Optional[int] = Field(default=None, foreign_key="users.id")
-    creator_id: Optional[int] = Field(default=None, foreign_key="users.id")
-    created_at: Optional[datetime] = None
-    updated_at: Optional[datetime] = None
+    
 
 class NewsItem(NewsItemBase, table=True):
     __tablename__ = "news_items"
-    id: Optional[int] = Field(default=None, primary_key=True)
-    creator: "User" = Relationship(back_populates="news_items", sa_relationship_kwargs={"lazy": "selectin", "foreign_keys": "[NewsItem.creator_id]"})
-    approver: Optional["User"] = Relationship(sa_relationship_kwargs={"lazy": "selectin", "foreign_keys": "[NewsItem.approved_by]"})
-    comments: list["NewsComment"] = Relationship(sa_relationship_kwargs = {"lazy": "selectin" })
-    photo_file: "File" = Relationship(sa_relationship_kwargs={"lazy": "selectin"})
-    
 
+    id: Optional[int] = Field(default=None, primary_key=True)
+    
+    # Foreign Keys
+    creator_id: Optional[int] = Field(foreign_key="users.id")
+    approved_by: Optional[int] = Field(default=None, foreign_key="users.id")
+
+    # Relationships
+    comments: List["NewsComment"] = Relationship(back_populates="news_item")
+    creator: "User" = Relationship(
+        back_populates="created_news_items",
+        sa_relationship_kwargs={"foreign_keys": "[NewsItem.creator_id]"}
+    )
+    approver: Optional["User"] = Relationship(
+        back_populates="approved_news_items",
+        sa_relationship_kwargs={"foreign_keys": "[NewsItem.approved_by]"}
+    )
+
+class NewsItemResponse(NewsItemBase):
+    id: int
+    creator_id: Optional[int]
+    approved_by: Optional[int] = None
+
+class NewsItemUpdate(SQLModel):
+    title_nl: Optional[str]
+    title_en: Optional[str]
+    content_nl: Optional[str]
+    content_en: Optional[str]
+
+class NewsItemCreate(SQLModel):
+    title_nl: str
+    title_en: str
+    content_nl: str
+    content_en: str
+
+class NewsCommentCreate(SQLModel):
+    newsitem_id: int
+    content: str
+ 
+###############################################################
+
+class NewsCommentBase(TimestampModel):
+    content: str
+    user_id: int = Field(foreign_key="users.id")
+    newsitem_id: int = Field(foreign_key="news_items.id")
+
+class NewsComment(NewsCommentBase, table=True):
+    __tablename__ = "news_comments"
+
+    id: Optional[int] = Field(default=None, primary_key=True)
+
+    # Relationships
+    user: "User" = Relationship()
+    news_item: "NewsItem" = Relationship(back_populates="comments")
+
+class NewsCommentResponse(NewsCommentBase):
+    id: int

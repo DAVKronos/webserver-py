@@ -1,72 +1,105 @@
-############### UPDATED #################
-from typing import Optional, TYPE_CHECKING
+from typing import List, Optional, TYPE_CHECKING
+from sqlmodel import Field, Relationship, SQLModel
+from .base import TimestampModel
 from datetime import datetime
-from sqlmodel import Field, SQLModel, Relationship
 
-# Resolve circular imports
 if TYPE_CHECKING:
     from .user import User
-    from .committee import Committee
+  
+class AgendaItemBase(TimestampModel):
+    name_nl: str
+    name_en: str
+    description_nl: Optional[str] = None
+    description_en: Optional[str] = None
+    date: datetime
+    location: Optional[str] = None
+    is_internal: bool = False
+    url: Optional[str] = None
+    can_subscribe: bool = False
+    subscription_deadline: Optional[datetime] = None
+    max_subscriptions: Optional[int] = None
+    
+    # These IDs are usually required when creating/viewing
+    committee_id: Optional[int] = None
+    agendaitem_type_id: Optional[int] = None
 
-############ AGENDA ITEMS
-class AgendaItemBase(SQLModel):
+class AgendaItem(AgendaItemBase, table=True):
+    __tablename__ = "agendaitems"
+
+    id: Optional[int] = Field(default=None, primary_key=True)
+    
+    # The actual DB foreign key
+    created_by_user_id: int = Field(foreign_key="users.id")
+
+    # Relationships (Runtime string references)
+    creator: "User" = Relationship(back_populates="created_agenda_items")
+    subscriptions: List["Subscription"] = Relationship(back_populates="agenda_item")
+
+class AgendaItemResponse(AgendaItemBase):
     id: int
+    created_by_user_id: int
+    
+    subscriptions: List["SubscriptionResponse"] = []
+
+class AgendaItemCreate(SQLModel):
+    id: int
+    name_nl: str
+    name_en: str
+    description_nl: str
+    description_en: str
+    date: datetime
+    location: Optional[str]
+    committee_id: Optional[int] = Field(default=None, foreign_key="committees.id")
+    is_internal: bool
+    url: Optional[str]
+    can_subscribe: bool
+    subscription_deadline: Optional[datetime] = None
+    max_subscriptions: Optional[int] = None
+
+class AgendaItemUpdate(SQLModel):
+    id: int  # Required to identify the record
     name_nl: Optional[str] = None
     name_en: Optional[str] = None
     description_nl: Optional[str] = None
     description_en: Optional[str] = None
     date: Optional[datetime] = None
     location: Optional[str] = None
-    committee_id: Optional[int] = Field(default=None, foreign_key="committees.id")
+    committee_id: Optional[int] = None
     is_internal: Optional[bool] = None
-    agendaitem_type_id: Optional[int] = Field(default=None, foreign_key="agendaitem_types.id")
     url: Optional[str] = None
-    created_by_user_id: Optional[int] = Field(default=None, foreign_key="users.id")
     can_subscribe: Optional[bool] = None
     subscription_deadline: Optional[datetime] = None
     max_subscriptions: Optional[int] = None
-    created_at: Optional[datetime] = None
-    updated_at: Optional[datetime] = None
 
-    def is_before_deadline(self):
-        if self.subscription_deadline is None:
-            return False
-        else:
-            return datetime.now() < self.subscription_deadline
+###########################################################################
 
-class AgendaItem(AgendaItemBase, table=True):
-    __tablename__ = "agendaitems"
-    id: Optional[int] = Field(default=None, primary_key=True)
-    subscriptions: list["Subscription"] = Relationship(back_populates="agendaitem",sa_relationship_kwargs={"lazy": "selectin"})
-    created_by: "User" = Relationship(sa_relationship_kwargs={"lazy": "selectin"})
-    agendaitem_type: "AgendaItemType" = Relationship(sa_relationship_kwargs={"lazy": "selectin"})
-    committee: "Committee" = Relationship(sa_relationship_kwargs={"lazy": "selectin"})
-
-############ AGENDA ITEM TYPES
-
-class AgendaItemTypeBase(SQLModel):
-    id: int
-    name_nl: Optional[str] = None
-    name_en: Optional[str] = None
-    created_at: Optional[datetime] = None
-    updated_at: Optional[datetime] = None
+class AgendaItemTypeBase(TimestampModel):
+    name_nl: str
+    name_en: str
 
 class AgendaItemType(AgendaItemTypeBase, table=True):
     __tablename__ = "agendaitem_types"
+
     id: Optional[int] = Field(default=None, primary_key=True)
 
-############# SUBSCRIPTIONS
-
-class SubscriptionBase(SQLModel):
+class AgendaItemTypeResponse(AgendaItemTypeBase):
     id: int
-    user_id: Optional[int] = Field(default=None, foreign_key="users.id")
-    agendaitem_id: Optional[int] = Field(default=None, foreign_key="agendaitems.id")
+
+
+#############################################################
+
+class SubscriptionBase(TimestampModel):
     comment: Optional[str] = None
-    created_at: Optional[datetime] = None
-    updated_at: Optional[datetime] = None
+    user_id: int = Field(foreign_key="users.id")
+    agendaitem_id: int = Field(foreign_key="agendaitems.id")
 
 class Subscription(SubscriptionBase, table=True):
     __tablename__ = "subscriptions"
+    
     id: Optional[int] = Field(default=None, primary_key=True)
-    agendaitem: "AgendaItem" = Relationship(back_populates="subscriptions",sa_relationship_kwargs={"lazy": "selectin"})
-    user: "User" = Relationship(back_populates="subscriptions",sa_relationship_kwargs={"lazy": "selectin"})
+
+    user: "User" = Relationship()
+    agenda_item: "AgendaItem" = Relationship(back_populates="subscriptions")
+
+class SubscriptionResponse(SubscriptionBase):
+    id: int
