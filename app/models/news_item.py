@@ -39,6 +39,7 @@ class NewsItemResponse(NewsItemBase):
     id: int
     creator_id: Optional[int]
     approved_by: Optional[int] = None
+    # creator: Optional["User"] = None
 
 class NewsItemUpdate(SQLModel):
     title_nl: Optional[str]

@@ -7,6 +7,7 @@ from ..dependencies import Database
 from ..authentication import *
 from ..models.news_item import *
 from ..models.user import *
+from sqlalchemy.orm import selectinload
 
 router = APIRouter(prefix="/newsitems")
 
@@ -16,18 +17,21 @@ async def index(r: Request, database: Database):
         .where(NewsItem.approved == True) \
         .limit(None) \
         .offset(None) \
-        .order_by(NewsItem.created_at.desc())
+        .order_by(NewsItem.created_at.desc()) 
+        # .options(selectinload(NewsItem.creator))
+        
     # 
     articles = await database.exec(query)
     
     return articles.all()
 
-@router.get("/{id}", response_model=NewsItemResponse)
+@router.get("/{id}", response_model=NewsItem)
 async def get_article(id: int, r: Request, database: Database):
     # TODO filter agreed depending on permission
     query = select(NewsItem) \
         .where(NewsItem.approved == True) \
-        .where(NewsItem.id == id)
+        .where(NewsItem.id == id) 
+        # .options(selectinload(NewsItem.creator))
     
     article = (await database.exec(query)).first()
     
@@ -36,7 +40,7 @@ async def get_article(id: int, r: Request, database: Database):
     
     return article
 
-@router.post("/", response_model=NewsItemResponse)
+@router.post("/", response_model=NewsItem)
 async def create_article(data: NewsItemCreate, database: Database, active_user: Annotated[User, Depends(current_user)]):
     t = datetime.utcnow()
     try:
@@ -49,9 +53,9 @@ async def create_article(data: NewsItemCreate, database: Database, active_user: 
     await database.commit()
     await database.refresh(article)
      
-    return NewsItemPublic.model_validate(article, update={"user":None})
+    return NewsItem.model_validate(article, update={"creator":None})
     
-@router.patch("/{id}", response_model=NewsItemResponse)
+@router.patch("/{id}", response_model=NewsItem)
 async def update_article(data: NewsItemUpdate, database: Database, active_user: Annotated[User, Depends(current_user)]):
     article = database.get(NewsItem, id)
     if not article:
@@ -85,7 +89,8 @@ async def get(id: int, database: Database):
             # NewsItem.agreed == True
         ).limit(None) \
         .offset(None) \
-        .order_by(NewsComment.created_at.desc())
+        .order_by(NewsComment.created_at.desc()) \
+        .options(selectinload())
     
     comments = await database.exec(query)
     return comments.all()

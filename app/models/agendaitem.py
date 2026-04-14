@@ -2,6 +2,7 @@ from typing import List, Optional, TYPE_CHECKING
 from sqlmodel import Field, Relationship, SQLModel
 from .base import TimestampModel
 from datetime import datetime
+from sqlalchemy.orm import selectinload 
 
 if TYPE_CHECKING:
     from .user import User
