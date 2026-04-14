@@ -1,14 +1,15 @@
-from fastapi import APIRouter, Request, HTTPException
+from fastapi import APIRouter, Request, HTTPException, Depends, status
 from sqlalchemy.sql import extract
 from sqlmodel import select, or_
 from ..dependencies import Database
 from datetime import date
 from ..models.user import *
-from ..models.commission import CompactCommissionResponse, CommissionMembership
+from typing import Annotated
+from ..authentication import current_user
 router = APIRouter(prefix="/users")
 
-@router.get("", response_model=list[UserResponse])
-async def get_all(r: Request, database: Database,active_user: Annotated[User, Depends(current_user)]):
+@router.get("", response_model=list[User])
+async def get_all(r: Request, database: Database, active_user: Annotated[User, Depends(current_user)]):
     if active_user is None:
         raise HTTPException(status.HTTP_401_UNAUTHORIZED)
     query = select(User) \
@@ -20,7 +21,7 @@ async def get_all(r: Request, database: Database,active_user: Annotated[User, De
     users = await database.exec(query)
     return users.all()
 
-@router.get("/birthdays", response_model=list[UserResponse])
+@router.get("/birthdays", response_model=list[User])
 async def get_birthdays(r: Request, database: Database):
     today = date.today()
     next_month = (today.month % 12) + 1
@@ -38,7 +39,7 @@ async def get_birthdays(r: Request, database: Database):
     users = await database.exec(query)
     return users.all()
 
-@router.get("/{id}", response_model=UserResponse)
+@router.get("/{id}", response_model=User)
 async def get_one(id: int, r: Request, database: Database, active_user: Annotated[User, Depends(current_user)]):
     if active_user is None:
         raise HTTPException(status.HTTP_401_UNAUTHORIZED)
@@ -48,10 +49,10 @@ async def get_one(id: int, r: Request, database: Database, active_user: Annotate
 
     return user
 
-@router.get("/{id}/commissions", response_model=list[CompactCommissionResponse])
-async def get_comissions(id: int, r: Request, database: Database):
-    user: User | None = await database.get(User, id)
-    if not user:
-        raise HTTPException(status_code=404, detail="User not found")
+# @router.get("/{id}/committees", response_model=list[CommitteeResponse])
+# async def get_comissions(id: int, r: Request, database: Database):
+#     user: User | None = await database.get(User, id)
+#     if not user:
+#         raise HTTPException(status_code=404, detail="User not found")
 
-    return user.commissions
+#     return user.commissions

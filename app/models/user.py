@@ -1,75 +1,50 @@
-from sqlmodel import Field, Relationship,  SQLModel
-from datetime import date, datetime
-from typing import Optional
+from typing import List, Optional, TYPE_CHECKING
+from sqlmodel import Field, Relationship
+from .base import TimestampModel
+from datetime import datetime, date
 
-class UserBase(SQLModel):
-    id: int
+# This only runs during type checking, not at runtime
+if TYPE_CHECKING:
+    from .agenda import AgendaItem
+    from .news import NewsItem
+
+class User(TimestampModel, table=True):
+    __tablename__ = "users"
+
+    id: Optional[int] = Field(default=None, primary_key=True)
+    
     name: str
-    initials: str
-    email: str
-    birthdate: Optional[date]
-    address: Optional[str]
-    postalcode: Optional[str]
-    city: Optional[str]
-    sex: Optional[str]
-    licensenumber: Optional[str]
-    papieren_kronometer: Optional[bool]
-    created_at: datetime
-    updated_at: datetime
-    avatar_file_name: Optional[str]
-    avatar_content_type: Optional[str]
-    avatar_file_size: Optional[int]
-    avatar_updated_at: Optional[datetime]
-    encrypted_password: str
-    phonenumber: Optional[str]
-    user_type_id: int
-    xtracard: Optional[str]
-    studie: Optional[str]
-    instelling: Optional[str]
-    aanvang: Optional[int]
+    initials: Optional[str] = None
+    email: str = Field(unique=True, index=True)
+    birthdate: Optional[date] = None
+    address: Optional[str] = None
+    postalcode: Optional[str] = None
+    city: Optional[str] = None
+    sex: Optional[str] = None
+    allow_password_change: bool = True
+    phonenumber: Optional[str] = None
+    bank_account_number: Optional[str] = None
+    unioncard_number: Optional[str] = None
+    institution: Optional[str] = None
+    joined_in: Optional[int] = None
+    tokens: Optional[str] = None
+    confirmed_at: Optional[datetime] = None
+    password: str
 
-class UserResponse(UserBase):
-    commissions: list["CompactCommissionResponse"] = []
+
     
-class User(UserBase, table=True):
-    __tablename__: str = "users"
-    id: int | None = Field(default=None, primary_key=True)
-    articles: list["Article"] = Relationship(back_populates="user")
-    comments: list["Comment"] = Relationship(back_populates="user")
-    commission_memberships: list["CommissionMembership"] = Relationship(back_populates="user", sa_relationship_kwargs={"lazy": "selectin"})
-    subscriptions: list["Subscription"] = Relationship(back_populates="user", sa_relationship_kwargs={"lazy": "selectin"})
-    
-    @property
-    def commissions(self):
-        return [
-            CompactCommissionResponse(
-                id=membership.commission.id,
-                name=membership.commission.name,
-                name_en=membership.commission.name_en
-            ) 
-            for membership in self.commission_memberships
-        ]
+    # Foreign Keys to tables not yet implemented
+    avatar_file_id: Optional[int] = None
+    user_type_id: Optional[int] = None
 
-class UserTypeBase(SQLModel):
-    id: int
-    name: str | None
-    name_en: str | None
-    donor: bool | None
-    competition: bool | None
-    
+    # Relationships
+    created_agenda_items: List["AgendaItem"] = Relationship(back_populates="creator")
+    created_news_items: List["NewsItem"] = Relationship(
+        back_populates="creator", 
+        sa_relationship_kwargs={"foreign_keys": "[NewsItem.creator_id]"}
+    )
+    approved_news_items: List["NewsItem"] = Relationship(
+        back_populates="approver", 
+        sa_relationship_kwargs={"foreign_keys": "[NewsItem.approved_by]"}
+    )
 
-class UserTypeResponse(UserTypeBase):
-    pass
-    
-class UserType(UserTypeBase, table=True):
-    __tablename__: str = "user_types"
-    id: int | None = Field(default=None, primary_key=True)
-    created_at: datetime
-    updated_at: datetime
-
-class CompactUserResponse(SQLModel):
-    id: int
-    name: str
-    initials: str
-
-from .commission import CompactCommissionResponse

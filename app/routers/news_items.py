@@ -1,0 +1,124 @@
+from typing import Annotated, Optional
+from datetime import datetime, timezone
+from fastapi import APIRouter, Depends, Form, HTTPException, Request, status
+from sqlmodel import SQLModel, select, func, and_, text
+from pydantic import BaseModel, ValidationError
+from ..dependencies import Database
+from ..authentication import *
+from ..models.news_item import *
+from ..models.user import *
+from sqlalchemy.orm import selectinload
+
+router = APIRouter(prefix="/newsitems")
+
+@router.get("", response_model=list[NewsItemResponse])
+async def index(r: Request, database: Database):
+    query = select(NewsItem) \
+        .where(NewsItem.approved == True) \
+        .limit(None) \
+        .offset(None) \
+        .order_by(NewsItem.created_at.desc()) 
+        # .options(selectinload(NewsItem.creator))
+        
+    # 
+    articles = await database.exec(query)
+    
+    return articles.all()
+
+@router.get("/{id}", response_model=NewsItem)
+async def get_article(id: int, r: Request, database: Database):
+    # TODO filter agreed depending on permission
+    query = select(NewsItem) \
+        .where(NewsItem.approved == True) \
+        .where(NewsItem.id == id) 
+        # .options(selectinload(NewsItem.creator))
+    
+    article = (await database.exec(query)).first()
+    
+    if article is None:
+        raise HTTPException(status_code=404, detail="NewsItem not found")
+    
+    return article
+
+@router.post("/", response_model=NewsItem)
+async def create_article(data: NewsItemCreate, database: Database, active_user: Annotated[User, Depends(current_user)]):
+    t = datetime.utcnow()
+    try:
+        article = NewsItem.model_validate(data, update={'created_at': t, 'updated_at': t, 'user_id': active_user.id })
+    except ValidationError as e:
+        print(e)
+        raise HTTPException(status_code=500, detail="Input data not valid")
+    
+    database.add(article)
+    await database.commit()
+    await database.refresh(article)
+     
+    return NewsItem.model_validate(article, update={"creator":None})
+    
+@router.patch("/{id}", response_model=NewsItem)
+async def update_article(data: NewsItemUpdate, database: Database, active_user: Annotated[User, Depends(current_user)]):
+    article = database.get(NewsItem, id)
+    if not article:
+        raise HTTPException(status_code=404, detail="NewsItem not found")
+    
+    article_dict = data.model_dump(exclude_unset=True)
+    article.sqlmodel_update(article_dict, update = {updated_at: datetime.now(timezone.utc)})
+    database.add(article)
+    database.commit()
+    database.refresh(article)
+    return article
+
+@router.delete("/{id}")
+async def delete(r: Request, database: Database):
+    pass
+
+@router.put("/{id}/photo")
+async def insert_photo(r: Request, database: Database):
+    pass
+
+@router.put("/{id}/photo")
+async def delete_photo(r: Request, database: Database):
+    pass
+
+@router.get("/{id}/comments", response_model=list[NewsCommentResponse])
+async def get(id: int, database: Database):
+    # todo: comments are not public!
+    query = select(NewsComment) \
+        .where(
+            NewsComment.newsitem_id == id,
+            # NewsItem.agreed == True
+        ).limit(None) \
+        .offset(None) \
+        .order_by(NewsComment.created_at.desc()) \
+        .options(selectinload())
+    
+    comments = await database.exec(query)
+    return comments.all()
+
+@router.post("/{id}/comments", response_model=NewsCommentResponse)
+async def create_comment(data: NewsCommentCreate, database: Database, active_user: Annotated[User, Depends(current_user)]):
+    t = datetime.utcnow()
+    try:
+        comment = NewsComment.model_validate(data, update={'created_at': t, 'updated_at': t, 'user_id': active_user.id })
+    except ValidationError as error:
+        raise HTTPException(status_code=500, detail="Input data not valid")
+    database.add(comment)
+    await database.commit()
+    await database.refresh(comment)
+
+    return comment
+
+
+@router.delete("/{article_id}/comments/{comment_id}", status_code=status.HTTP_204_NO_CONTENT)
+async def delete_comment(comment_id: int, database: Database, active_user: Annotated[User, Depends(current_user)]):
+    comment:NewsComment | None = await database.get(NewsComment, comment_id)
+
+    if not comment:
+        raise HTTPException(status_code=404, detail="NewsComment not found")
+    # For now only allow the owner of the comment to remove it
+    # TODO: Admins can remove comments
+    if comment.user_id != active_user.id:
+        raise HTTPException(status_code=403, detail="Not authorized to delete this comment")
+    await database.delete(comment)
+    await database.commit()
+    return

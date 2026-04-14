@@ -4,7 +4,7 @@ from fastapi.responses import Response
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlmodel import select, func, column
 from ..authentication import *
-from ..models.user import User, UserResponse
+from ..models.user import User
 from ..dependencies import Database
 from ..permissions import Ability, can, cannot
 from ..config import config
@@ -37,9 +37,9 @@ async def logout():
     # remove the session cookie
     return Response(200)
 
-@router.get("/current_user", response_model=UserResponse)
+@router.get("/current_user", response_model=User)
 async def get_current_user(current_user: Annotated[Optional[User], Depends(current_user)]):
-    return UserResponse.model_validate(current_user)
+    return User.model_validate(current_user)
 
 
 # maybe this belongs more to user administration than authentication?

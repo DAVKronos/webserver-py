@@ -14,11 +14,11 @@ const NewsItemCaroursel = ({ items }) => {
           <Carousel.Item key={item.id}>
             <img
               className='d-block w-100'
-              src={getAPIHostUrl(item.articlephoto_url_carrousel)}
+              src={getAPIHostUrl(item.photo_file.file_name)}
               alt={item.title_en}
             />
             <Carousel.Caption>
-              <h3><MultiLanguageText nl={item.title} en={item.title_en}/></h3>
+              <h3><MultiLanguageText nl={item.title_nl} en={item.title_en}/></h3>
             </Carousel.Caption>
           </Carousel.Item>
         )

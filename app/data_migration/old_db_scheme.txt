@@ -1,0 +1,748 @@
+-- public.agendaitems definition
+
+-- Drop table
+
+-- DROP TABLE public.agendaitems;
+
+CREATE TABLE public.agendaitems (
+	id serial4 NOT NULL,
+	"name" varchar(255) NULL,
+	description text NULL,
+	"date" timestamp NULL,
+	"location" varchar(255) NULL,
+	subscribe bool NULL,
+	subscriptiondeadline timestamp NULL,
+	commission_id int4 NULL,
+	created_at timestamp NULL,
+	updated_at timestamp NULL,
+	category varchar(255) NULL,
+	intern bool NULL,
+	agendaitemtype_id int4 NULL,
+	url varchar(255) NULL,
+	user_id int4 NULL,
+	name_en varchar(255) NULL,
+	description_en text NULL,
+	maxsubscription int4 NULL,
+	CONSTRAINT agendaitems_pkey PRIMARY KEY (id)
+);
+
+
+-- public.agendaitemtype_eventtypes definition
+
+-- Drop table
+
+-- DROP TABLE public.agendaitemtype_eventtypes;
+
+CREATE TABLE public.agendaitemtype_eventtypes (
+	id serial4 NOT NULL,
+	agendaitemtype_id int4 NULL,
+	eventtype_id int4 NULL,
+	created_at timestamp NOT NULL,
+	updated_at timestamp NOT NULL,
+	CONSTRAINT agendaitemtype_eventtypes_pkey PRIMARY KEY (id)
+);
+
+
+-- public.agendaitemtypes definition
+
+-- Drop table
+
+-- DROP TABLE public.agendaitemtypes;
+
+CREATE TABLE public.agendaitemtypes (
+	id serial4 NOT NULL,
+	"name" varchar(255) NULL,
+	created_at timestamp NOT NULL,
+	updated_at timestamp NOT NULL,
+	is_match bool NULL,
+	name_en varchar(255) NULL,
+	CONSTRAINT agendaitemtypes_pkey PRIMARY KEY (id)
+);
+
+
+-- public.aliases definition
+
+-- Drop table
+
+-- DROP TABLE public.aliases;
+
+CREATE TABLE public.aliases (
+	id serial4 NOT NULL,
+	"name" text NULL,
+	emailaddress text NULL,
+	description text NULL,
+	created_at timestamp NOT NULL,
+	updated_at timestamp NOT NULL,
+	CONSTRAINT aliases_pkey PRIMARY KEY (id)
+);
+
+
+-- public.aliases_mailinglists definition
+
+-- Drop table
+
+-- DROP TABLE public.aliases_mailinglists;
+
+CREATE TABLE public.aliases_mailinglists (
+	alias_id int4 NULL,
+	mailinglist_id int4 NULL
+);
+CREATE INDEX index_aliases_mailinglists_on_alias_id_and_mailinglist_id ON public.aliases_mailinglists USING btree (alias_id, mailinglist_id);
+
+
+-- public.announcements definition
+
+-- Drop table
+
+-- DROP TABLE public.announcements;
+
+CREATE TABLE public.announcements (
+	id serial4 NOT NULL,
+	message text NULL,
+	starts_at timestamp NULL,
+	ends_at timestamp NULL,
+	created_at timestamp NOT NULL,
+	updated_at timestamp NOT NULL,
+	background_file_name varchar(255) NULL,
+	background_content_type varchar(255) NULL,
+	background_file_size int4 NULL,
+	background_updated_at timestamp NULL,
+	title text NULL,
+	url text NULL,
+	CONSTRAINT announcements_pkey PRIMARY KEY (id)
+);
+
+
+-- public.apps_exceptions definition
+
+-- Drop table
+
+-- DROP TABLE public.apps_exceptions;
+
+CREATE TABLE public.apps_exceptions (
+	id serial4 NOT NULL,
+	email varchar(255) NULL,
+	way bool NULL,
+	created_at timestamp NOT NULL,
+	updated_at timestamp NOT NULL,
+	group_email varchar(255) NULL,
+	CONSTRAINT apps_exceptions_pkey PRIMARY KEY (id)
+);
+
+
+-- public.ar_internal_metadata definition
+
+-- Drop table
+
+-- DROP TABLE public.ar_internal_metadata;
+
+CREATE TABLE public.ar_internal_metadata (
+	"key" varchar NOT NULL,
+	value varchar NULL,
+	created_at timestamp NOT NULL,
+	updated_at timestamp NOT NULL,
+	CONSTRAINT ar_internal_metadata_pkey PRIMARY KEY (key)
+);
+
+
+-- public.chatmessages definition
+
+-- Drop table
+
+-- DROP TABLE public.chatmessages;
+
+CREATE TABLE public.chatmessages (
+	id serial4 NOT NULL,
+	"by" varchar(255) NULL,
+	message text NULL,
+	created_at timestamp NULL,
+	updated_at timestamp NULL,
+	email varchar(255) NULL,
+	user_id int4 NULL,
+	user_ip varchar(255) NULL,
+	user_agent varchar(255) NULL,
+	referrer varchar(255) NULL,
+	CONSTRAINT chatmessages_pkey PRIMARY KEY (id)
+);
+
+
+-- public."comments" definition
+
+-- Drop table
+
+-- DROP TABLE public."comments";
+
+CREATE TABLE public."comments" (
+	id int4 DEFAULT nextval('reactions_id_seq'::regclass) NOT NULL,
+	created_at timestamp NOT NULL,
+	updated_at timestamp NOT NULL,
+	user_id int4 NULL,
+	agendaitem_id int4 NULL,
+	result_id int4 NULL,
+	photo_id int4 NULL,
+	newsitem_id int4 NULL,
+	commenttext text NULL,
+	commentable_id int4 NULL,
+	commentable_type varchar(255) NULL,
+	CONSTRAINT reactions_pkey PRIMARY KEY (id)
+);
+
+
+-- public.commission_memberships definition
+
+-- Drop table
+
+-- DROP TABLE public.commission_memberships;
+
+CREATE TABLE public.commission_memberships (
+	id serial4 NOT NULL,
+	"function" varchar(255) NULL,
+	installed bool DEFAULT false NULL,
+	user_id int4 NOT NULL,
+	commission_id int4 NOT NULL,
+	created_at timestamp NULL,
+	updated_at timestamp NULL,
+	CONSTRAINT commission_memberships_pkey PRIMARY KEY (id)
+);
+
+
+-- public.commissions definition
+
+-- Drop table
+
+-- DROP TABLE public.commissions;
+
+CREATE TABLE public.commissions (
+	id serial4 NOT NULL,
+	"name" varchar(255) NULL,
+	description text NULL,
+	email varchar(255) NULL,
+	created_at timestamp NULL,
+	updated_at timestamp NULL,
+	"role" varchar(255) NULL,
+	name_en varchar(255) NULL,
+	description_en text NULL,
+	CONSTRAINT commissions_pkey PRIMARY KEY (id)
+);
+
+
+-- public.delayed_jobs definition
+
+-- Drop table
+
+-- DROP TABLE public.delayed_jobs;
+
+CREATE TABLE public.delayed_jobs (
+	id serial4 NOT NULL,
+	priority int4 DEFAULT 0 NULL,
+	attempts int4 DEFAULT 0 NULL,
+	"handler" text NULL,
+	last_error text NULL,
+	run_at timestamp NULL,
+	locked_at timestamp NULL,
+	failed_at timestamp NULL,
+	locked_by varchar(255) NULL,
+	created_at timestamp NULL,
+	updated_at timestamp NULL,
+	queue varchar(255) NULL,
+	CONSTRAINT delayed_jobs_pkey PRIMARY KEY (id)
+);
+CREATE INDEX delayed_jobs_priority ON public.delayed_jobs USING btree (priority, run_at);
+
+
+-- public.events definition
+
+-- Drop table
+
+-- DROP TABLE public.events;
+
+CREATE TABLE public.events (
+	id serial4 NOT NULL,
+	"date" time NULL,
+	created_at timestamp NULL,
+	updated_at timestamp NULL,
+	eventtype_id int4 NULL,
+	agendaitem_id int4 NULL,
+	distance float8 NULL,
+	CONSTRAINT events_pkey PRIMARY KEY (id)
+);
+CREATE INDEX events_agendaitem_id_idx ON public.events USING btree (agendaitem_id);
+
+
+-- public.eventtypes definition
+
+-- Drop table
+
+-- DROP TABLE public.eventtypes;
+
+CREATE TABLE public.eventtypes (
+	id serial4 NOT NULL,
+	"name" varchar(255) NULL,
+	formula varchar(255) NULL,
+	shortname varchar(255) NULL,
+	measuringunit varchar(255) NULL,
+	created_at timestamp NULL,
+	updated_at timestamp NULL,
+	calculated_unit varchar(255) NULL,
+	show_wind bool DEFAULT false NULL,
+	female_formula varchar(255) NULL,
+	important bool NULL,
+	CONSTRAINT eventtypes_pkey PRIMARY KEY (id)
+);
+
+
+-- public.folders definition
+
+-- Drop table
+
+-- DROP TABLE public.folders;
+
+CREATE TABLE public.folders (
+	id serial4 NOT NULL,
+	"name" varchar NULL,
+	folder_id int4 NULL,
+	CONSTRAINT folders_pkey PRIMARY KEY (id)
+);
+
+
+-- public.kronometers definition
+
+-- Drop table
+
+-- DROP TABLE public.kronometers;
+
+CREATE TABLE public.kronometers (
+	id serial4 NOT NULL,
+	"name" varchar(255) NULL,
+	"date" date NULL,
+	file_file_name varchar(255) NULL,
+	file_content_type varchar(255) NULL,
+	file_file_size int4 NULL,
+	file_updated_at timestamp NULL,
+	created_at timestamp NOT NULL,
+	updated_at timestamp NOT NULL,
+	folder_id int4 NULL,
+	public bool DEFAULT false NULL,
+	CONSTRAINT kronometers_pkey PRIMARY KEY (id)
+);
+
+
+-- public.mailinglist_memberships definition
+
+-- Drop table
+
+-- DROP TABLE public.mailinglist_memberships;
+
+CREATE TABLE public.mailinglist_memberships (
+	id serial4 NOT NULL,
+	user_id int4 NULL,
+	mailinglist_id int4 NULL,
+	created_at timestamp NOT NULL,
+	updated_at timestamp NOT NULL,
+	CONSTRAINT mailinglist_memberships_pkey PRIMARY KEY (id)
+);
+CREATE INDEX index_mailinglist_memberships_on_mailinglist_id ON public.mailinglist_memberships USING btree (mailinglist_id);
+CREATE INDEX index_mailinglist_memberships_on_user_id ON public.mailinglist_memberships USING btree (user_id);
+
+
+-- public.mailinglists definition
+
+-- Drop table
+
+-- DROP TABLE public.mailinglists;
+
+CREATE TABLE public.mailinglists (
+	id serial4 NOT NULL,
+	"name" text NULL,
+	description text NULL,
+	created_at timestamp NOT NULL,
+	updated_at timestamp NOT NULL,
+	local_part varchar(255) NULL,
+	commission_id int4 NULL,
+	mailinglist_id int4 NULL,
+	CONSTRAINT mailinglists_pkey PRIMARY KEY (id)
+);
+
+
+-- public.migrate_paperclip_articlephotos definition
+
+-- Drop table
+
+-- DROP TABLE public.migrate_paperclip_articlephotos;
+
+CREATE TABLE public.migrate_paperclip_articlephotos (
+	id serial4 NOT NULL,
+	url_normal varchar(255) NULL,
+	url_carrousel varchar(255) NULL,
+	updated_at timestamp DEFAULT now() NULL,
+	article_id int4 NULL,
+	CONSTRAINT migrate_paperclip_articlephotos_pkey PRIMARY KEY (id)
+);
+
+
+-- public.newsitems definition
+
+-- Drop table
+
+-- DROP TABLE public.newsitems;
+
+CREATE TABLE public.newsitems (
+	id serial4 NOT NULL,
+	title varchar(255) NULL,
+	news text NULL,
+	agreed bool NULL,
+	created_at timestamp NULL,
+	updated_at timestamp NULL,
+	user_id int4 NULL,
+	agreed_by int4 NULL,
+	articlephoto_file_name varchar(255) NULL,
+	articlephoto_content_type varchar(255) NULL,
+	articlephoto_file_size int4 NULL,
+	articlephoto_updated_at timestamp NULL,
+	title_en varchar(255) NULL,
+	news_en text NULL,
+	articlephoto_url_normal varchar NULL,
+	articlephoto_url_carrousel varchar NULL,
+	CONSTRAINT newsitems_pkey PRIMARY KEY (id)
+);
+
+
+-- public.old_photoalbums definition
+
+-- Drop table
+
+-- DROP TABLE public.old_photoalbums;
+
+CREATE TABLE public.old_photoalbums (
+	"FotoAlbumID" int4 NOT NULL,
+	"Naam" varchar(150) DEFAULT NULL::character varying NULL,
+	"Datum" date NULL,
+	CONSTRAINT old_photoalbums_pkey PRIMARY KEY ("FotoAlbumID")
+);
+
+
+-- public.old_photos definition
+
+-- Drop table
+
+-- DROP TABLE public.old_photos;
+
+CREATE TABLE public.old_photos (
+	"FotoID" int4 NOT NULL,
+	"FotoAlbumID" int4 NULL,
+	"Omschrijving" text NULL,
+	"LidID" int4 NULL,
+	CONSTRAINT old_photos_pkey PRIMARY KEY ("FotoID")
+);
+
+
+-- public.old_users definition
+
+-- Drop table
+
+-- DROP TABLE public.old_users;
+
+CREATE TABLE public.old_users (
+	"LidID" int4 NOT NULL,
+	"Voorletters" varchar(12) DEFAULT NULL::character varying NULL,
+	"Voornaam" varchar(50) DEFAULT NULL::character varying NULL,
+	"Achternaam" varchar(60) DEFAULT NULL::character varying NULL,
+	"Naam" varchar(70) DEFAULT NULL::character varying NULL,
+	"GeboorteDatum" date NULL,
+	"Email" varchar(100) DEFAULT NULL::character varying NULL,
+	"Adres" varchar(100) DEFAULT NULL::character varying NULL,
+	"Postcode" varchar(10) DEFAULT NULL::character varying NULL,
+	"Woonplaats" varchar(80) DEFAULT NULL::character varying NULL,
+	"Wijk" varchar(20) DEFAULT NULL::character varying NULL,
+	"UIN" varchar(20) DEFAULT NULL::character varying NULL,
+	"Telefoon" varchar(30) DEFAULT NULL::character varying NULL,
+	"MobieleTelefoon" varchar(30) DEFAULT NULL::character varying NULL,
+	"Opmerking" text NULL,
+	"Geslacht" int4 NULL,
+	"Wachtwoord" varchar(15) DEFAULT NULL::character varying NULL,
+	"LicentieNummer" varchar(25) DEFAULT NULL::character varying NULL,
+	"LidTypeID" int4 NULL,
+	"Privacy" int4 NULL,
+	"Incasso" int4 NULL,
+	"Jurylid" int4 NULL,
+	"Campuskaart" varchar(20) DEFAULT NULL::character varying NULL,
+	"Rekeningnummer" varchar(20) DEFAULT NULL::character varying NULL,
+	"WedstrijdVereniging" varchar(80) DEFAULT NULL::character varying NULL,
+	"Nickname" varchar(100) DEFAULT NULL::character varying NULL,
+	"OVKaart" int4 NULL,
+	"KMeterPapier" int4 NULL,
+	CONSTRAINT old_users_pkey PRIMARY KEY ("LidID")
+);
+
+
+-- public.pages definition
+
+-- Drop table
+
+-- DROP TABLE public.pages;
+
+CREATE TABLE public.pages (
+	id serial4 NOT NULL,
+	information text NULL,
+	created_at timestamp NULL,
+	updated_at timestamp NULL,
+	pagetag varchar(255) NULL,
+	menu varchar(255) NULL,
+	highlight bool NULL,
+	pagetag_en varchar(255) NULL,
+	information_en text NULL,
+	public bool DEFAULT true NULL,
+	sort_order int4 NULL,
+	CONSTRAINT pages_pkey PRIMARY KEY (id)
+);
+
+
+-- public.photoalbums definition
+
+-- Drop table
+
+-- DROP TABLE public.photoalbums;
+
+CREATE TABLE public.photoalbums (
+	id serial4 NOT NULL,
+	"name" varchar(255) NULL,
+	created_at timestamp NULL,
+	updated_at timestamp NULL,
+	agendaitem_id int4 NULL,
+	public bool NULL,
+	eventdate timestamp NULL,
+	name_en varchar NULL,
+	url varchar NULL,
+	CONSTRAINT photoalbums_pkey PRIMARY KEY (id)
+);
+
+
+-- public.photos definition
+
+-- Drop table
+
+-- DROP TABLE public.photos;
+
+CREATE TABLE public.photos (
+	id serial4 NOT NULL,
+	caption varchar(255) NULL,
+	created_at timestamp NULL,
+	updated_at timestamp NULL,
+	photo_file_name varchar(255) NULL,
+	photo_content_type varchar(255) NULL,
+	photo_file_size int4 NULL,
+	photo_updated_at timestamp NULL,
+	photoalbum_id int4 NULL,
+	youtube_id varchar(255) NULL,
+	processing bool NULL,
+	exif_date timestamp NULL,
+	photo_url_original varchar NULL,
+	photo_url_thumb varchar NULL,
+	CONSTRAINT photos_pkey PRIMARY KEY (id)
+);
+
+
+-- public.results definition
+
+-- Drop table
+
+-- DROP TABLE public.results;
+
+CREATE TABLE public.results (
+	id serial4 NOT NULL,
+	username varchar(255) NULL,
+	"result" varchar(255) NULL,
+	created_at timestamp NULL,
+	updated_at timestamp NULL,
+	event_id int4 NULL,
+	user_id int4 NULL,
+	wind numeric NULL,
+	place int4 NULL,
+	calculated numeric NULL,
+	CONSTRAINT results_pkey PRIMARY KEY (id)
+);
+CREATE INDEX results_event_id_idx ON public.results USING btree (event_id);
+
+
+-- public.schema_migrations definition
+
+-- Drop table
+
+-- DROP TABLE public.schema_migrations;
+
+CREATE TABLE public.schema_migrations (
+	"version" varchar(255) NOT NULL
+);
+CREATE UNIQUE INDEX unique_schema_migrations ON public.schema_migrations USING btree (version);
+
+
+-- public.subscriptions definition
+
+-- Drop table
+
+-- DROP TABLE public.subscriptions;
+
+CREATE TABLE public.subscriptions (
+	id serial4 NOT NULL,
+	"comment" text NULL,
+	"name" varchar(255) NULL,
+	created_at timestamp NULL,
+	updated_at timestamp NULL,
+	user_id int4 NULL,
+	agendaitem_id int4 NULL,
+	reserve bool DEFAULT false NULL,
+	CONSTRAINT subscriptions_pkey PRIMARY KEY (id)
+);
+
+
+-- public.tag_ definition
+
+-- Drop table
+
+-- DROP TABLE public.tag_;
+
+CREATE TABLE public.tag_ (
+	id serial4 NOT NULL,
+	"name" varchar(100) NOT NULL,
+	CONSTRAINT tag__name_key UNIQUE (name),
+	CONSTRAINT tag__pkey PRIMARY KEY (id)
+);
+
+
+-- public.tags definition
+
+-- Drop table
+
+-- DROP TABLE public.tags;
+
+CREATE TABLE public.tags (
+	id serial4 NOT NULL,
+	photo_id int4 NULL,
+	user_id int4 NULL,
+	xpos int4 NULL,
+	ypos int4 NULL,
+	width int4 NULL,
+	heigth int4 NULL,
+	created_at timestamp NULL,
+	updated_at timestamp NULL,
+	CONSTRAINT tags_pkey PRIMARY KEY (id)
+);
+
+
+-- public.user_sessions definition
+
+-- Drop table
+
+-- DROP TABLE public.user_sessions;
+
+CREATE TABLE public.user_sessions (
+	id serial4 NOT NULL,
+	created_at timestamp NULL,
+	updated_at timestamp NULL,
+	CONSTRAINT user_sessions_pkey PRIMARY KEY (id)
+);
+
+
+-- public.user_types definition
+
+-- Drop table
+
+-- DROP TABLE public.user_types;
+
+CREATE TABLE public.user_types (
+	id serial4 NOT NULL,
+	"name" varchar(255) NULL,
+	donor bool NULL,
+	competition bool NULL,
+	created_at timestamp NOT NULL,
+	updated_at timestamp NOT NULL,
+	name_en varchar NULL,
+	CONSTRAINT user_types_pkey PRIMARY KEY (id)
+);
+
+
+-- public.users definition
+
+-- Drop table
+
+-- DROP TABLE public.users;
+
+CREATE TABLE public.users (
+	id serial4 NOT NULL,
+	"name" varchar(255) NULL,
+	initials varchar(255) NULL,
+	email varchar(255) DEFAULT ''::character varying NOT NULL,
+	birthdate date NULL,
+	address varchar(255) NULL,
+	postalcode varchar(255) NULL,
+	city varchar(255) NULL,
+	sex varchar(255) NULL,
+	licensenumber varchar(255) NULL,
+	papieren_kronometer bool DEFAULT false NULL,
+	created_at timestamp NULL,
+	updated_at timestamp NULL,
+	avatar_file_name varchar(255) NULL,
+	avatar_content_type varchar(255) NULL,
+	avatar_file_size int4 NULL,
+	avatar_updated_at timestamp NULL,
+	encrypted_password varchar(255) DEFAULT ''::character varying NOT NULL,
+	reset_password_token varchar(255) NULL,
+	reset_password_sent_at timestamp NULL,
+	remember_created_at timestamp NULL,
+	sign_in_count int4 DEFAULT 0 NULL,
+	current_sign_in_at timestamp NULL,
+	last_sign_in_at timestamp NULL,
+	current_sign_in_ip varchar(255) NULL,
+	last_sign_in_ip varchar(255) NULL,
+	phonenumber varchar(255) NULL,
+	user_type_id int4 NULL,
+	bank_account_number varchar(255) NULL,
+	xtracard varchar(255) NULL,
+	iban varchar(255) NULL,
+	studie varchar(255) NULL,
+	instelling varchar(255) NULL,
+	aanvang int4 NULL,
+	provider varchar DEFAULT 'email'::character varying NOT NULL,
+	uid varchar DEFAULT ''::character varying NOT NULL,
+	tokens text NULL,
+	confirmed_at timestamp DEFAULT '2021-07-21 17:41:51.810119'::timestamp without time zone NULL,
+	allow_password_change bool DEFAULT false NULL,
+	CONSTRAINT users_pkey PRIMARY KEY (id)
+);
+CREATE UNIQUE INDEX index_users_on_email ON public.users USING btree (email);
+CREATE UNIQUE INDEX index_users_on_reset_password_token ON public.users USING btree (reset_password_token);
+CREATE UNIQUE INDEX index_users_on_uid_and_provider ON public.users USING btree (uid, provider);
+
+
+-- public.versions definition
+
+-- Drop table
+
+-- DROP TABLE public.versions;
+
+CREATE TABLE public.versions (
+	id serial4 NOT NULL,
+	item_type varchar(255) NOT NULL,
+	item_id int4 NOT NULL,
+	"event" varchar(255) NOT NULL,
+	whodunnit varchar(255) NULL,
+	"object" text NULL,
+	created_at timestamp NULL,
+	CONSTRAINT versions_pkey PRIMARY KEY (id)
+);
+CREATE INDEX index_versions_on_item_type_and_item_id ON public.versions USING btree (item_type, item_id);
+
+
+-- public.photo_tags definition
+
+-- Drop table
+
+-- DROP TABLE public.photo_tags;
+
+CREATE TABLE public.photo_tags (
+	photo_id int4 NOT NULL,
+	tag_id int4 NOT NULL,
+	CONSTRAINT photo_tags_pkey PRIMARY KEY (photo_id, tag_id),
+	CONSTRAINT photo_tags_photo_id_fkey FOREIGN KEY (photo_id) REFERENCES public.photos(id) ON DELETE CASCADE,
+	CONSTRAINT photo_tags_tag_id_fkey FOREIGN KEY (tag_id) REFERENCES public.tag_(id) ON DELETE CASCADE
+);

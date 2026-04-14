@@ -22,15 +22,15 @@ const ShortNewsItem = ({ item }) => {
     <Row>
       <Col md={3} style={{ display: 'flex' }}>
         <Link to={`/newsitems/${item.id}`} className='align-self-center'>
-          <Image className='d-block w-100' src={getAPIHostUrl(item.articlephoto_url_normal)} alt={item.title} thumbnail />
+          <Image className='d-block w-100' src={getAPIHostUrl(item.articlephoto_url_normal)} alt={item.title_nl} thumbnail />
         </Link>
       </Col>
       <Col md={9}>
         <header>
-          <Link to={`/newsitems/${item.id}`}><h2><MultiLanguageText nl={item.title} en={item.title_en} /></h2></Link>
-          <p>{format(item.created_at, 'PPP p', i18n.language)} | {item.user.name}{commentCount}</p>
+          <Link to={`/newsitems/${item.id}`}><h2><MultiLanguageText nl={item.title_nl} en={item.title_en} /></h2></Link>
+          <p>{format(item.created_at, 'PPP p', i18n.language)} | {item.creator.name}{commentCount}</p>
         </header>
-        <MultiLanguageText nl={item.news} en={item.news_en} renderFunction={renderNews} />
+        <MultiLanguageText nl={item.content_nl} en={item.content_en} renderFunction={renderNews} />
         <Link to={`/newsitems/${item.id}`}>{t('readMore')}</Link>
       </Col>
     </Row>
