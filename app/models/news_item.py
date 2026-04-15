@@ -2,7 +2,10 @@ from typing import Optional, List, TYPE_CHECKING
 from sqlmodel import Field, Relationship, SQLModel
 from .base import TimestampModel
 
+# Put all model imports outside the if statement
+from .user import UserResponse
 if TYPE_CHECKING:
+    # Put all scheme (table) import in the if statement
     from .user import User
 
 class NewsItemBase(TimestampModel):
@@ -39,7 +42,9 @@ class NewsItemResponse(NewsItemBase):
     id: int
     creator_id: Optional[int]
     approved_by: Optional[int] = None
-    # creator: Optional["User"] = None
+    creator: Optional["UserResponse"] = None
+    comments: List["NewsCommentResponse"] = None
+
 
 class NewsItemUpdate(SQLModel):
     title_nl: Optional[str]

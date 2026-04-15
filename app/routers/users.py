@@ -8,7 +8,7 @@ from typing import Annotated
 from ..authentication import current_user
 router = APIRouter(prefix="/users")
 
-@router.get("", response_model=list[User])
+@router.get("", response_model=list[UserResponse])
 async def get_all(r: Request, database: Database, active_user: Annotated[User, Depends(current_user)]):
     if active_user is None:
         raise HTTPException(status.HTTP_401_UNAUTHORIZED)
@@ -21,7 +21,7 @@ async def get_all(r: Request, database: Database, active_user: Annotated[User, D
     users = await database.exec(query)
     return users.all()
 
-@router.get("/birthdays", response_model=list[User])
+@router.get("/birthdays", response_model=list[UserResponse])
 async def get_birthdays(r: Request, database: Database):
     today = date.today()
     next_month = (today.month % 12) + 1
@@ -39,7 +39,7 @@ async def get_birthdays(r: Request, database: Database):
     users = await database.exec(query)
     return users.all()
 
-@router.get("/{id}", response_model=User)
+@router.get("/{id}", response_model=UserResponse)
 async def get_one(id: int, r: Request, database: Database, active_user: Annotated[User, Depends(current_user)]):
     if active_user is None:
         raise HTTPException(status.HTTP_401_UNAUTHORIZED)
