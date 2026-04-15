@@ -17,21 +17,27 @@ async def index(r: Request, database: Database):
         .where(NewsItem.approved == True) \
         .limit(None) \
         .offset(None) \
-        .order_by(NewsItem.created_at.desc()) 
-        # .options(selectinload(NewsItem.creator))
+        .order_by(NewsItem.created_at.desc()) \
+        .options(
+            selectinload(NewsItem.creator),
+            selectinload(NewsItem.comments)
+        )
         
     # 
     articles = await database.exec(query)
     
     return articles.all()
 
-@router.get("/{id}", response_model=NewsItem)
+@router.get("/{id}", response_model=NewsItemResponse)
 async def get_article(id: int, r: Request, database: Database):
     # TODO filter agreed depending on permission
     query = select(NewsItem) \
         .where(NewsItem.approved == True) \
-        .where(NewsItem.id == id) 
-        # .options(selectinload(NewsItem.creator))
+        .where(NewsItem.id == id) \
+        .options(
+            selectinload(NewsItem.creator),
+            selectinload(NewsItem.comments)
+        )
     
     article = (await database.exec(query)).first()
     
@@ -40,7 +46,7 @@ async def get_article(id: int, r: Request, database: Database):
     
     return article
 
-@router.post("/", response_model=NewsItem)
+@router.post("/", response_model=NewsItemResponse)
 async def create_article(data: NewsItemCreate, database: Database, active_user: Annotated[User, Depends(current_user)]):
     t = datetime.utcnow()
     try:
@@ -55,7 +61,7 @@ async def create_article(data: NewsItemCreate, database: Database, active_user: 
      
     return NewsItem.model_validate(article, update={"creator":None})
     
-@router.patch("/{id}", response_model=NewsItem)
+@router.patch("/{id}", response_model=NewsItemResponse)
 async def update_article(data: NewsItemUpdate, database: Database, active_user: Annotated[User, Depends(current_user)]):
     article = database.get(NewsItem, id)
     if not article:

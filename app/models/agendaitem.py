@@ -39,7 +39,6 @@ class AgendaItem(AgendaItemBase, table=True):
 class AgendaItemResponse(AgendaItemBase):
     id: int
     created_by_user_id: int
-    
     subscriptions: List["SubscriptionResponse"] = []
 
 class AgendaItemCreate(SQLModel):
