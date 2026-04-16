@@ -14,9 +14,9 @@ class AgendaItemBase(TimestampModel):
     description_en: Optional[str] = None
     date: datetime
     location: Optional[str] = None
-    is_internal: bool = False
+    is_internal: Optional[bool] = False
     url: Optional[str] = None
-    can_subscribe: bool = False
+    can_subscribe: Optional[bool] = False
     subscription_deadline: Optional[datetime] = None
     max_subscriptions: Optional[int] = None
     
@@ -29,12 +29,11 @@ class AgendaItem(AgendaItemBase, table=True):
 
     id: Optional[int] = Field(default=None, primary_key=True)
     
-    # The actual DB foreign key
     created_by_user_id: int = Field(foreign_key="users.id")
 
-    # Relationships (Runtime string references)
-    creator: "User" = Relationship(back_populates="created_agenda_items")
-    subscriptions: List["Subscription"] = Relationship(back_populates="agenda_item")
+    # Relationships
+    creator: "User" = Relationship(back_populates="created_agenda_items", sa_relationship_kwargs={'lazy': 'selectin'})
+    subscriptions: List["Subscription"] = Relationship(back_populates="agenda_item", sa_relationship_kwargs={'lazy': 'selectin'})
 
 class AgendaItemResponse(AgendaItemBase):
     id: int
@@ -57,7 +56,7 @@ class AgendaItemCreate(SQLModel):
     max_subscriptions: Optional[int] = None
 
 class AgendaItemUpdate(SQLModel):
-    id: int  # Required to identify the record
+    id: int  
     name_nl: Optional[str] = None
     name_en: Optional[str] = None
     description_nl: Optional[str] = None
