@@ -108,7 +108,7 @@
     "paperkronometer": "Papieren Kronometer",
     "banknumber": "Bankrekeningnummer",
     "createdat": "Toegevoegd op",
-    "commissions": "Commissies",
+    "Committees": "Commissies",
     "changePassword": "Wachtwoord veranderen",
     "changePasswordSentMessage": "Wachtwoord is veranderd",
     "unEqualPassword": "Wachtwoorden zijn niet hetzelfde"
@@ -175,8 +175,8 @@
       "mailingList_plural": "Mailing lijsten",
       "alias": "Alias",
       "alias_plural": "Aliassen",
-      "commission": "Commissie",
-      "commission_plural": "Commissies",
+      "Committee": "Commissie",
+      "Committee_plural": "Commissies",
       "folder": "Map",
       "folder_plural": "Mappen",
       "kronometer": "Kronometer",
@@ -196,7 +196,7 @@
       "description_en": "Beschrijving (Engels)",
       "location": "Locatie",
       "url": "URL",
-      "commission_id": "Commissie",
+      "Committee_id": "Commissie",
       "subscribe": "Inschrijven",
       "subscriptiondeadline": "Inschrijfdeadline",
       "maxsubscription": "Maximum inschrijvingen"
@@ -234,7 +234,7 @@
       "name": "Naam",
       "description": "Omschrijving",
       "local_part": "Lokaal deel (voor de @)",
-      "commission_id": "Commissie",
+      "Committee_id": "Commissie",
       "alias_ids": "Aliassen",
       "user_ids": "Leden",
       "mailinglist_ids": "Mailinglijsten"
@@ -244,7 +244,7 @@
       "description": "Omschrijving",
       "emailaddress": "Email adres"
     },
-    "commission": {
+    "Committee": {
       "name": "Naam (Nederlands)",
       "name_en":"Naam (Engels)",
       "description": "Beschrijving (Nederlands)",

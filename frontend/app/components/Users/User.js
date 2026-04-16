@@ -138,10 +138,10 @@ const User = (props) => {
                 </Can>
                 <tr>
                   <td>
-                    <b>{t('commissions')}</b>
+                    <b>{t('Committees')}</b>
                   </td>
                   <td>
-                    {user.commissions
+                    {user.Committees
                       .map((c) => (lang === 'nl' ? c.name : c.name_en))
                       .toString()}
                   </td>

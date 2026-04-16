@@ -6,7 +6,7 @@ import { Link } from 'react-router-dom'
 import { Can } from '../../utils/auth-helper'
 import { useTranslation } from 'react-i18next'
 import DefaultSpinner from '../Generic/Spinner'
-import { getCommissions } from '../Commissions/queries'
+import { getCommittees } from '../Committees/queries'
 import ListObjectsComponent from '../Generic/ListObjectsComponent'
 
 const Announcements = () => {

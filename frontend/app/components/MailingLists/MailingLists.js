@@ -6,7 +6,7 @@ import { Link } from 'react-router-dom'
 import { Can } from '../../utils/auth-helper'
 import { useTranslation } from 'react-i18next'
 import DefaultSpinner from '../Generic/Spinner'
-import { getCommissions } from '../Commissions/queries'
+import { getCommittees } from '../Committees/queries'
 import ListObjectsComponent from '../Generic/ListObjectsComponent'
 
 const MailingLists = () => {
@@ -16,29 +16,29 @@ const MailingLists = () => {
     data: mailingLists,
     error
   } = useQuery('mailinglists', getMailingLists)
-  const { isLoading: commissionsLoading, data: commissions } = useQuery(
-    'commissions',
-    getCommissions
+  const { isLoading: CommitteesLoading, data: Committees } = useQuery(
+    'Committees',
+    getCommittees
   )
 
   mailingLists =
     mailingLists &&
     mailingLists.map((mailingList) => {
-      let commission_id = 'Geen'
-      if (mailingList.commission_id) {
-        if (commissionsLoading) {
-          commission_id = <DefaultSpinner inline size='sm' />
+      let Committee_id = 'Geen'
+      if (mailingList.Committee_id) {
+        if (CommitteesLoading) {
+          Committee_id = <DefaultSpinner inline size='sm' />
         } else {
-          const commission = commissions.find(
-            (v) => v.id == mailingList.commission_id
+          const Committee = Committees.find(
+            (v) => v.id == mailingList.Committee_id
           )
-          commission_id = commission && commission.name
+          Committee_id = Committee && Committee.name
         }
       }
       const local_part = `${mailingList.local_part}@kronos.nl`
-      return { ...mailingList, commission_id, local_part }
+      return { ...mailingList, Committee_id, local_part }
     })
-  const columns = ['name', 'description', 'local_part', 'commission_id']
+  const columns = ['name', 'description', 'local_part', 'Committee_id']
   const removeFunction = (id) => {
     return removeMailingList(id).then(() => {
       queryCache.invalidateQueries(['mailinglists'], { exact: true })

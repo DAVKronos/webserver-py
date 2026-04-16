@@ -79,14 +79,14 @@ async def permissions(request: Request, database: Database, user: Annotated[Opti
                 can('read', 'Photoalbum', {'public': True}),
                 cannot('read', ['User','Photo','Announcement', 'Kronometer', 'Subscription', 'Comment']),
                 can(['read','display'], 'Kronometer', {'public':True}),
-                cannot('see_email', 'Commission')]
+                cannot('see_email', 'Committee')]
 
     abilities = [] + everyone
 
     if user is not None:
         abilities += [can('read', 'all'),
                    can('read', 'Page'),
-                   can('see_email', 'Commission'),
+                   can('see_email', 'Committee'),
                    can('create', ['Photo','Newsitem','Agendaitem','Event','Result','Comment']),
                    can(['archief','wedstrijden','new_result','create_result', 'icalendar', 'duplicate'], 'Agendaitem'),
                    can(['read','create','update'], 'Photoalbum'),
@@ -99,12 +99,12 @@ async def permissions(request: Request, database: Database, user: Annotated[Opti
 
         abilities += [can('destroy', 'Subscription', {'id':sub.id}) for sub in user.subscriptions if sub.agendaitem.is_before_deadline()]
         
-        if len(user.commission_memberships) > 0:
+        if len(user.Committee_memberships) > 0:
             abilities += [can('manage', 'Agendaitem', {'user_id': user.id})]           
-            abilities += [can('update', 'Agendaitem', {'commission_id': cm.commission_id}) for cm in user.commission_memberships]
+            abilities += [can('update', 'Agendaitem', {'Committee_id': cm.Committee_id}) for cm in user.Committee_memberships]
             
-            for cm in user.commission_memberships:
-                match cm.commission.role:
+            for cm in user.Committee_memberships:
+                match cm.Committee.role:
                     case "KRONOMETER_ADMIN":
                         abilities += [can('kronometer_list', 'User'),
                          can('manage', 'Kronometer')]

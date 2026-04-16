@@ -7,6 +7,7 @@ from datetime import datetime, date
 if TYPE_CHECKING:
     from .agendaitem import AgendaItem
     from .news_item import NewsItem
+    from .committee import CommitteeMember
 
 class UserBase(TimestampModel):
     name: str
@@ -44,6 +45,9 @@ class User(UserBase, table=True):
     approved_news_items: List["NewsItem"] = Relationship(
         back_populates="approver", 
         sa_relationship_kwargs={"foreign_keys": "[NewsItem.approved_by]"}
+    )
+    committee_memberships: List["CommitteeMember"] = Relationship(
+        back_populates="user"
     )
 
 class UserResponse(UserBase):

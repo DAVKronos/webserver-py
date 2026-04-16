@@ -1,7 +1,7 @@
 import React from 'react'
 import FormField from '../Generic/FormField'
 import { Form } from 'react-bootstrap'
-import { getCommissions, getUsersForCommission } from '../Commissions/queries'
+import { getCommittees, getUsersForCommittee } from '../Committees/queries'
 import { getAliases } from '../Aliases/queries'
 import { getUsers } from '../Users/queries'
 
@@ -22,10 +22,10 @@ const mailingListFields = [
     required: true
   },
   {
-    name: 'commission_id',
+    name: 'Committee_id',
     type: 'reference',
     required: false,
-    itemQuery: [['commissions'], getCommissions]
+    itemQuery: [['Committees'], getCommittees]
   },
   {
     name: 'alias_ids',
@@ -39,9 +39,9 @@ const mailingListFields = [
     type: 'reference',
     required: false,
     multiple: true,
-    itemQuery: (commissionId) =>
-      commissionId
-        ? [['commissions', commissionId, 'users'], getUsersForCommission]
+    itemQuery: (CommitteeId) =>
+      CommitteeId
+        ? [['Committees', CommitteeId, 'users'], getUsersForCommittee]
         : [['users'], getUsers]
   }
 ]
@@ -54,7 +54,7 @@ const MailingListForm = ({ values, setValue, children }) => {
         ({ name, type, required, itemQuery, ...otherProps }) => {
           const newItemQuery =
             name === 'user_ids'
-              ? itemQuery(values.commission_id)
+              ? itemQuery(values.Committee_id)
               : itemQuery
           return (
             <FormField

@@ -1,5 +1,5 @@
 import { useQuery } from 'react-query'
-import { getAgendaitemTypes, getCommissionForUser } from './queries'
+import { getAgendaitemTypes, getCommitteeForUser } from './queries'
 import React, { useContext } from 'react'
 import FormField from '../Generic/FormField'
 import { authContext } from '../../utils/AuthContext'
@@ -39,9 +39,9 @@ const agendaItemFields = [{
   name: 'url',
   type: 'text'
 }, {
-  name: 'commission_id',
+  name: 'Committee_id',
   type: 'reference',
-  itemQuery: userId => [['users', userId, 'commissions'], getCommissionForUser, { enabled: !!userId }]
+  itemQuery: userId => [['users', userId, 'Committees'], getCommitteeForUser, { enabled: !!userId }]
 }, {
   name: 'subscribe',
   type: 'boolean'
@@ -62,7 +62,7 @@ const AgendaItemForm = ({ values, setValue, children }) => {
   return (
     <Form>
       {agendaItemFields.map(({ name, type, required, itemQuery, conditionField, ...otherProps }) => {
-        const newItemQuery = name === 'commission_id' ? itemQuery(userId) : itemQuery
+        const newItemQuery = name === 'Committee_id' ? itemQuery(userId) : itemQuery
         if (!conditionField || values[conditionField]) {
           return (
             <FormField

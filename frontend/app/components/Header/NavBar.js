@@ -41,7 +41,7 @@ const NavBar = () => {
         <Nav>
           <Nav.Link as={NavLink} to='/' href='/' exact>Home</Nav.Link>
           <NavDropdown title={t('association')} id='basic-nav-dropdown'>
-            <NavDropdown.Item as={NavLink} to='/commissions' href='/commissions'>{t('committees')}</NavDropdown.Item>
+            <NavDropdown.Item as={NavLink} to='/Committees' href='/Committees'>{t('committees')}</NavDropdown.Item>
             {getPageLinksForMenu(pages, 'Vereniging')}
             <NavDropdown.Item as={NavLink} to='/kronometers' href='/kronometers'>{t('kronometers')}</NavDropdown.Item>
           </NavDropdown>

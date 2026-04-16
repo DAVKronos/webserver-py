@@ -11,7 +11,7 @@ import NewsItemsRouter from './components/NewsItems'
 import AgendaItemsRouter from './components/AgendaItems'
 import Contact from './components/Contact/Contact'
 import PhotoAlbumsRouter from './components/PhotoAlbums'
-import CommissionsRouter from './components/Commissions'
+import CommitteesRouter from './components/Committees'
 import ResultsRouter from './components/Results'
 import PagesRouter from './components/Pages'
 import UsersRouter from './components/Users'
@@ -48,8 +48,8 @@ const AppRouter = () => {
             <Route path='/photoalbums'>
               <PhotoAlbumsRouter />
             </Route>
-            <Route path='/commissions'>
-              <CommissionsRouter />
+            <Route path='/committees'>
+              <CommitteesRouter />
             </Route>
             <Route path='/results'>
               <ResultsRouter />

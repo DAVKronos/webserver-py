@@ -108,7 +108,7 @@
     "paperkronometer": "Paper Kronometer",
     "banknumber": "Bank-account number",
     "createdat": "Created at",
-    "commissions": "Commissions",
+    "Committees": "Committees",
     "changePassword": "Change password",
     "changePasswordSentMessage": "Password has been changed.",
     "unEqualPassword": "Passwords not the same"
@@ -175,8 +175,8 @@
       "mailingList_plural": "Mailing lists",
       "alias": "Alias",
       "alias_plural": "Aliases",
-      "commission": "Commission",
-      "commission_plural": "Commissions",
+      "Committee": "Committee",
+      "Committee_plural": "Committees",
       "folder": "Folder",
       "folder_plural": "Folders",
       "kronometer": "Kronometer",
@@ -196,7 +196,7 @@
       "description_en": "Description (English)",
       "location": "Location",
       "url": "URL",
-      "commission_id": "Commission",
+      "Committee_id": "Committee",
       "subscribe": "Subscription",
       "subscriptiondeadline": "Subscription deadline",
       "maxsubscription": "Maximum subscriptions"
@@ -234,7 +234,7 @@
       "name": "Name",
       "description": "Description",
       "local_part": "Local part",
-      "commission_id": "Commission",
+      "Committee_id": "Committee",
       "alias_ids": "Aliases",
       "user_ids": "Members",
       "mailinglist_ids": "Mailinglists"
@@ -244,7 +244,7 @@
       "description": "Description",
       "emailaddress": "Email Address"
     },
-    "commission": {
+    "Committee": {
       "name": "Name (Dutch)",
       "name_en": "Name (English)",
       "description": "Description (Dutch)",

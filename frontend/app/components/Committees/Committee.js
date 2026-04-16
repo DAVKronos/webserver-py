@@ -3,10 +3,10 @@ import { Table, Button } from 'react-bootstrap'
 import { useQuery, useQueryCache } from 'react-query'
 import { useTranslation } from 'react-i18next'
 import {
-  createCommissionMembership,
-  getCommission,
-  getCommissionMemberships,
-  removeCommissionMembership
+  createCommitteeMembership,
+  getCommittee,
+  getCommitteeMemberships,
+  removeCommitteeMembership
 } from './queries'
 import DefaultSpinner from '../Generic/Spinner'
 import MultiLanguageText from '../Generic/MultiLanguageText'
@@ -15,28 +15,32 @@ import { Can } from '../../utils/auth-helper'
 
 import { getUsers } from '../Users/queries'
 
-const NewCommissionMember = ({ commissionId }) => {
+
+const NewCommitteeMember = ({ CommitteeId }) => {
   const [userId, setUserId] = useState(null)
-  const [commissionFunction, setCommissionFunction] = useState(null)
+  const [CommitteeFunction, setCommitteeFunction] = useState(null)
   const [creating, setCreating] = useState(false)
   const { t } = useTranslation('generic')
   const queryCache = useQueryCache()
+
   const onClickCreate = () => {
-    if (userId && commissionFunction) {
+    if (userId && CommitteeFunction) {
       setCreating(true)
+
       const data = {
         user_id: userId,
-        function: commissionFunction,
-        commission_id: commissionId
+        function: CommitteeFunction,
+        committee_id: CommitteeId
       }
-      createCommissionMembership(commissionId, data).then(() => {
+
+      createCommitteeMembership(CommitteeId, data).then(() => {
         setCreating(false)
         queryCache.invalidateQueries(
-          ['commissions', commissionId, 'commission_memberships'],
+          ['committees', CommitteeId, 'committee_memberships'],
           { exact: true }
         )
         setUserId(null)
-        setCommissionFunction(null)
+        setCommitteeFunction(null)
       })
     }
   }
@@ -55,8 +59,8 @@ const NewCommissionMember = ({ commissionId }) => {
       </td>
       <td>
         <FieldControl
-          value={commissionFunction}
-          setValue={(v) => setCommissionFunction(v)}
+          value={CommitteeFunction}
+          setValue={(v) => setCommitteeFunction(v)}
           type='text'
           required
         />
@@ -70,7 +74,8 @@ const NewCommissionMember = ({ commissionId }) => {
   )
 }
 
-const CommissionMembershipRow = ({ membership, removeFunction }) => {
+
+const CommitteeMembershipRow = ({ membership, removeFunction }) => {
   const name = membership.user && membership.user.name
   const [removing, setRemoving] = useState(false)
 
@@ -80,12 +85,13 @@ const CommissionMembershipRow = ({ membership, removeFunction }) => {
       setRemoving(false)
     })
   }
+
   return (
     <tr key={membership.id}>
       <td>{name}</td>
       <td>{membership.function}</td>
       <td>
-        <Can I='delete' a='CommissionMembership'>
+        <Can I='delete' a='CommitteeMembership'>
           <Button
             variant='danger'
             disabled={removing}
@@ -100,31 +106,35 @@ const CommissionMembershipRow = ({ membership, removeFunction }) => {
   )
 }
 
-function Commission (props) {
+
+function Committee (props) {
   const id = parseInt(props.match.params.id)
   const queryCache = useQueryCache()
-  const { isLoading, isError, data, error } = useQuery(
-    ['commissions', id],
-    getCommission
+
+  const { isLoading, data } = useQuery(
+    ['committees', id],
+    getCommittee
   )
 
   const { isLoading: isMembershipsLoading, data: memberships } = useQuery(
-    ['commissions', id, 'commission_memberships'],
-    getCommissionMemberships
+    ['committees', id, 'committee_memberships'],
+    getCommitteeMemberships
   )
+
   if (isLoading) {
     return <DefaultSpinner />
   }
 
-  const commission = data
-  if (!commission) {
-    return <h1>Commission not found</h1>
+  const Committee = data
+
+  if (!Committee) {
+    return <h1>Committee not found</h1>
   }
 
   const removeFunction = (membershipId) => {
-    return removeCommissionMembership(commission.id, membershipId).then(() => {
+    return removeCommitteeMembership(Committee.id, membershipId).then(() => {
       queryCache.invalidateQueries(
-        ['commissions', commission.id, 'commission_memberships'],
+        ['committees', Committee.id, 'committee_memberships'],
         { exact: true }
       )
     })
@@ -133,29 +143,32 @@ function Commission (props) {
   return (
     <>
       <h1>
-        <MultiLanguageText nl={commission.name} en={commission.name_en} />
+        <MultiLanguageText nl={Committee.name_nl} en={Committee.name_en} />
       </h1>
+
       <p className='lead'>
         <MultiLanguageText
-          nl={commission.description}
-          en={commission.description_en}
+          nl={Committee.description_nl}
+          en={Committee.description_en}
         />
       </p>
+
       <Table striped>
         <thead>
           <tr>
             <th>Naam</th>
             <th>Functie</th>
-            <Can I='delete' a='CommissionMembership'>
+            <Can I='delete' a='CommitteeMembership'>
               <th>Action</th>
             </Can>
           </tr>
         </thead>
+
         <tbody>
           {memberships &&
             memberships.map((membership) => {
               return (
-                <CommissionMembershipRow
+                <CommitteeMembershipRow
                   key={membership.id}
                   removeFunction={removeFunction}
                   membership={membership}
@@ -163,14 +176,15 @@ function Commission (props) {
               )
             })}
 
-          <Can I='create' a='CommissionMembership'>
-            <NewCommissionMember commissionId={commission.id} />
+          <Can I='create' a='CommitteeMembership'>
+            <NewCommitteeMember CommitteeId={Committee.id} />
           </Can>
         </tbody>
       </Table>
+
       {isMembershipsLoading && <DefaultSpinner />}
     </>
   )
 }
 
-export default Commission
+export default Committee

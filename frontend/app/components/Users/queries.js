@@ -1,7 +1,7 @@
 import { restCall, convertToFormData } from '../../utils/rest-helper'
 
 function getMemberships (querykey, userId) {
-  return restCall(`users/${userId}/commissions`).then((res) => res.data)
+  return restCall(`users/${userId}/Committees`).then((res) => res.data)
 }
 function getUsers (queryKey) {
   return restCall('users').then((res) => res.data)
