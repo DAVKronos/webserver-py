@@ -4,6 +4,7 @@ from .base import TimestampModel
 from datetime import datetime
 from sqlalchemy.orm import selectinload 
 
+from .user import UserResponse
 if TYPE_CHECKING:
     from .user import User
   
@@ -41,22 +42,20 @@ class AgendaItemResponse(AgendaItemBase):
     subscriptions: List["SubscriptionResponse"] = []
 
 class AgendaItemCreate(SQLModel):
-    id: int
     name_nl: str
     name_en: str
-    description_nl: str
-    description_en: str
+    description_nl: Optional[str] = None
+    description_en: Optional[str] = None
     date: datetime
-    location: Optional[str]
+    location: Optional[str] = None
     committee_id: Optional[int] = Field(default=None, foreign_key="committees.id")
     is_internal: bool
-    url: Optional[str]
+    url: Optional[str] = None
     can_subscribe: bool
     subscription_deadline: Optional[datetime] = None
     max_subscriptions: Optional[int] = None
 
 class AgendaItemUpdate(SQLModel):
-    id: int  
     name_nl: Optional[str] = None
     name_en: Optional[str] = None
     description_nl: Optional[str] = None
@@ -97,8 +96,9 @@ class Subscription(SubscriptionBase, table=True):
     
     id: Optional[int] = Field(default=None, primary_key=True)
 
-    user: "User" = Relationship()
+    user: "User" = Relationship(sa_relationship_kwargs={'lazy': 'selectin'})
     agenda_item: "AgendaItem" = Relationship(back_populates="subscriptions")
 
 class SubscriptionResponse(SubscriptionBase):
     id: int
+    user: "UserResponse"

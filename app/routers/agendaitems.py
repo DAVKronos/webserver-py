@@ -1,5 +1,5 @@
 from typing import Annotated
-from datetime import datetime, date
+import datetime
 from fastapi import APIRouter, Request, Depends, Query, HTTPException, HTTPException, status
 from fastapi.responses import JSONResponse
 from sqlalchemy import column, func
@@ -7,6 +7,7 @@ from sqlmodel import select
 from ..dependencies import Database
 from ..authentication import *
 from ..models.agendaitem import *
+from ..time_utils import now
 
 router = APIRouter()
 
@@ -33,14 +34,14 @@ async def get(id : int , r: Request, database: Database):
     return agendaitem
 
 #/agendaitemtypes
-@router.get("/agendaitemtypes/{id}", response_model=AgendaItemResponse)
-async def get(id : int , r: Request, database: Database):
+@router.get("/agendaitemtypes/{id}", response_model=AgendaItemTypeResponse)
+async def get(id : int, r: Request, database: Database):
     agendaitemType = await database.get(AgendaItemType, id) 
     if agendaitemType is None : 
         raise HTTPException(status_code=404, detail="Agenda item type not found")
     return agendaitemType
 
-@router.get("/agendaitemtypes", response_model=list[AgendaItem])
+@router.get("/agendaitemtypes", response_model=list[AgendaItemType])
 async def get(r: Request, database: Database):
     query = select(AgendaItemType)
     agendaitemTypes = await database.exec(query) 
@@ -64,15 +65,9 @@ async def get(r: Request, id: int, database: Database):
 
 @router.post("/agendaitems", response_model=AgendaItemResponse)
 async def create_agenda_item(data: AgendaItemCreate, database: Database):
-    t = datetime.utcnow()
-    agenda_item = AgendaItem.model_validate(data, update={'created_at': t, 'updated_at': t, 'user_id': active_user.id})
-    
-    if data.subscribe:
-        if  data.maxsubscription == None or  data.subscriptiondeadline == None:
-            raise HTTPException(status_code=500, detail="Input data not set")
-        # if data.maxsubscription <= 0 and data.subscriptiondeadline < t :
-        #    raise HTTPException(status_code=500, detail="Input data not valid")
-
+    t = now()
+    # TODO: Add active_user.id as creator_id (it is now Bob :) )
+    agenda_item = AgendaItem.model_validate(data, update={'created_at': t, 'updated_at': t, 'created_by_user_id': 313})
 
     database.add(agenda_item)
     await database.commit()
@@ -88,9 +83,6 @@ async def delete_agendaitem(id: int, database: Database):
 
     if not agendaitem:
         raise HTTPException(status_code=404, detail="AgendaItem not found")
-    #For now only allow the owner of the comment to remove it
-    if agendaitem.user_id != active_user.id :
-        raise HTTPException(status_code=403, detail="Not authorized to delete this AgendaItem")
     await database.delete(agendaitem)
     await database.commit()
     return
@@ -102,13 +94,8 @@ async def update_AgendaItem( id: int, data: AgendaItemUpdate, database: Database
     
     if not agendaitem:
         raise HTTPException(status_code=404, detail="AgendaItem not found")
-    #For now only allow the owner of the comment to remove it
-    if agendaitem.user_id != active_user.id and active_user.id != 999:
-        raise HTTPException(status_code=403, detail="Not authorized to edit this comment")
-    t = datetime.utcnow()
-    print(data)
+    t = now()
     agendaitem_data = data.model_dump(exclude_unset=True)
-    print(agendaitem_data)
     agendaitem.sqlmodel_update(agendaitem, update={'updated_at': t, **agendaitem_data})
 
     database.add(agendaitem)
