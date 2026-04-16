@@ -3,6 +3,7 @@ from sqlmodel import Field, Relationship, SQLModel
 from .base import TimestampModel
 from datetime import datetime
 
+from .files import FileResponse
 if TYPE_CHECKING:
     from .agendaitem import AgendaItem
     from .files import File
@@ -25,7 +26,7 @@ class PhotoTag(PhotoTagBase, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
 
     # Relationship back to photos via the link table
-    photos: List["Photo"] = Relationship(back_populates="tags", link_model=HasTags)
+    photos: List["Photo"] = Relationship(back_populates="tags", link_model=HasTag)
 
 class PhotoTagResponse(PhotoTagBase):
     id: int
@@ -45,13 +46,13 @@ class Photo(PhotoBase, table=True):
 
     # Relationships
     album: "PhotoAlbum" = Relationship(back_populates="photos")
-    tags: List[PhotoTag] = Relationship(back_populates="photos", link_model=HasTags)
+    tags: List[PhotoTag] = Relationship(back_populates="photos", link_model=HasTag)
     file: "File" = Relationship()
 
 class PhotoResponse(PhotoBase):
     id: int
     tags: List[PhotoTagResponse] = []
-    file: "File"
+    file: "FileResponse"
 
 
 ##############################################################
@@ -70,7 +71,7 @@ class PhotoAlbum(PhotoAlbumBase, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
 
     # Relationships
-    agenda_item: Optional["AgendaItem"] = Relationship(back_populates="photo_albums")
+    agenda_item: Optional["AgendaItem"] = Relationship()
     photos: List["Photo"] = Relationship(back_populates="album")
 
 class PhotoAlbumResponse(PhotoAlbumBase):
