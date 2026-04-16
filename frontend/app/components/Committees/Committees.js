@@ -3,41 +3,48 @@ import { Table, Button } from 'react-bootstrap'
 import { Link } from 'react-router-dom'
 import { useQuery, useQueryCache } from 'react-query'
 import { useTranslation } from 'react-i18next'
-import { getCommissions, removeCommision } from './queries'
+import { getCommittees, removeCommittee } from './queries'
 import MultiLanguageText from '../Generic/MultiLanguageText'
 import { Can } from '../../utils/auth-helper'
 import DefaultSpinner from '../Generic/Spinner'
 
-const CommissionRow = ({ commission, removeFunction }) => {
+
+const CommitteeRow = ({ committee, removeFunction }) => {
   const [removing, setRemoving] = useState(false)
 
   const onClickRemove = () => {
     setRemoving(true)
-    removeFunction(commission.id).then(() => {
+    removeFunction(committee.id).then(() => {
       setRemoving(false)
     })
   }
+
   return (
-    <tr key={commission.id}>
+    <tr key={committee.id}>
       <td>
-        <Link to={`/commissions/${commission.id}`}>
-          <MultiLanguageText nl={commission.name} en={commission.name_en} />
+        <Link to={`/committees/${committee.id}`}>
+          <MultiLanguageText
+            nl={committee.name_nl}
+            en={committee.name_en}
+          />
         </Link>
       </td>
-      <Can I='update' a='Commission'>
+
+      <Can I='update' a='Committee'>
         <td>
           <Button
             variant='warning'
             disabled={removing}
             size='sm'
             as={Link}
-            to={`commissions/${commission.id}/edit`}
+            to={`/committees/${committee.id}/edit`}
           >
             Bewerk
           </Button>
         </td>
       </Can>
-      <Can I='delete' a='Commission'>
+
+      <Can I='delete' a='Committee'>
         <td>
           <Button
             variant='danger'
@@ -53,18 +60,20 @@ const CommissionRow = ({ commission, removeFunction }) => {
   )
 }
 
-function Commissions (props) {
-  const { isLoading, isError, data, error } = useQuery(
-    'commissions',
-    getCommissions
+
+function Committees (props) {
+  const { isLoading, data } = useQuery(
+    'committees',
+    getCommittees
   )
 
-  const commissions = data
+  const committees = data
   const { t } = useTranslation('committeePage')
   const queryCache = useQueryCache()
+
   const removeFunction = (id) => {
-    return removeCommision(id).then(() => {
-      queryCache.invalidateQueries(['commissions'], { exact: true })
+    return removeCommittee(id).then(() => {
+      queryCache.invalidateQueries(['committees'], { exact: true })
     })
   }
 
@@ -72,36 +81,40 @@ function Commissions (props) {
     <>
       <h1>{t('headerText')}</h1>
       <p className='lead'>{t('pageDescription')}</p>
+
       <Table striped>
         <thead>
           <tr>
             <th>{t('name')}</th>
-            <Can I='update' a='Commission'>
+            <Can I='update' a='Committee'>
               <th />
             </Can>
-            <Can I='delete' a='Commission'>
+            <Can I='delete' a='Committee'>
               <th />
             </Can>
           </tr>
         </thead>
+
         <tbody>
-          {commissions &&
-            commissions.map((commission) => {
+          {committees &&
+            committees.map((committee) => {
               return (
-                <CommissionRow
-                  key={commission.id}
-                  commission={commission}
+                <CommitteeRow
+                  key={committee.id}
+                  committee={committee}
                   removeFunction={removeFunction}
                 />
               )
             })}
         </tbody>
       </Table>
+
       {isLoading && <DefaultSpinner />}
-      <Can I='create' a='Commission'>
-        <Button as={Link} to='/commissions/new'>
+
+      <Can I='create' a='Committee'>
+        <Button as={Link} to='/committees/new'>
           {t('generic:addModel', {
-            model: t('models:modelNames.commission', { count: 0 })
+            model: t('models:modelNames.committee', { count: 0 })
           })}
         </Button>
       </Can>
@@ -109,4 +122,4 @@ function Commissions (props) {
   )
 }
 
-export default Commissions
+export default Committees

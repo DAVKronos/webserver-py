@@ -21,14 +21,14 @@ const EditMailingListWithData = (props) => {
 const EditMailingList = ({ mailingList }) => {
   const queryCache = useQueryCache()
   const history = useHistory()
-  const { id, name, description, local_part, commission_id } = mailingList
+  const { id, name, description, local_part, committee_id } = mailingList
   const alias_ids = mailingList.aliases.map((v) => v.id)
   const user_ids = mailingList.users.map((v) => v.id)
   const editableFields = {
     name,
     description,
     local_part,
-    commission_id,
+    committee_id,
     alias_ids,
     user_ids
   }

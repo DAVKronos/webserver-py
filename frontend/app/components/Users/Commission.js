@@ -18,11 +18,11 @@ const MembershipList = ({ user }) => {
   const { t, i18n } = useTranslation('generic')
   const lang = i18n.language
   const { isLoading, isError, data, error } = useQuery(['memberships', user.id], getMemberships)
-  const commissions = data
+  const Committees = data
   return (
     <>
-      {commissions && commissions.map(commission => {
-        return <RegularText key={commission.id} text={commission.name} />
+      {Committees && Committees.map(Committee => {
+        return <RegularText key={Committee.id} text={Committee.name} />
       })}
     </>
   )
