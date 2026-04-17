@@ -14,15 +14,11 @@ async def get_all(r: Request, database: Database, active_user: Annotated[User, D
         raise HTTPException(status.HTTP_401_UNAUTHORIZED)
     query = select(User) \
         .order_by(User.name.asc())
-        #The users table currently has 2 problematic entries, id 479 & 340
-        # these have a birthdate with the year 0001 initially gave return errors
-        # after manually changing it and setting it back it somehow works again
-        # but maybe update 01/01/0001 dates?
     users = await database.exec(query)
     return users.all()
 
 @router.get("/birthdays", response_model=list[UserResponse])
-async def get_birthdays(r: Request, database: Database):
+async def get_birthdays(r: Request, database: Database, active_user: Annotated[User, Depends(current_user)]):
     today = date.today()
     next_month = (today.month % 12) + 1
     query = select(User).where(

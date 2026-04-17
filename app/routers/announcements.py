@@ -11,8 +11,7 @@ router = APIRouter(prefix="/announcements")
 @router.get("/current", response_model=list[AnnouncementResponse])
 async def current(r: Request, database: Database):
     query = select(Announcement) \
-        .order_by(Announcement.created_at.desc()) \
-        .options(selectinload(Announcement.photo_file))
+        .order_by(Announcement.created_at.desc())
     
     announcements = await database.exec(query)
 

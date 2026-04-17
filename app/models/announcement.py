@@ -22,7 +22,7 @@ class Announcement(AnnouncementBase, table=True):
     __tablename__ = "announcements"
     id: Optional[int] = Field(default=None, primary_key=True)
     
-    photo_file: Optional["File"] = Relationship()
+    photo_file: Optional["File"] = Relationship(sa_relationship_kwargs={'lazy': 'selectin'})
 
 class AnnouncementResponse(AnnouncementBase):
     id: int

@@ -28,29 +28,28 @@ class NewsItem(NewsItemBase, table=True):
     approved_by: Optional[int] = Field(default=None, foreign_key="users.id")
 
     # Relationships
-    comments: List["NewsComment"] = Relationship(back_populates="news_item")
+    comments: List["NewsComment"] = Relationship(back_populates="news_item", sa_relationship_kwargs={'lazy': 'selectin'})
     creator: "User" = Relationship(
         back_populates="created_news_items",
-        sa_relationship_kwargs={"foreign_keys": "[NewsItem.creator_id]"}
+        sa_relationship_kwargs={"foreign_keys": "[NewsItem.creator_id]", 'lazy': 'selectin'}
     )
     approver: Optional["User"] = Relationship(
-        back_populates="approved_news_items",
-        sa_relationship_kwargs={"foreign_keys": "[NewsItem.approved_by]"}
+        sa_relationship_kwargs={"foreign_keys": "[NewsItem.approved_by]", 'lazy': 'selectin'}
     )
 
 class NewsItemResponse(NewsItemBase):
     id: int
-    creator_id: Optional[int]
+    creator_id: Optional[int] = None
     approved_by: Optional[int] = None
     creator: Optional["UserResponse"] = None
     comments: List["NewsCommentResponse"] = None
 
 
 class NewsItemUpdate(SQLModel):
-    title_nl: Optional[str]
-    title_en: Optional[str]
-    content_nl: Optional[str]
-    content_en: Optional[str]
+    title_nl: Optional[str] = None
+    title_en: Optional[str] = None
+    content_nl: Optional[str] = None
+    content_en: Optional[str] = None
 
 class NewsItemCreate(SQLModel):
     title_nl: str
@@ -75,8 +74,9 @@ class NewsComment(NewsCommentBase, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
 
     # Relationships
-    user: "User" = Relationship()
+    user: "User" = Relationship(sa_relationship_kwargs={'lazy': 'selectin'})
     news_item: "NewsItem" = Relationship(back_populates="comments")
 
 class NewsCommentResponse(NewsCommentBase):
     id: int
+    user: "UserResponse"
