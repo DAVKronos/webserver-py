@@ -4,14 +4,14 @@ from fastapi.responses import Response
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlmodel import select, func, column
 from ..authentication import *
-from ..models.user import User
+from ..models.user import UserResponse
 from ..dependencies import Database
 from ..permissions import Ability, can, cannot
 from ..config import config
 
 router = APIRouter(prefix="/auth")
 
-@router.post("/login") #, response_model_exclude_unset=True
+@router.post("/login", response_model=Token) #, response_model_exclude_unset=True
 async def login(
         form_data: Annotated[OAuth2PasswordRequestForm, Depends()],
         database: Database, response: Response) -> Token:
@@ -36,9 +36,9 @@ async def logout():
     # => No need for calling this endpoint
     return {"detail": "Successfully logged out"}
 
-@router.get("/current_user", response_model=User)
+@router.get("/current_user", response_model=UserResponse)
 async def get_current_user(current_user: Annotated[Optional[User], Depends(get_current_user)]):
-    return User.model_validate(current_user)
+    return UserResponse.model_validate(current_user)
 
 
 # maybe this belongs more to user administration than authentication?
