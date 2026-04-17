@@ -11,7 +11,7 @@ from ..authentication import get_current_user
 # All user endpoints need authentication
 router = APIRouter(
     prefix="/users",
-    # dependencies=[Depends(get_current_user)]
+    dependencies=[Depends(get_current_user)]
 )
 
 @router.get("", response_model=list[UserResponse])
