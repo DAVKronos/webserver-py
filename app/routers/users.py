@@ -46,6 +46,14 @@ async def get_one(id: int, r: Request, database: Database):
         raise HTTPException(status_code=404, detail="User not found")
     return user
 
+@router.delete("/{id}")
+async def delete_user(id: int, r: Request, database: Database):
+    user = await database.get(User, id)
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    await database.delete(user)
+    await database.commit()
+
 @router.get("/{id}/committees", response_model=list[CommitteeResponse])
 async def get_committees(id: int, r: Request, database: Database):
     user = await database.get(User, id)
