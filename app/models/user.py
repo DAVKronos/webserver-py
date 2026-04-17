@@ -1,5 +1,5 @@
 from typing import List, Optional, TYPE_CHECKING
-from sqlmodel import Field, Relationship, SQLModel
+from sqlmodel import Field, Relationship
 from .base import TimestampModel
 from datetime import datetime, date
 
@@ -7,7 +7,7 @@ from datetime import datetime, date
 if TYPE_CHECKING:
     from .agendaitem import AgendaItem
     from .news_item import NewsItem
-    from .committees import CommitteeMember
+    from .committee import CommitteeMember
 
 class UserBase(TimestampModel):
     name: str
@@ -52,19 +52,3 @@ class User(UserBase, table=True):
 
 class UserResponse(UserBase):
     id: int
-
-class UserCreate(SQLModel):
-    name: str
-    email: str
-    password: str
-    birthdate: date
-    address: str
-    postalcode: str
-    city: str
-    sex: str
-    phonenumber: str
-    user_type_id: str
-    bank_account_number: str
-    unioncard_number: str
-    institution: str
-    joined_in: int

@@ -4,11 +4,10 @@ from fastapi.responses import Response
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlmodel import select, func, column
 from ..authentication import *
-from ..models.user import *
+from ..models.user import UserResponse
 from ..dependencies import Database
 from ..permissions import Ability, can, cannot
 from ..config import config
-from ..time_utils import now
 
 router = APIRouter(prefix="/auth")
 
@@ -43,17 +42,10 @@ async def get_current_user(current_user: Annotated[Optional[User], Depends(get_c
 
 
 # maybe this belongs more to user administration than authentication?
-@router.post("/register", response_model=User)
-async def register(user_data: UserCreate, database: Database):
-    t = now()
-    hashed_password = hash_password(user_data.password)
-    user = User.model_validate(user_data, update={'created_at': t, 'updated_at': t, 'password': hashed_password})
-    database.add(user)
-    await database.commit()
-    await database.refresh(user)
-    return user
+@router.post("/register")
+async def register():
+    return Response(200)
 
-# TODO: Implement
 @router.post("/forgot-password")
 async def forgot_password():
     # generate temporary login token (validity xx hours)

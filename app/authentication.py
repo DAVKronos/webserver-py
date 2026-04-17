@@ -77,8 +77,6 @@ async def login(database, username, password):
 
     return create_token(str(user.id))
 
-
-
 async def get_current_user(
     database: Database, 
     security_scopes: SecurityScopes, 
