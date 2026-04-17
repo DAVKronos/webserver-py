@@ -89,7 +89,7 @@ async def delete_agendaitem(id: int, database: Database):
 
 
 @router.patch("/agendaitems/{id}", response_model=AgendaItemResponse)
-async def update_AgendaItem( id: int, data: AgendaItemUpdate, database: Database, active_user: Annotated[User, Depends(current_user)]):
+async def update_AgendaItem( id: int, data: AgendaItemUpdate, database: Database):
     agendaitem:AgendaItem | None = await database.get(AgendaItem, id)
     
     if not agendaitem:

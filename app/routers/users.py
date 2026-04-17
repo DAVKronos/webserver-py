@@ -4,21 +4,25 @@ from sqlmodel import select, or_
 from ..dependencies import Database
 from datetime import date
 from ..models.user import *
+from ..models.committees import *
 from typing import Annotated
-from ..authentication import current_user
-router = APIRouter(prefix="/users")
+from ..authentication import get_current_user
+
+# All user endpoints need authentication
+router = APIRouter(
+    prefix="/users",
+    # dependencies=[Depends(get_current_user)]
+)
 
 @router.get("", response_model=list[UserResponse])
-async def get_all(r: Request, database: Database, active_user: Annotated[User, Depends(current_user)]):
-    if active_user is None:
-        raise HTTPException(status.HTTP_401_UNAUTHORIZED)
+async def get_all(r: Request, database: Database):
     query = select(User) \
         .order_by(User.name.asc())
     users = await database.exec(query)
     return users.all()
 
 @router.get("/birthdays", response_model=list[UserResponse])
-async def get_birthdays(r: Request, database: Database, active_user: Annotated[User, Depends(current_user)]):
+async def get_birthdays(r: Request, database: Database):
     today = date.today()
     next_month = (today.month % 12) + 1
     query = select(User).where(
@@ -36,19 +40,16 @@ async def get_birthdays(r: Request, database: Database, active_user: Annotated[U
     return users.all()
 
 @router.get("/{id}", response_model=UserResponse)
-async def get_one(id: int, r: Request, database: Database, active_user: Annotated[User, Depends(current_user)]):
-    if active_user is None:
-        raise HTTPException(status.HTTP_401_UNAUTHORIZED)
-    user: User | None = await database.get(User, id)
+async def get_one(id: int, r: Request, database: Database):
+    user= await database.get(User, id)
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    return user
+
+@router.get("/{id}/committees", response_model=list[CommitteeResponse])
+async def get_committees(id: int, r: Request, database: Database):
+    user = await database.get(User, id)
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
 
-    return user
-
-# @router.get("/{id}/committees", response_model=list[CommitteeResponse])
-# async def get_comissions(id: int, r: Request, database: Database):
-#     user: User | None = await database.get(User, id)
-#     if not user:
-#         raise HTTPException(status_code=404, detail="User not found")
-
-#     return user.committees
+    return user.committees
