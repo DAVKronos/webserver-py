@@ -1,13 +1,13 @@
 from typing import Annotated, Optional
-import time
 from datetime import datetime, timezone, timedelta
 from passlib.context import  CryptContext
 from jose import JWTError, jwt
-from fastapi import Depends, FastAPI, HTTPException, Request, Security, status
+from fastapi import Depends, FastAPI, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer, SecurityScopes
 from pydantic import BaseModel, ValidationError
 from .models.user import User
 from .config import config
+from sqlmodel import select, func, column
 from .dependencies import Database
 
 crypt = CryptContext(schemes=["bcrypt"], deprecated="auto")
@@ -20,13 +20,14 @@ class TokenData(BaseModel):
     username: str | None = None
     scopes: list[str] = []
 
-oauth2_scheme = OAuth2PasswordBearer(
-    tokenUrl="token",
-    scopes={"public": ""}
+oauth2_scheme_required = OAuth2PasswordBearer(
+    tokenUrl="/auth/login",
+    scopes={"public": ""},
+    auto_error=True
 )
 
 oauth2_scheme_optional = OAuth2PasswordBearer(
-    tokenUrl="token",
+    tokenUrl="/auth/login",
     scopes={"public": ""},
     auto_error=False
 )
@@ -76,25 +77,66 @@ async def login(database, username, password):
 
     return create_token(str(user.id))
 
-# TODO: rename to something more explanatory
-async def current_user(database: Database, security_scopes: SecurityScopes, token: Annotated[str, Depends(oauth2_scheme_optional)]) -> Optional[User]:
-    # Returns None if no token is supplied
-    if token is None:
+
+
+async def get_current_user(
+    database: Database, 
+    security_scopes: SecurityScopes, 
+    token: Annotated[str, Depends(oauth2_scheme_required)]
+) -> User:
+    try:
+        payload = await validate_token(token)
+        if not payload:
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED, 
+                detail="Invalid or expired token."
+            )
+        
+        user_id = payload.get("sub")
+        token_scopes = payload.get("scopes", [])
+
+        if user_id is None:
+            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED)
+        user = await database.get(User, int(user_id))
+        if not user:
+            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="User not found")
+    
+        # Check permissions
+        for scope in security_scopes.scopes:
+            if scope not in token_scopes:
+                raise HTTPException(
+                    status_code=status.HTTP_403_FORBIDDEN,
+                    detail="Not enough permissions"
+                )
+        
+        return user
+
+    except (JWTError, ValidationError, ValueError):
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Could not validate credentials",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+
+async def get_optional_user(
+    database: Database, 
+    token: Annotated[Optional[str], Depends(oauth2_scheme_optional)]
+) -> Optional[User]:
+    # returning None means guest mode (not logged in)
+    if not token:
         return None
     
-    else:
-        try:
-            payload = await validate_token(token)
-            user_id: str = payload.get("sub")
-            token_scopes: str = payload.get("scopes")
+    try:
+        payload = await validate_token(token)
+        if not payload:
+            return None
+            
+        user_id = payload.get("sub")
+        if not user_id:
+            return None
 
-            user = await database.get(User, int(user_id))
-        
-            for scope in security_scopes.scopes:
-                if scope not in token_scopes:
-                    raise HTTPException(status.HTTP_401_UNAUTHORIZED,detail="Not enough permissions")
-            # return TokenData(scopes=scopes, username=username)
-            return user
-        except:
-            raise HTTPException(status.HTTP_401_UNAUTHORIZED)
-    
+        user = await database.get(User, int(user_id))
+        return user # returns User if found, None otherwise
+
+    except Exception:
+        return None

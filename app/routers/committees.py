@@ -61,8 +61,7 @@ async def get_committee(id: int, r: Request, database: Database):
 @router.post("", response_model=CommitteeResponse)
 async def create_committee(
     data: CommitteeCreate,
-    database: Database,
-    active_user: Annotated[User, Depends(current_user)]
+    database: Database
 ):
     t = datetime.now(timezone.utc)
 
@@ -89,8 +88,7 @@ async def create_committee(
 async def update_committee(
     id: int,
     data: CommitteeUpdate,
-    database: Database,
-    active_user: Annotated[User, Depends(current_user)]
+    database: Database
 ):
     committee = await database.get(Committee, id)
 
@@ -118,8 +116,7 @@ async def update_committee(
 @router.delete("/{id}", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_committee(
     id: int,
-    database: Database,
-    active_user: Annotated[User, Depends(current_user)]
+    database: Database
 ):
     committee = await database.get(Committee, id)
 
@@ -159,8 +156,7 @@ async def get_memberships(id: int, database: Database):
 async def create_membership(
     id: int,
     data: CommitteeMemberCreate,
-    database: Database,
-    active_user: Annotated[User, Depends(current_user)]
+    database: Database
 ):
     t = datetime.now(timezone.utc)
 
@@ -203,12 +199,13 @@ async def delete_membership(
     id: int,
     membership_id: int,
     database: Database,
-    active_user: Annotated[User, Depends(current_user)]
+    active_user: Annotated[User, Depends(get_current_user)]
 ):
     membership = await database.get(CommitteeMember, membership_id)
 
     if not membership:
         raise HTTPException(status_code=404, detail="Membership not found")
+
 
     if membership.user_id != active_user.id:
         raise HTTPException(status_code=403, detail="Not authorized")
