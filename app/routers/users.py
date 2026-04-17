@@ -54,6 +54,18 @@ async def delete_user(id: int, r: Request, database: Database):
     await database.delete(user)
     await database.commit()
 
+@router.patch("/{id}", response_model=UserResponse)
+async def update_user(id: int, data: UserUpdate, database: Database):
+    user = await database.get(User, id)
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    user_dict = data.model_dump(exclude_unset=True)
+    user.sqlmodel_update(user_dict, update = {'updated_at': now()})
+    database.add(user)
+    await database.commit()
+    await database.refresh(user)
+    return user
+
 @router.get("/{id}/committees", response_model=list[CommitteeResponse])
 async def get_committees(id: int, r: Request, database: Database):
     user = await database.get(User, id)
