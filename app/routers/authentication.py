@@ -23,19 +23,18 @@ async def login(
     user = (await database.exec(query)).first()
     
     if not user:
-        return Response("", 403)
-    if not verify_password(password, user.encrypted_password):
-        return Response("", 403)
+        return Response("Invalid username", 403)
+    if not verify_password(password, user.password):
+        return Response("Invalid password", 403)
     
     token = create_token(str(user.id))
     return Token(access_token=token, token_type="bearer")
 
 @router.post("/logout")
 async def logout():
-    # requires valid session
-    # remove the session from cache
-    # remove the session cookie
-    return Response(200)
+    # Backend is stateless, so logging out is primarily a frontend action
+    # => No need to call this endpoint
+    return {"detail": "Successfully logged out"}
 
 @router.get("/current_user", response_model=User)
 async def get_current_user(current_user: Annotated[Optional[User], Depends(current_user)]):
