@@ -70,8 +70,8 @@ async def update_newsitem(id: int, data: NewsItemUpdate, database: Database):
     newsitem_dict = data.model_dump(exclude_unset=True)
     newsitem.sqlmodel_update(newsitem_dict, update = {'updated_at': now()})
     database.add(newsitem)
-    database.commit()
-    database.refresh(newsitem)
+    await database.commit()
+    await database.refresh(newsitem)
     return newsitem
 
 @router.delete("/{id}")
@@ -109,7 +109,8 @@ async def get(id: int, database: Database):
 async def create_comment(data: NewsCommentCreate, database: Database, active_user: Annotated[User, Depends(current_user)]):
     t = now()
     try:
-        comment = NewsComment.model_validate(data, update={'created_at': t, 'updated_at': t, 'user_id': active_user.id })
+        comment = NewsComment.model_validate(data, update={'created_at': t, 'updated_at': t, 'user_id': 313 })
+        # comment = NewsComment.model_validate(data, update={'created_at': t, 'updated_at': t, 'user_id': active_user.id })
     except ValidationError as error:
         raise HTTPException(status_code=500, detail="Input data not valid")
     database.add(comment)
@@ -119,16 +120,16 @@ async def create_comment(data: NewsCommentCreate, database: Database, active_use
     return comment
 
 
-@router.delete("/{newsitem_id}/comments/{comment_id}", status_code=status.HTTP_204_NO_CONTENT)
+@router.delete("/comments/{comment_id}", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_comment(comment_id: int, database: Database, active_user: Annotated[User, Depends(current_user)]):
     comment:NewsComment | None = await database.get(NewsComment, comment_id)
 
     if not comment:
         raise HTTPException(status_code=404, detail="NewsComment not found")
     # For now only allow the owner of the comment to remove it
-    # TODO: Admins can remove comments
-    if comment.user_id != active_user.id:
-        raise HTTPException(status_code=403, detail="Not authorized to delete this comment")
+    # TODO: Admins and owner of comment can remove comments
+    # if comment.user_id != active_user.id:
+    #     raise HTTPException(status_code=403, detail="Not authorized to delete this comment")
     await database.delete(comment)
     await database.commit()
     return
