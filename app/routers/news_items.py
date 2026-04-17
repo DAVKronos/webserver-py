@@ -1,14 +1,13 @@
 from typing import Annotated, Optional
 from datetime import datetime
-from fastapi import APIRouter, Depends, Form, HTTPException, Request, status
-from sqlmodel import SQLModel, select, func, and_, text
-from pydantic import BaseModel, ValidationError
+from fastapi import APIRouter, Depends, HTTPException, Request, status
+from sqlmodel import select
+from pydantic import  ValidationError
 from ..dependencies import Database
 from ..authentication import *
 from ..models.news_item import *
 from ..models.user import *
 from ..time_utils import now
-from sqlalchemy.orm import selectinload
 
 router = APIRouter(prefix="/newsitems")
 
@@ -27,11 +26,7 @@ async def index(r: Request, database: Database, user: Annotated[Optional[User], 
 async def get_newsitem(id: int, r: Request, database: Database, user: Annotated[Optional[User], Depends(get_optional_user)]):
     query = select(NewsItem) \
         .where(NewsItem.approved == True) \
-        .where(NewsItem.id == id) \
-        .options(
-            selectinload(NewsItem.creator),
-            selectinload(NewsItem.comments)
-        )
+        .where(NewsItem.id == id)
     
     newsitem = (await database.exec(query)).first()    
     if newsitem is None:
