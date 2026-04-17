@@ -21,13 +21,13 @@ class TokenData(BaseModel):
     scopes: list[str] = []
 
 oauth2_scheme_required = OAuth2PasswordBearer(
-    tokenUrl="auth/login",
+    tokenUrl="/auth/login",
     scopes={"public": ""},
     auto_error=True
 )
 
 oauth2_scheme_optional = OAuth2PasswordBearer(
-    tokenUrl="auth/login",
+    tokenUrl="/auth/login",
     scopes={"public": ""},
     auto_error=False
 )
