@@ -1,5 +1,6 @@
 from sqlmodel import SQLModel
-from typing import Union, Optional
+from typing import Union, Optional, Any
+from models import User
 
 class Ability(SQLModel):
     action: Union[str, list[str]]
@@ -12,3 +13,67 @@ def can(action, subject, conditions = None) -> Ability:
 
 def cannot(action,subject, conditions = None) -> Ability:
     return Ability(action=action, subject=subject, conditions=conditions, inverted=True)
+
+def is_allowed(user: User, action: str, subject: str, resource: Any = None) -> bool:
+    abilities = permission_scopes(user.id)
+    for ability in abilities:
+        # Convert to List
+        actions = [ability.action] if isinstance(ability.action, str) else ability.action
+        subjects = [ability.subject] if isinstance(ability.subject, str) else ability.subject
+        
+        if not (action in actions and subject in subjects):
+            continue
+        
+        if not ability.conditions:
+            return not ability.inverted
+        
+        # There are conditions
+        if not resource: return False
+        
+        if all(getattr(resource, key, None) == value for key, value in ability.conditions.items()):
+            return True # Conditions met
+    return False
+
+#####################
+
+CREATE = "create"
+EDIT = "edit"
+DELETE = "delete"
+APPROVE = "approve"
+VIEW_EXTENDED = "view.extended"
+
+def permission_scopes(user_id: int):
+    scopes = []
+    scopes["member"] = [
+        can(EDIT, "User", {"id": user_id}),       # With restriction
+        can(VIEW_EXTENDED, "User", {"id": user_id}), # With restriction
+        can([EDIT, DELETE], "Subscription", {"user_id": user_id}),
+    ]
+
+    scopes["contributor"] = \
+        scopes["user"] + \
+        [
+            can([CREATE, EDIT, DELETE], "NewsItem"),
+            can([CREATE, EDIT, DELETE], "Photo"),
+            can([CREATE, EDIT, DELETE], "File")
+        ]
+    
+    scopes["board"] = \
+        scopes["contributor"] + \
+        [
+            can(VIEW_EXTENDED, "User"),            # Without restriction
+            can([CREATE, EDIT, DELETE], "User"), 
+            can(APPROVE, "NewsItem"),
+            can([CREATE, EDIT, DELETE], "Committee"),
+            can([CREATE, EDIT, DELETE]),
+            can([EDIT, DELETE], "Subscription"),
+            can([CREATE, EDIT, DELETE], "Page")
+        ]
+
+    scopes["admin"] = \
+        scopes["board"] + \
+        [
+            
+        ]
+    return scopes
+
