@@ -4,9 +4,10 @@ from fastapi.responses import Response
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlmodel import select, func, column
 from ..authentication import *
+from ..models.committees import Committee, CommitteeMember
 from ..models.user import *
 from ..dependencies import Database
-from ..permissions import Ability, can, cannot
+from ..permissions import *
 from ..config import config
 from ..time_utils import now
 
@@ -69,8 +70,27 @@ async def reset_password():
     # requires valid token that  has {can_reset_password:true }
     return Response(200)
 
+@router.get("/permissions", response_model=List[Ability])
+async def get_permissions(r: Request, database: Database, user: Annotated[User, Depends(get_current_user)]):
+    scopes = permission_scopes(user.id)
 
-# # TODO: don't need this anymore when the JWT contains scopes
+    committee_query = (
+        select(Committee)
+        .join(CommitteeMember)
+        .where(CommitteeMember.user_id == user.id)
+    )
+    committees = (await Database.exec(committee_query)).all()
+    role = "member"
+    if any(c.name_nl == "Redactie" for c in committees):
+        role = "redactie"
+    if any(c.name_nl == "Bestuur" for c in committees):
+        role = "board"
+    if any(c.name_nl == "WebCie" for c in committees):
+        role = "admin"
+    return scopes[role]
+
+
+# OLD CODE:
 # @router.get("/permissions", response_model= list[Ability], response_model_exclude_none=True)
 # async def permissions(request: Request, database: Database, user: Annotated[Optional[User], Depends(current_user)]):
 #     everyone = [can('read', 'all'),
