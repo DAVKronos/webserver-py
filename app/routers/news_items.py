@@ -91,7 +91,6 @@ async def delete_photo(r: Request, database: Database):
 
 @router.get("/{id}/comments", response_model=list[NewsCommentResponse])
 async def get(id: int, database: Database, user: Annotated[User, Depends(get_current_user)]):
-    # TODO: comments are not public!
     query = select(NewsComment) \
         .where(
             NewsComment.newsitem_id == id
@@ -123,7 +122,7 @@ async def delete_comment(comment_id: int, database: Database, user: Annotated[Us
         raise HTTPException(status.HTTP_404_NOT_FOUND, detail="NewsComment not found")
     # TODO: Admins can remove comments
     if comment.user_id != user.id:
-        raise HTTPException(status.HTTP_403_FORBIDDEN detail="Not authorized to delete this comment")
+        raise HTTPException(status.HTTP_403_FORBIDDEN, detail="Not authorized to delete this comment")
     await database.delete(comment)
     await database.commit()
     return
