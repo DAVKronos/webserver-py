@@ -56,7 +56,7 @@ async def delete_user(id: int, r: Request, database: Database):
 
 
 @router.get("/{id}/committees", response_model=list[CommitteePublicResponse])
-async def get_committees(id: int, r: Request, database: Database, user: Annotated[User, Depends(get_current_user)]):
+async def get_committees(id: int, r: Request, database: Database):
     query = (
         select(Committee)
         .join(CommitteeMember)
