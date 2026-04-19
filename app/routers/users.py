@@ -54,10 +54,14 @@ async def delete_user(id: int, r: Request, database: Database):
     await database.delete(user)
     await database.commit()
 
-@router.get("/{id}/committees", response_model=list[CommitteeResponse])
-async def get_committees(id: int, r: Request, database: Database):
-    user = await database.get(User, id)
-    if not user:
-        raise HTTPException(status_code=404, detail="User not found")
 
-    return user.committees
+@router.get("/{id}/committees", response_model=list[CommitteePublicResponse])
+async def get_committees(id: int, r: Request, database: Database, user: Annotated[User, Depends(get_current_user)]):
+    query = (
+        select(Committee)
+        .join(CommitteeMember)
+        .where(CommitteeMember.user_id == id)
+    )
+    
+    results = await database.exec(query)
+    return results.all()
