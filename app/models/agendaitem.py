@@ -36,8 +36,10 @@ class AgendaItem(AgendaItemBase, table=True):
     creator: "User" = Relationship(back_populates="created_agenda_items", sa_relationship_kwargs={'lazy': 'selectin'})
     subscriptions: List["Subscription"] = Relationship(back_populates="agenda_item", sa_relationship_kwargs={'lazy': 'selectin'})
 
-class AgendaItemResponse(AgendaItemBase):
+class AgendaItemPublicResponse(AgendaItemBase):
     id: int
+
+class AgendaItemPrivateResponse(AgendaItemPublicResponse):
     created_by_user_id: int
     subscriptions: List["SubscriptionResponse"] = []
 

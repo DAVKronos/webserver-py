@@ -11,29 +11,41 @@ from ..time_utils import now
 
 router = APIRouter()
 
-@router.get("/agendaitems", response_model = list[AgendaItemResponse])
+@router.get("/agendaitems")
 async def get(
     r: Request, 
     database: Database, 
+    user: Annotated[Optional[User], Depends(get_optional_user)],
     year: Annotated[int, Query(alias="date[year]")] = datetime.now().year,
-    month: Annotated[int, Query(alias="date[month]")] = datetime.now().month
+    month: Annotated[int, Query(alias="date[month]")] = datetime.now().month,
 ):
     query = select(AgendaItem) \
         .order_by(AgendaItem.date.asc()) \
         .where(func.extract("year", AgendaItem.date) == year) \
         .where(func.extract("month", AgendaItem.date) == month)
+    agendaitems = (await database.exec(query)).all()
+    
+    if user: # Private Response
+        return [AgendaItemPrivateResponse.model_validate(item) for item in agendaitems]
+    
+    # Public response
+    return [AgendaItemPublicResponse.model_validate(item) for item in agendaitems if not item.is_internal]
 
-    agendaitems = await database.exec(query)
-    return agendaitems.all()
 
-@router.get("/agendaitems/{id}", response_model=AgendaItemResponse)
-async def get(id : int , r: Request, database: Database):
+@router.get("/agendaitems/{id}")
+async def get(id : int , r: Request, database: Database, user: Annotated[Optional[User], Depends(get_optional_user)]):
     agendaitem = await database.get(AgendaItem, id) 
     if agendaitem is None : 
-        raise HTTPException(status_code=404, detail="Agenda item not found")
-    return agendaitem
+        raise HTTPException(status.HTTP_404_NOT_FOUND, detail="Agenda item not found")
+    
+    if user: 
+        return AgendaItemPrivateResponse.model_validate(agendaitem)
+    
+    if agendaitem.is_internal:
+        raise HTTPException(status.HTTP_401_UNAUTHORIZED, detail="You must login to view this agenda item.")
+    
+    return AgendaItemPublicResponse.model_validate(agendaitem)
 
-#/agendaitemtypes
 @router.get("/agendaitemtypes/{id}", response_model=AgendaItemTypeResponse)
 async def get(id : int, r: Request, database: Database):
     agendaitemType = await database.get(AgendaItemType, id) 
@@ -52,7 +64,8 @@ async def get(r: Request, database: Database):
 
 
 @router.get("/agendaitems/{id}/subscriptions", response_model=list[SubscriptionResponse])
-async def get(r: Request, id: int, database: Database):
+async def get(r: Request, id: int, database: Database, user: Annotated[User, Depends(get_current_user)]
+):
     query = select(Subscription) \
         .where(Subscription.agendaitem_id == id) \
         .order_by(Subscription.created_at.asc()) \
@@ -63,11 +76,10 @@ async def get(r: Request, id: int, database: Database):
 
 
 
-@router.post("/agendaitems", response_model=AgendaItemResponse)
-async def create_agenda_item(data: AgendaItemCreate, database: Database):
+@router.post("/agendaitems", response_model=AgendaItemPrivateResponse)
+async def create_agenda_item(data: AgendaItemCreate, database: Database, user: Annotated[User, Depends(get_current_user)]):
     t = now()
-    # TODO: Add active_user.id as creator_id (it is now Bob :) )
-    agenda_item = AgendaItem.model_validate(data, update={'created_at': t, 'updated_at': t, 'created_by_user_id': 313})
+    agenda_item = AgendaItem.model_validate(data, update={'created_at': t, 'updated_at': t, 'created_by_user_id': user.id})
 
     database.add(agenda_item)
     await database.commit()
@@ -77,23 +89,24 @@ async def create_agenda_item(data: AgendaItemCreate, database: Database):
 
 
 
-@router.delete("/agendaitems/{id}", status_code=status.HTTP_204_NO_CONTENT)
-async def delete_agendaitem(id: int, database: Database):
-    agendaitem:AgendaItem | None = await database.get(AgendaItem, id)
+@router.delete("/agendaitems/{id}")
+async def delete_agendaitem(id: int, database: Database, user: Annotated[User, Depends(get_current_user)]):
+    agendaitem: AgendaItem | None = await database.get(AgendaItem, id)
 
     if not agendaitem:
-        raise HTTPException(status_code=404, detail="AgendaItem not found")
+        raise HTTPException(status.HTTP_404_NOT_FOUND, detail="AgendaItem not found")
+
     await database.delete(agendaitem)
     await database.commit()
     return
 
 
-@router.patch("/agendaitems/{id}", response_model=AgendaItemResponse)
-async def update_AgendaItem( id: int, data: AgendaItemUpdate, database: Database):
-    agendaitem:AgendaItem | None = await database.get(AgendaItem, id)
+@router.patch("/agendaitems/{id}", response_model=AgendaItemPrivateResponse)
+async def update_AgendaItem( id: int, data: AgendaItemUpdate, database: Database, user: Annotated[User, Depends(get_current_user)]):
+    agendaitem: AgendaItem | None = await database.get(AgendaItem, id)
     
     if not agendaitem:
-        raise HTTPException(status_code=404, detail="AgendaItem not found")
+        raise HTTPException(status.HTTP_404_NOT_FOUND, detail="AgendaItem not found")
     t = now()
     agendaitem_data = data.model_dump(exclude_unset=True)
     agendaitem.sqlmodel_update(agendaitem, update={'updated_at': t, **agendaitem_data})
