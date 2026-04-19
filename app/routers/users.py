@@ -66,10 +66,13 @@ async def update_user(id: int, data: UserUpdate, database: Database):
     await database.refresh(user)
     return user
 
-@router.get("/{id}/committees", response_model=list[CommitteeResponse])
+@router.get("/{id}/committees", response_model=list[CommitteePublicResponse])
 async def get_committees(id: int, r: Request, database: Database):
-    user = await database.get(User, id)
-    if not user:
-        raise HTTPException(status_code=404, detail="User not found")
-
-    return user.committees
+    query = (
+        select(Committee)
+        .join(CommitteeMember)
+        .where(CommitteeMember.user_id == id)
+    )
+    
+    results = await database.exec(query)
+    return results.all()

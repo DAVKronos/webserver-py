@@ -37,12 +37,14 @@ class NewsItem(NewsItemBase, table=True):
         sa_relationship_kwargs={"foreign_keys": "[NewsItem.approved_by]", 'lazy': 'selectin'}
     )
 
-class NewsItemResponse(NewsItemBase):
+class NewsItemPublicResponse(NewsItemBase):
     id: int
-    creator_id: Optional[int] = None
-    approved_by: Optional[int] = None
+
+class NewsItemPrivateResponse(NewsItemPublicResponse):
     creator: Optional["UserResponse"] = None
     comments: List["NewsCommentResponse"] = None
+    approved_by: Optional[int] = None
+    
 
 
 class NewsItemUpdate(SQLModel):

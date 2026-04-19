@@ -8,6 +8,7 @@ from ..models.announcement import *
 
 router = APIRouter(prefix="/announcements")
 
+# TODO: More endpoints
 @router.get("/current", response_model=list[AnnouncementResponse])
 async def current(r: Request, database: Database):
     query = select(Announcement) \

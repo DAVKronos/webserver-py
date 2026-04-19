@@ -3,7 +3,6 @@ from sqlmodel import Field, Relationship, SQLModel
 from .base import TimestampModel
 
 from .user import UserResponse
-
 if TYPE_CHECKING:
     from .user import User
 
@@ -18,26 +17,22 @@ class CommitteeBase(TimestampModel):
     description_nl: str
     description_en: str
     email: Optional[str] = None
-    role: Optional[str] = None
 
 
 class Committee(CommitteeBase, table=True):
     __tablename__ = "committees"
 
     id: Optional[int] = Field(default=None, primary_key=True)
+    role: Optional[str] = None
 
-    memberships: List["CommitteeMember"] = Relationship(back_populates="committee")
 
+    memberships: List["CommitteeMember"] = Relationship(back_populates="committee", sa_relationship_kwargs={'lazy': 'selectin'})
 
-class CommitteeResponse(CommitteeBase):
+class CommitteePublicResponse(CommitteeBase):
     id: int
-    memberships: Optional[List["CommitteeMemberResponse"]] = None
 
-
-class CompactCommitteeResponse(SQLModel):
-    id: int
-    name_nl: str
-    name_en: str
+class CommitteePrivateResponse(CommitteePublicResponse):
+    memberships: List["CommitteeMemberResponse"]
 
 
 class CommitteeCreate(SQLModel):
@@ -63,7 +58,7 @@ class CommitteeUpdate(SQLModel):
 # ============================================================
 
 class CommitteeMemberBase(TimestampModel):
-    function: Optional[str] = None
+    function: Optional[str] = "Member"
     user_id: int = Field(foreign_key="users.id")
     committee_id: int = Field(foreign_key="committees.id")
 
@@ -76,16 +71,16 @@ class CommitteeMember(CommitteeMemberBase, table=True):
     user_id: int = Field(foreign_key="users.id")
     committee_id: int = Field(foreign_key="committees.id")
     
-    user: "User" = Relationship(back_populates="committee_memberships")
-    committee: "Committee" = Relationship(back_populates="memberships")
+    user: "User" = Relationship(back_populates="committee_memberships", sa_relationship_kwargs={'lazy': 'selectin'})
+    committee: "Committee" = Relationship(back_populates="memberships", sa_relationship_kwargs={'lazy': 'selectin'})
 
 
 class CommitteeMemberResponse(CommitteeMemberBase):
     id: int
     user: Optional[UserResponse] = None
-    committee: Optional[CompactCommitteeResponse] = None
+    committee: Optional[CommitteePublicResponse] = None
 
 
 class CommitteeMemberCreate(SQLModel):
     user_id: int
-    function: Optional[str] = None
+    function: Optional[str] = "Member"
