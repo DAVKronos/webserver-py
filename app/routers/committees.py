@@ -8,6 +8,7 @@ from ..dependencies import Database
 from ..authentication import *
 from ..models.committees import *
 from ..models.user import *
+from ..time_utils import now
 
 router = APIRouter(prefix="/committees")
 
@@ -16,27 +17,25 @@ router = APIRouter(prefix="/committees")
 # GET ALL COMMITTEES
 # ============================================================
 
-@router.get("", response_model=list[CommitteeResponse])
-async def index(r: Request, database: Database):
+@router.get("")
+async def index(r: Request, database: Database, user: Annotated[Optional[User], Depends(get_optional_user)]):
     query = (
-        select(Committee)
+        select(Committee) \
         .order_by(Committee.created_at.desc())
-        .options(
-            selectinload(Committee.memberships),
-            selectinload(Committee.memberships).selectinload(CommitteeMember.user),
-        )
     )
+    committees = (await database.exec(query)).all()
 
-    result = await database.exec(query)
-    return result.all()
-
+    if user:
+        return [CommitteePrivateResponse.model_validate(committee) for committee in committees]
+    return [CommitteePublicResponse.model_validate(committee) for committee in committees]
+    
 
 # ============================================================
 # GET ONE COMMITTEE
 # ============================================================
 
-@router.get("/{id}", response_model=CommitteeResponse)
-async def get_committee(id: int, r: Request, database: Database):
+@router.get("/{id}")
+async def get_committee(id: int, r: Request, database: Database, user: Annotated[Optional[User], Depends(get_optional_user)]):
     query = (
         select(Committee)
         .where(Committee.id == id)
@@ -45,26 +44,28 @@ async def get_committee(id: int, r: Request, database: Database):
             selectinload(Committee.memberships).selectinload(CommitteeMember.user),
         )
     )
-
     committee = (await database.exec(query)).first()
 
     if committee is None:
         raise HTTPException(status_code=404, detail="Committee not found")
+    
+    if user:
+        return CommitteePrivateResponse.model_validate(committee)
+    return CommitteePublicResponse.model_validate(committee)
 
-    return committee
 
 
 # ============================================================
 # CREATE COMMITTEE
 # ============================================================
 
-@router.post("", response_model=CommitteeResponse)
+@router.post("", response_model=CommitteePrivateResponse)
 async def create_committee(
     data: CommitteeCreate,
-    database: Database
+    database: Database,
+    user: Annotated[User, Depends(get_current_user)]
 ):
-    t = datetime.now(timezone.utc)
-
+    t = now()
     committee = Committee.model_validate(
         data,
         update={
@@ -84,11 +85,12 @@ async def create_committee(
 # UPDATE COMMITTEE
 # ============================================================
 
-@router.patch("/{id}", response_model=CommitteeResponse)
+@router.patch("/{id}", response_model=CommitteePrivateResponse)
 async def update_committee(
     id: int,
     data: CommitteeUpdate,
-    database: Database
+    database: Database,
+    user: Annotated[User, Depends(get_current_user)]
 ):
     committee = await database.get(Committee, id)
 
@@ -96,11 +98,7 @@ async def update_committee(
         raise HTTPException(status_code=404, detail="Committee not found")
 
     update_data = data.model_dump(exclude_unset=True)
-
-    for key, value in update_data.items():
-        setattr(committee, key, value)
-
-    committee.updated_at = datetime.now(timezone.utc)
+    committee.sqlmodel_update(update_data, update = {'updated_at': now()})
 
     database.add(committee)
     await database.commit()
@@ -116,7 +114,8 @@ async def update_committee(
 @router.delete("/{id}", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_committee(
     id: int,
-    database: Database
+    database: Database,
+    user: Annotated[User, Depends(get_current_user)]
 ):
     committee = await database.get(Committee, id)
 
@@ -133,15 +132,11 @@ async def delete_committee(
 # ============================================================
 
 @router.get("/{id}/memberships", response_model=list[CommitteeMemberResponse])
-async def get_memberships(id: int, database: Database):
+async def get_memberships(id: int, database: Database, user: Annotated[User, Depends(get_current_user)]):
     query = (
-        select(CommitteeMember)
-        .where(CommitteeMember.committee_id == id)
-        .order_by(CommitteeMember.created_at.desc())
-        .options(
-            selectinload(CommitteeMember.user),
-            selectinload(CommitteeMember.committee)
-        )
+        select(CommitteeMember) \
+        .where(CommitteeMember.committee_id == id) \
+        .order_by(CommitteeMember.created_at.desc()) 
     )
 
     result = await database.exec(query)
@@ -156,15 +151,15 @@ async def get_memberships(id: int, database: Database):
 async def create_membership(
     id: int,
     data: CommitteeMemberCreate,
-    database: Database
+    database: Database,
+    user: Annotated[User, Depends(get_current_user)]
 ):
-    t = datetime.now(timezone.utc)
+    t = now()
 
     membership = CommitteeMember.model_validate(
         data,
         update={
             "committee_id": id,
-            "user_id": active_user.id,
             "created_at": t,
             "updated_at": t
         }
@@ -173,18 +168,7 @@ async def create_membership(
     database.add(membership)
     await database.commit()
     await database.refresh(membership)
-
-    # 🔥 IMPORTANT: re-query with relationships loaded
-    result = await database.exec(
-        select(CommitteeMember)
-        .where(CommitteeMember.id == membership.id)
-        .options(
-            selectinload(CommitteeMember.user),
-            selectinload(CommitteeMember.committee)
-        )
-    )
-
-    return result.first()
+    return membership
 
 
 # ============================================================
@@ -192,24 +176,22 @@ async def create_membership(
 # ============================================================
 
 @router.delete(
-    "/{id}/memberships/{membership_id}",
-    status_code=status.HTTP_204_NO_CONTENT
+    "/{id}/memberships/{membership_id}"
 )
 async def delete_membership(
     id: int,
     membership_id: int,
     database: Database,
-    active_user: Annotated[User, Depends(get_current_user)]
+    user: Annotated[User, Depends(get_current_user)]
 ):
     membership = await database.get(CommitteeMember, membership_id)
 
     if not membership:
-        raise HTTPException(status_code=404, detail="Membership not found")
+        raise HTTPException(status.HTTP_404_NOT_FOUND, detail="Membership not found")
 
-
-    if membership.user_id != active_user.id:
-        raise HTTPException(status_code=403, detail="Not authorized")
-
+    if membership.user_id != user.id:
+        raise HTTPException(status.HTTP_403_FORBIDDEN)
+    
     await database.delete(membership)
     await database.commit()
     return
