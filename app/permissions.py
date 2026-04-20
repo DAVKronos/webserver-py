@@ -1,6 +1,6 @@
 from sqlmodel import SQLModel
 from typing import Union, Optional, Any
-from models import User
+from .models import User
 
 class Ability(SQLModel):
     action: Union[str, list[str]]

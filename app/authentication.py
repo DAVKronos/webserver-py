@@ -22,11 +22,13 @@ class TokenData(BaseModel):
 
 oauth2_scheme_required = OAuth2PasswordBearer(
     tokenUrl="/auth/login",
+    scopes={"public": ""},
     auto_error=True
 )
 
 oauth2_scheme_optional = OAuth2PasswordBearer(
     tokenUrl="/auth/login",
+    scopes={"public": ""},
     auto_error=False
 )
 
@@ -45,7 +47,7 @@ def create_token(user: User):
     e = datetime.now(timezone.utc) + timedelta(minutes=expires)
 
     # We will probably not use JWT token, but for now, give an empty token list
-    payload = {"sub": user.id, "scopes": [], "exp": int(e.timestamp())}
+    payload = {"sub": str(user.id), "scopes": [], "exp": int(e.timestamp())}
     
     token = jwt.encode(payload, secret, algorithm=algo)
     return token
@@ -55,7 +57,8 @@ async def validate_token(token):
     algo = config["authentication"]["jwt"]["algorithm"]
     try:
         payload = jwt.decode(token, secret, algorithms=[algo])
-    except JWTError:
+    except JWTError as e:
+        print(e)
         return None
     
     return payload
@@ -98,14 +101,14 @@ async def get_current_user(
         if not user:
             raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="User not found")
 
-        # Get scopes
-        token_scopes = payload.get("scopes", [])
-        user.scopes = token_scopes
+        # # Get scopes
+        # token_scopes = payload.get("scopes", [])
+        # user.scopes = token_scopes
 
-        # Check permissions
-        for scope in security_scopes.scopes:
-            if scope not in user.scopes:
-                raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Not enough permissions")
+        # # Check permissions
+        # for scope in security_scopes.scopes:
+        #     if scope not in user.scopes:
+        #         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Not enough permissions")
         
         return user
 
@@ -140,8 +143,8 @@ async def get_optional_user(
             return None
 
         # Get scopes
-        token_scopes = payload.get("scopes", [])
-        user.scopes = token_scopes
+        # token_scopes = payload.get("scopes", [])
+        # user.scopes = token_scopes
 
         return user
 

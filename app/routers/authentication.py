@@ -29,7 +29,7 @@ async def login(
     if not verify_password(password, user.password):
         return Response("Invalid password", 403)
     
-    token = create_token(str(user.id))
+    token = create_token(user)
     return Token(access_token=token, token_type="bearer")
 
 @router.post("/logout")
