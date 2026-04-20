@@ -9,6 +9,7 @@ from ..authentication import *
 from ..models.committees import *
 from ..models.user import *
 from ..time_utils import now
+from ..permissions import *
 
 router = APIRouter(prefix="/committees")
 
@@ -25,10 +26,9 @@ async def index(r: Request, database: Database, user: Annotated[Optional[User], 
     )
     committees = (await database.exec(query)).all()
 
-    if user:
-        return [CommitteePrivateResponse.model_validate(committee) for committee in committees]
-    return [CommitteePublicResponse.model_validate(committee) for committee in committees]
-    
+    if not user or not user_can(user, VIEW, "Subscription", committees):
+        return [CommitteePublicResponse.model_validate(committee) for committee in committees]
+    return [CommitteeExtendedResponse.model_validate(committee) for committee in committees]
 
 # ============================================================
 # GET ONE COMMITTEE
@@ -49,22 +49,23 @@ async def get_committee(id: int, r: Request, database: Database, user: Annotated
     if committee is None:
         raise HTTPException(status_code=404, detail="Committee not found")
     
-    if user:
-        return CommitteePrivateResponse.model_validate(committee)
-    return CommitteePublicResponse.model_validate(committee)
-
-
+    if not user or not user_can(user, VIEW, "Subscription", committee):
+        return CommitteePublicResponse.model_validate(committee)
+    return CommitteeExtendedResponse.model_validate(committee)
 
 # ============================================================
 # CREATE COMMITTEE
 # ============================================================
 
-@router.post("", response_model=CommitteePrivateResponse)
+@router.post("", response_model=CommitteeExtendedResponse)
 async def create_committee(
     data: CommitteeCreate,
     database: Database,
     user: Annotated[User, Depends(get_current_user)]
 ):
+    if not user_can(user, CREATE, "Committee"):
+        raise HTTPException(status.HTTP_403_FORBIDDEN, detail="Not enough permissions")
+    
     t = now()
     committee = Committee.model_validate(
         data,
@@ -85,7 +86,7 @@ async def create_committee(
 # UPDATE COMMITTEE
 # ============================================================
 
-@router.patch("/{id}", response_model=CommitteePrivateResponse)
+@router.patch("/{id}", response_model=CommitteeExtendedResponse)
 async def update_committee(
     id: int,
     data: CommitteeUpdate,
@@ -96,6 +97,8 @@ async def update_committee(
 
     if not committee:
         raise HTTPException(status_code=404, detail="Committee not found")
+    if not user_can(user, EDIT, "Committee", committee):
+        raise HTTPException(status.HTTP_403_FORBIDDEN, detail="Not enough permissions")
 
     update_data = data.model_dump(exclude_unset=True)
     committee.sqlmodel_update(update_data, update = {'updated_at': now()})
@@ -121,6 +124,8 @@ async def delete_committee(
 
     if not committee:
         raise HTTPException(status_code=404, detail="Committee not found")
+    if not user_can(user, DELETE, "Committee", committee):
+        raise HTTPException(status.HTTP_403_FORBIDDEN, detail="Not enough permissions")
 
     await database.delete(committee)
     await database.commit()
@@ -138,7 +143,9 @@ async def get_memberships(id: int, database: Database, user: Annotated[User, Dep
         .where(CommitteeMember.committee_id == id) \
         .order_by(CommitteeMember.created_at.desc()) 
     )
-
+    if not user_can(user, VIEW, "CommitteeMember"):
+        raise HTTPException(status.HTTP_403_FORBIDDEN, detail="Not enough permissions")
+    
     result = await database.exec(query)
     return result.all()
 
@@ -154,6 +161,9 @@ async def create_membership(
     database: Database,
     user: Annotated[User, Depends(get_current_user)]
 ):
+    if not user_can(user, CREATE, "CommitteeMember"):
+        raise HTTPException(status.HTTP_403_FORBIDDEN, detail="Not enough permissions")
+    
     t = now()
 
     membership = CommitteeMember.model_validate(
@@ -175,9 +185,7 @@ async def create_membership(
 # DELETE MEMBERSHIP
 # ============================================================
 
-@router.delete(
-    "/{id}/memberships/{membership_id}"
-)
+@router.delete("/{id}/memberships/{membership_id}")
 async def delete_membership(
     id: int,
     membership_id: int,
@@ -188,9 +196,9 @@ async def delete_membership(
 
     if not membership:
         raise HTTPException(status.HTTP_404_NOT_FOUND, detail="Membership not found")
-
-    if membership.user_id != user.id:
-        raise HTTPException(status.HTTP_403_FORBIDDEN)
+    
+    if not user_can(user, DELETE, "CommitteeMember", membership):
+        raise HTTPException(status.HTTP_403_FORBIDDEN, detail="Not enough permissions")
     
     await database.delete(membership)
     await database.commit()

@@ -31,7 +31,7 @@ class Committee(CommitteeBase, table=True):
 class CommitteePublicResponse(CommitteeBase):
     id: int
 
-class CommitteePrivateResponse(CommitteePublicResponse):
+class CommitteeExtendedResponse(CommitteePublicResponse):
     memberships: List["CommitteeMemberResponse"]
 
 
