@@ -8,6 +8,7 @@ from ..authentication import *
 from ..models.news_item import *
 from ..models.user import *
 from ..time_utils import now
+from ..permissions import *
 
 router = APIRouter(prefix="/newsitems")
 
@@ -18,9 +19,9 @@ async def index(r: Request, database: Database, user: Annotated[Optional[User], 
         .order_by(NewsItem.created_at.desc())
     newsitems = (await database.exec(query)).all()
 
-    if user:
-        return [NewsItemPrivateResponse.model_validate(item) for item in newsitems]
-    return [NewsItemPublicResponse.model_validate(item) for item in newsitems]
+    if not user or not user_can(user, VIEW_EXTENDED, "NewsItem"):
+        return [NewsItemPublicResponse.model_validate(item) for item in newsitems]
+    return [NewsItemExtendedResponse.model_validate(item) for item in newsitems]
 
 @router.get("/{id}")
 async def get_newsitem(id: int, r: Request, database: Database, user: Annotated[Optional[User], Depends(get_optional_user)]):
@@ -32,18 +33,17 @@ async def get_newsitem(id: int, r: Request, database: Database, user: Annotated[
     if newsitem is None:
         raise HTTPException(status_code=404, detail="NewsItem not found")
     
-    if user:
-        return NewsItemPrivateResponse.model_validate(newsitem)
-    return NewsItemPublicResponse.model_validate(newsitem)
+    if not user or not user_can(user, VIEW_EXTENDED, "NewsItem"):
+        return NewsItemPublicResponse.model_validate(newsitem)
+    return NewsItemExtendedResponse.model_validate(newsitem)
 
-@router.post("/", response_model=NewsItemPrivateResponse)
+@router.post("/", response_model=NewsItemExtendedResponse)
 async def create_newsitem(data: NewsItemCreate, database: Database, user: Annotated[User, Depends(get_current_user)]):
+    if not user_can(user, CREATE, "NewsItem"):
+        raise HTTPException(status.HTTP_403_FORBIDDEN, detail="Not enough permissions.")
+    
     t = now()
-    try:
-        newsitem = NewsItem.model_validate(data, update={'created_at': t, 'updated_at': t, 'user_id': user.id })
-    except ValidationError as e:
-        print(e)
-        raise HTTPException(status_code=500, detail="Input data not valid")
+    newsitem = NewsItem.model_validate(data, update={'created_at': t, 'updated_at': t, 'user_id': user.id })
     
     database.add(newsitem)
     await database.commit()
@@ -51,15 +51,14 @@ async def create_newsitem(data: NewsItemCreate, database: Database, user: Annota
      
     return newsitem
     
-@router.patch("/{id}", response_model=NewsItemPrivateResponse)
+@router.patch("/{id}", response_model=NewsItemExtendedResponse)
 async def update_newsitem(id: int, data: NewsItemUpdate, database: Database, user: Annotated[User, Depends(get_current_user)]):
+
     newsitem = await database.get(NewsItem, id)
     if not newsitem:
         raise HTTPException(status.HTTP_404_NOT_FOUND, detail="NewsItem not found")
-    
-    # TODO: admins can patch as well
-    if newsitem.creator_id != user.id:
-        raise HTTPException(status.HTTP_403_FORBIDDEN, detail="Not authorized")
+    if not user_can(user, EDIT, "NewsItem", newsitem):
+        raise HTTPException(status.HTTP_403_FORBIDDEN, detail="Not enough permissions.")
     
     newsitem_dict = data.model_dump(exclude_unset=True)
     newsitem.sqlmodel_update(newsitem_dict, update = {'updated_at': now()})
@@ -74,8 +73,8 @@ async def delete_newsitem(id: int, r: Request, database: Database, user: Annotat
 
     if not newsitem:
         raise HTTPException(status.HTTP_404_NOT_FOUND, detail="NewsItem not found")
-    if newsitem.creator_id != user.id:
-        raise HTTPException(status.HTTP_403_FORBIDDEN, detail="Not authorized")
+    if not user_can(user, CREATE, "NewsItem", newsitem):
+        raise HTTPException(status.HTTP_403_FORBIDDEN, detail="Not enough permissions.")
     await database.delete(newsitem)
     await database.commit()
 
@@ -91,6 +90,9 @@ async def delete_photo(r: Request, database: Database):
 
 @router.get("/{id}/comments", response_model=list[NewsCommentResponse])
 async def get(id: int, database: Database, user: Annotated[User, Depends(get_current_user)]):
+    if not user_can(user, VIEW, "Comment"):
+        raise HTTPException(status.HTTP_403_FORBIDDEN, detail="Not enough permissions.")
+    
     query = select(NewsComment) \
         .where(
             NewsComment.newsitem_id == id
@@ -102,11 +104,11 @@ async def get(id: int, database: Database, user: Annotated[User, Depends(get_cur
 
 @router.post("/{id}/comments", response_model=NewsCommentResponse)
 async def create_comment(data: NewsCommentCreate, database: Database, user: Annotated[User, Depends(get_current_user)]):
+    if not user_can(user, CREATE, "Comment"):
+        raise HTTPException(status.HTTP_403_FORBIDDEN, detail="Not enough permissions.")
+    
     t = now()
-    try:
-        comment = NewsComment.model_validate(data, update={'created_at': t, 'updated_at': t, 'user_id': user.id })
-    except ValidationError:
-        raise HTTPException(status.HTTP_422_UNPROCESSABLE_CONTENT, detail="Input data not valid")
+    comment = NewsComment.model_validate(data, update={'created_at': t, 'updated_at': t, 'user_id': user.id })
     database.add(comment)
     await database.commit()
     await database.refresh(comment)
@@ -120,9 +122,9 @@ async def delete_comment(comment_id: int, database: Database, user: Annotated[Us
 
     if not comment:
         raise HTTPException(status.HTTP_404_NOT_FOUND, detail="NewsComment not found")
-    # TODO: Admins can remove comments
-    if comment.user_id != user.id:
-        raise HTTPException(status.HTTP_403_FORBIDDEN, detail="Not authorized to delete this comment")
+    if not user_can(user, DELETE, "Comment", comment):
+        raise HTTPException(status.HTTP_403_FORBIDDEN, detail="Not enough permissions.")
+    
     await database.delete(comment)
     await database.commit()
     return

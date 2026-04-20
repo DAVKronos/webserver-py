@@ -40,7 +40,7 @@ class NewsItem(NewsItemBase, table=True):
 class NewsItemPublicResponse(NewsItemBase):
     id: int
 
-class NewsItemPrivateResponse(NewsItemPublicResponse):
+class NewsItemExtendedResponse(NewsItemPublicResponse):
     creator: Optional["UserResponse"] = None
     comments: List["NewsCommentResponse"] = None
     approved_by: Optional[int] = None
