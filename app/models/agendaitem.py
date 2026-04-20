@@ -39,7 +39,7 @@ class AgendaItem(AgendaItemBase, table=True):
 class AgendaItemPublicResponse(AgendaItemBase):
     id: int
 
-class AgendaItemPrivateResponse(AgendaItemPublicResponse):
+class AgendaItemExtendedResponse(AgendaItemPublicResponse):
     created_by_user_id: int
     subscriptions: List["SubscriptionResponse"] = []
 
