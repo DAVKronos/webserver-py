@@ -21,7 +21,7 @@ def is_allowed(user: User, action: str, subject: str, resource: Any = None) -> b
         actions = [ability.action] if isinstance(ability.action, str) else ability.action
         subjects = [ability.subject] if isinstance(ability.subject, str) else ability.subject
         
-        if not (action in actions and subject in subjects):
+        if not (action in actions and (subject in subjects or 'all' in subjects)):
             continue
         
         if not ability.conditions:
@@ -31,7 +31,7 @@ def is_allowed(user: User, action: str, subject: str, resource: Any = None) -> b
         if not resource: return False
         
         if all(getattr(resource, key, None) == value for key, value in ability.conditions.items()):
-            return True # Conditions met
+            return not ability.inverted # Conditions met
     return False
 
 #####################
@@ -73,7 +73,7 @@ def permission_scopes(user_id: int):
     scopes["admin"] = \
         scopes["board"] + \
         [
-            
+            can([CREATE, EDIT, DELETE, VIEW_EXTENDED], 'all')
         ]
     return scopes
 
