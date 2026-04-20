@@ -17,7 +17,7 @@ router = APIRouter(
 )
 
 @router.get("")
-async def get_all(r: Request, database: Database, current_user: Annotated[User, Depends[get_current_user]]):
+async def get_all(r: Request, database: Database, current_user: Annotated[User, Depends(get_current_user)]):
     query = select(User) \
         .order_by(User.name.asc())
     users = (await database.exec(query)).all()
@@ -50,7 +50,7 @@ async def get_birthdays(r: Request, database: Database):
     return users.all()
 
 @router.get("/{id}")
-async def get_one(id: int, r: Request, database: Database, current_user: Annotated[User, Depends[get_current_user]]):
+async def get_one(id: int, r: Request, database: Database, current_user: Annotated[User, Depends(get_current_user)]):
     user = await database.get(User, id)
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
@@ -61,7 +61,7 @@ async def get_one(id: int, r: Request, database: Database, current_user: Annotat
 
 
 @router.delete("/{id}")
-async def delete_user(id: int, r: Request, database: Database, current_user: Annotated[User, Depends[get_current_user]]):
+async def delete_user(id: int, r: Request, database: Database, current_user: Annotated[User, Depends(get_current_user)]):
     user = await database.get(User, id)
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
@@ -73,7 +73,7 @@ async def delete_user(id: int, r: Request, database: Database, current_user: Ann
     await database.commit()
 
 @router.patch("/{id}", response_model=UserExtendedResponse)
-async def update_user(id: int, data: UserUpdate, database: Database, current_user: Annotated[User, Depends[get_current_user]]):
+async def update_user(id: int, data: UserUpdate, database: Database, current_user: Annotated[User, Depends(get_current_user)]):
     user = await database.get(User, id)
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
