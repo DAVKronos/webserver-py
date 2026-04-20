@@ -85,7 +85,7 @@ def permission_scopes(user_id: int):
     scopes["admin"] = \
         scopes["board"] + \
         [
-            can([CREATE, EDIT, DELETE, VIEW_EXTENDED], 'all')
+            can([CREATE, EDIT, DELETE, VIEW, VIEW_EXTENDED, APPROVE], 'all')
         ]
     return scopes
 
