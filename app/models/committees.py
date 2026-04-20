@@ -2,7 +2,7 @@ from typing import Optional, List, TYPE_CHECKING
 from sqlmodel import Field, Relationship, SQLModel
 from .base import TimestampModel
 
-from .user import UserResponse
+from .user import UserBasicResponse
 if TYPE_CHECKING:
     from .user import User
 
@@ -77,7 +77,7 @@ class CommitteeMember(CommitteeMemberBase, table=True):
 
 class CommitteeMemberResponse(CommitteeMemberBase):
     id: int
-    user: Optional[UserResponse] = None
+    user: Optional[UserBasicResponse] = None
     committee: Optional[CommitteePublicResponse] = None
 
 

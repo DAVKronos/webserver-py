@@ -3,7 +3,7 @@ from sqlmodel import Field, Relationship, SQLModel
 from .base import TimestampModel
 
 # Put all model imports outside the if statement
-from .user import UserResponse
+from .user import UserBasicResponse
 if TYPE_CHECKING:
     # Put all scheme (table) import in the if statement
     from .user import User
@@ -41,7 +41,7 @@ class NewsItemPublicResponse(NewsItemBase):
     id: int
 
 class NewsItemExtendedResponse(NewsItemPublicResponse):
-    creator: Optional["UserResponse"] = None
+    creator: Optional["UserBasicResponse"] = None
     comments: List["NewsCommentResponse"] = None
     approved_by: Optional[int] = None
     
@@ -81,4 +81,4 @@ class NewsComment(NewsCommentBase, table=True):
 
 class NewsCommentResponse(NewsCommentBase):
     id: int
-    user: "UserResponse"
+    user: "UserBasicResponse"

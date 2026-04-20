@@ -14,7 +14,10 @@ def can(action, subject, conditions = None) -> Ability:
 def cannot(action,subject, conditions = None) -> Ability:
     return Ability(action=action, subject=subject, conditions=conditions, inverted=True)
 
-def is_allowed(user: User, action: str, subject: str, resource: Any = None) -> bool:
+def user_can(user: Optional[User], action: str, subject: str, resource: Any = None) -> bool:
+    if not user:
+        return False
+    
     abilities = permission_scopes(user.id)
     for ability in abilities:
         # Convert to List
@@ -40,6 +43,7 @@ CREATE = "create"
 EDIT = "edit"
 DELETE = "delete"
 APPROVE = "approve"
+VIEW = "view"
 VIEW_EXTENDED = "view.extended"
 
 def permission_scopes(user_id: int):
@@ -47,7 +51,13 @@ def permission_scopes(user_id: int):
     scopes["member"] = [
         can(EDIT, "User", {"id": user_id}),       # With restriction
         can(VIEW_EXTENDED, "User", {"id": user_id}), # With restriction
+        can(VIEW_EXTENDED, "AgendaItem"),
+        can(VIEW, "Subscription"),
         can([EDIT, DELETE], "Subscription", {"user_id": user_id}),
+        can(VIEW, "CommitteeMember"),
+        can(VIEW_EXTENDED, "NewsItem"),
+        can(CREATE, VIEW, "NewsComment"),
+        can([EDIT, DELETE], "NewsComment", {"user_id": user_id})
     ]
 
     scopes["contributor"] = \
@@ -65,9 +75,11 @@ def permission_scopes(user_id: int):
             can([CREATE, EDIT, DELETE], "User"), 
             can(APPROVE, "NewsItem"),
             can([CREATE, EDIT, DELETE], "Committee"),
+            can([CREATE, EDIT, DELETE], "CommitteeMember"),
             can([CREATE, EDIT, DELETE]),
             can([EDIT, DELETE], "Subscription"),
-            can([CREATE, EDIT, DELETE], "Page")
+            can([CREATE, EDIT, DELETE], "Page"),
+            can([VIEW, EDIT, DELETE], "NewsComment")
         ]
 
     scopes["admin"] = \

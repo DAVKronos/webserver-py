@@ -14,9 +14,6 @@ class UserBase(TimestampModel):
     initials: Optional[str] = None
     email: str = Field(unique=True, index=True)
     birthdate: Optional[date] = None
-    address: Optional[str] = None
-    postalcode: Optional[str] = None
-    city: Optional[str] = None
     sex: Optional[str] = None
     phonenumber: Optional[str] = None
     institution: Optional[str] = None
@@ -36,6 +33,10 @@ class User(UserBase, table=True):
     tokens: Optional[str] = None
     confirmed_at: Optional[datetime] = None
 
+    address: Optional[str] = None
+    postalcode: Optional[str] = None
+    city: Optional[str] = None
+
     # Relationships
     created_agenda_items: List["AgendaItem"] = Relationship(back_populates="creator")
     created_news_items: List["NewsItem"] = Relationship(
@@ -50,8 +51,15 @@ class User(UserBase, table=True):
         back_populates="user"
     )
 
-class UserResponse(UserBase):
+class UserBasicResponse(UserBase):
     id: int
+
+class UserExtendedResponse(UserBasicResponse):
+    bank_account_number: Optional[str] = None
+    unioncard_number: Optional[str] = None
+    address: Optional[str] = None
+    postalcode: Optional[str] = None
+    city: Optional[str] = None
 
 class UserCreate(SQLModel):
     name: str

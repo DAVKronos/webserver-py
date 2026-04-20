@@ -38,9 +38,9 @@ async def logout():
     # => No need for calling this endpoint
     return {"detail": "Successfully logged out"}
 
-@router.get("/current_user", response_model=UserResponse)
+@router.get("/current_user", response_model=UserExtendedResponse)
 async def get_current_user(current_user: Annotated[Optional[User], Depends(get_current_user)]):
-    return UserResponse.model_validate(current_user)
+    return UserExtendedResponse.model_validate(current_user)
 
 
 # maybe this belongs more to user administration than authentication?
