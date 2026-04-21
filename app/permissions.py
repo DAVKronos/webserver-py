@@ -1,6 +1,8 @@
-from sqlmodel import SQLModel
-from typing import Union, Optional, Any
-from .models import User
+from sqlmodel import SQLModel, select
+from typing import Union, Optional, Any, List
+from .dependencies import Database
+from .models.user import User
+from .models.committees import Committee, CommitteeMember
 
 class Ability(SQLModel):
     action: Union[str, list[str]]
@@ -8,17 +10,20 @@ class Ability(SQLModel):
     conditions: Optional[object] = None
     inverted: Optional[bool] = None
 
+class UserContext:
+    user: User
+    permissions: List[Ability]
+    def __init__(self, user: User, permissions: List[Ability]):
+        self.user = user
+        self.permissions = permissions
+
 def can(action, subject, conditions = None) -> Ability:
     return Ability(action=action, subject=subject, conditions=conditions)
 
 def cannot(action,subject, conditions = None) -> Ability:
     return Ability(action=action, subject=subject, conditions=conditions, inverted=True)
 
-def user_can(user: Optional[User], action: str, subject: str, resource: Any = None) -> bool:
-    if not user:
-        return False
-    
-    abilities = permission_scopes(user.id)
+def user_can(abilities: List[Ability], action: str, subject: str, resource: Any = None) -> bool:    
     for ability in abilities:
         # Convert to List
         actions = [ability.action] if isinstance(ability.action, str) else ability.action
@@ -39,6 +44,25 @@ def user_can(user: Optional[User], action: str, subject: str, resource: Any = No
 
 #####################
 
+async def get_user_permissions(user: User, database: Database) -> List[Ability]:
+    scopes = permission_scopes(user.id)
+    committee_query = (
+        select(Committee)
+        .join(CommitteeMember)
+        .where(CommitteeMember.user_id == user.id)
+    )
+    committees = (await database.exec(committee_query)).all()
+    role = "member"
+    if any(c.name_nl == "WebCie" for c in committees):
+        role = "admin"
+    elif any(c.name_nl == "Bestuur" for c in committees):
+        role = "board"
+    elif any(c.name_nl == "Redactie" for c in committees):
+        role = "contributor"
+
+    print(f"Granted permission scope '{role}' to {user.id}")
+    return scopes[role]
+
 CREATE = "create"
 EDIT = "edit"
 DELETE = "delete"
@@ -47,7 +71,7 @@ VIEW = "view"
 VIEW_EXTENDED = "view.extended"
 
 def permission_scopes(user_id: int):
-    scopes = []
+    scopes = {}
     scopes["member"] = [
         can(EDIT, "User", {"id": user_id}),       # With restriction
         can(VIEW_EXTENDED, "User", {"id": user_id}), # With restriction
@@ -61,7 +85,7 @@ def permission_scopes(user_id: int):
     ]
 
     scopes["contributor"] = \
-        scopes["user"] + \
+        scopes["member"] + \
         [
             can([CREATE, EDIT, DELETE], "NewsItem"),
             can([CREATE, EDIT, DELETE], "Photo"),
@@ -76,7 +100,7 @@ def permission_scopes(user_id: int):
             can(APPROVE, "NewsItem"),
             can([CREATE, EDIT, DELETE], "Committee"),
             can([CREATE, EDIT, DELETE], "CommitteeMember"),
-            can([CREATE, EDIT, DELETE]),
+            can([CREATE, EDIT, DELETE], "AgendaItem"),
             can([EDIT, DELETE], "Subscription"),
             can([CREATE, EDIT, DELETE], "Page"),
             can([VIEW, EDIT, DELETE], "NewsComment")

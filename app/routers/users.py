@@ -17,14 +17,14 @@ router = APIRouter(
 )
 
 @router.get("")
-async def get_all(r: Request, database: Database, current_user: Annotated[User, Depends(get_current_user)]):
+async def get_all(r: Request, database: Database, user_context: Annotated[UserContext, Depends(get_current_user)]):
     query = select(User) \
         .order_by(User.name.asc())
     users = (await database.exec(query)).all()
 
     users_response = []
     for user in users:
-        if user_can(current_user, VIEW_EXTENDED, "User", user):
+        if user_can(user_context.permissions, VIEW_EXTENDED, "User", user):
             users_response.append(UserExtendedResponse.model_validate(user))
         else:
             users_response.append(UserBasicResponse.model_validate(user))
@@ -50,34 +50,34 @@ async def get_birthdays(r: Request, database: Database):
     return users.all()
 
 @router.get("/{id}")
-async def get_one(id: int, r: Request, database: Database, current_user: Annotated[User, Depends(get_current_user)]):
+async def get_one(id: int, r: Request, database: Database, user_context: Annotated[UserContext, Depends(get_current_user)]):
     user = await database.get(User, id)
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
-    if user_can(current_user, VIEW_EXTENDED, "User", user):
+    if user_can(user_context.permissions, VIEW_EXTENDED, "User", user):
         return UserExtendedResponse.model_validate(user)
     
     return UserBasicResponse.model_validate(user)
 
 
 @router.delete("/{id}")
-async def delete_user(id: int, r: Request, database: Database, current_user: Annotated[User, Depends(get_current_user)]):
+async def delete_user(id: int, r: Request, database: Database, user_context: Annotated[UserContext, Depends(get_current_user)]):
     user = await database.get(User, id)
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
     
-    if not user_can(current_user, DELETE, "User", user):
+    if not user_can(user_context.permissions, DELETE, "User", user):
         raise HTTPException(status.HTTP_403_FORBIDDEN)
     
     await database.delete(user)
     await database.commit()
 
 @router.patch("/{id}", response_model=UserExtendedResponse)
-async def update_user(id: int, data: UserUpdate, database: Database, current_user: Annotated[User, Depends(get_current_user)]):
+async def update_user(id: int, data: UserUpdate, database: Database, user_context: Annotated[UserContext, Depends(get_current_user)]):
     user = await database.get(User, id)
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
-    if not user_can(current_user, EDIT, "User", user):
+    if not user_can(user_context.permissions, EDIT, "User", user):
         raise HTTPException(status.HTTP_403_FORBIDDEN)
 
     user_dict = data.model_dump(exclude_unset=True)

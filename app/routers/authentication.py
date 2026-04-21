@@ -39,8 +39,8 @@ async def logout():
     return {"detail": "Successfully logged out"}
 
 @router.get("/current_user", response_model=UserExtendedResponse)
-async def get_current_user(current_user: Annotated[Optional[User], Depends(get_current_user)]):
-    return UserExtendedResponse.model_validate(current_user)
+async def endpoint_current_user(user_context: Annotated[UserContext, Depends(get_current_user)]):
+    return UserExtendedResponse.model_validate(user_context.user)
 
 
 # maybe this belongs more to user administration than authentication?
@@ -71,23 +71,8 @@ async def reset_password():
     return Response(200)
 
 @router.get("/permissions", response_model=List[Ability])
-async def get_permissions(r: Request, database: Database, user: Annotated[User, Depends(get_current_user)]):
-    scopes = permission_scopes(user.id)
-
-    committee_query = (
-        select(Committee)
-        .join(CommitteeMember)
-        .where(CommitteeMember.user_id == user.id)
-    )
-    committees = (await Database.exec(committee_query)).all()
-    role = "member"
-    if any(c.name_nl == "Redactie" for c in committees):
-        role = "redactie"
-    if any(c.name_nl == "Bestuur" for c in committees):
-        role = "board"
-    if any(c.name_nl == "WebCie" for c in committees):
-        role = "admin"
-    return scopes[role]
+async def get_permissions(r: Request, database: Database, user_context: Annotated[UserContext, Depends(get_current_user)]):
+    return await get_user_permissions(user_context.user, database)
 
 
 # OLD CODE:

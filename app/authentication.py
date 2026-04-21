@@ -9,6 +9,7 @@ from .models.user import User
 from .config import config
 from sqlmodel import select, func, column
 from .dependencies import Database
+from .permissions import get_user_permissions, UserContext
 
 crypt = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
@@ -79,12 +80,11 @@ async def login(database, username, password):
     return token
 
 
-
 async def get_current_user(
     database: Database, 
     security_scopes: SecurityScopes, 
     token: Annotated[str, Depends(oauth2_scheme_required)]
-) -> User:
+) -> UserContext:
     try:
         payload = await validate_token(token)
         if not payload:
@@ -96,23 +96,15 @@ async def get_current_user(
         # Get user
         user_id = payload.get("sub")
         if user_id is None:
-            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED)
+            raise HTTPException(status.HTTP_401_UNAUTHORIZED)
         user = await database.get(User, int(user_id))
         if not user:
-            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="User not found")
+            raise HTTPException(status.HTTP_401_UNAUTHORIZED, detail="User not found")
 
-        # # Get scopes
-        # token_scopes = payload.get("scopes", [])
-        # user.scopes = token_scopes
-
-        # # Check permissions
-        # for scope in security_scopes.scopes:
-        #     if scope not in user.scopes:
-        #         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Not enough permissions")
-        
-        return user
-
-    except (JWTError, ValidationError, ValueError):
+        permissions = await get_user_permissions(user, database)
+        return UserContext(user, permissions)
+    except (JWTError, ValidationError, ValueError) as e:
+        print(e)
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Could not validate credentials",
@@ -143,10 +135,10 @@ async def get_optional_user(
             return None
 
         # Get scopes
-        # token_scopes = payload.get("scopes", [])
-        # user.scopes = token_scopes
+        permissions = await get_user_permissions(user, database)
 
-        return user
+        return UserContext(user, permissions)
+        # return user
 
     except Exception:
         return None

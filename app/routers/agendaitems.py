@@ -16,7 +16,7 @@ router = APIRouter()
 async def get(
     r: Request, 
     database: Database, 
-    user: Annotated[Optional[User], Depends(get_optional_user)],
+    user_context: Annotated[Optional[UserContext], Depends(get_optional_user)],
     year: Annotated[int, Query(alias="date[year]")] = datetime.now().year,
     month: Annotated[int, Query(alias="date[month]")] = datetime.now().month,
 ):
@@ -26,7 +26,7 @@ async def get(
         .where(func.extract("month", AgendaItem.date) == month)
     agendaitems = (await database.exec(query)).all()
     
-    if user: # Private Response
+    if user_context: # Extended Response
         return [AgendaItemExtendedResponse.model_validate(item) for item in agendaitems]
     
     # Public response
@@ -34,12 +34,12 @@ async def get(
 
 
 @router.get("/agendaitems/{id}")
-async def get(id : int , r: Request, database: Database, user: Annotated[Optional[User], Depends(get_optional_user)]):
+async def get(id : int , r: Request, database: Database, user_context: Annotated[Optional[UserContext], Depends(get_optional_user)]):
     agendaitem = await database.get(AgendaItem, id) 
     if agendaitem is None : 
         raise HTTPException(status.HTTP_404_NOT_FOUND, detail="Agenda item not found")
     
-    if user:
+    if user_context:
         return AgendaItemExtendedResponse.model_validate(agendaitem)
     
     if agendaitem.is_internal:
@@ -65,7 +65,7 @@ async def get(r: Request, database: Database):
 
 
 @router.get("/agendaitems/{id}/subscriptions", response_model=list[SubscriptionResponse])
-async def get(r: Request, id: int, database: Database, user: Annotated[User, Depends(get_current_user)]
+async def get(r: Request, id: int, database: Database, user_context: Annotated[UserContext, Depends(get_current_user)]
 ):
     query = select(Subscription) \
         .where(Subscription.agendaitem_id == id) \
@@ -78,8 +78,8 @@ async def get(r: Request, id: int, database: Database, user: Annotated[User, Dep
 
 
 @router.post("/agendaitems", response_model=AgendaItemExtendedResponse)
-async def create_agenda_item(data: AgendaItemCreate, database: Database, user: Annotated[User, Depends(get_current_user)]):
-    if not user_can(user, CREATE, "AgendaItem"):
+async def create_agenda_item(data: AgendaItemCreate, database: Database, user_context: Annotated[UserContext, Depends(get_current_user)]):
+    if not user_can(user_context.permissions, CREATE, "AgendaItem"):
         raise HTTPException(status.HTTP_403_FORBIDDEN, detail="Not enough permissions.")
     
     t = now()
@@ -94,8 +94,8 @@ async def create_agenda_item(data: AgendaItemCreate, database: Database, user: A
 
 
 @router.delete("/agendaitems/{id}")
-async def delete_agendaitem(id: int, database: Database, user: Annotated[User, Depends(get_current_user)]):
-    if not user_can(user, DELETE, "AgendaItem"):
+async def delete_agendaitem(id: int, database: Database, user_context: Annotated[UserContext, Depends(get_current_user)]):
+    if not user_can(user_context.permissions, DELETE, "AgendaItem"):
         raise HTTPException(status.HTTP_403_FORBIDDEN, detail="Not enough permissions.")
     
     agendaitem: AgendaItem | None = await database.get(AgendaItem, id)
@@ -109,8 +109,8 @@ async def delete_agendaitem(id: int, database: Database, user: Annotated[User, D
 
 
 @router.patch("/agendaitems/{id}", response_model=AgendaItemExtendedResponse)
-async def update_agendaitem( id: int, data: AgendaItemUpdate, database: Database, user: Annotated[User, Depends(get_current_user)]):
-    if not user_can(user, EDIT, "AgendaItem"):
+async def update_agendaitem( id: int, data: AgendaItemUpdate, database: Database, user_context: Annotated[UserContext, Depends(get_current_user)]):
+    if not user_can(user_context.permissions, EDIT, "AgendaItem"):
         raise HTTPException(status.HTTP_403_FORBIDDEN, detail="Not enough permissions.")
     
     agendaitem: AgendaItem | None = await database.get(AgendaItem, id)
