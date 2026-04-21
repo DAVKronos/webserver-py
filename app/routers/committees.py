@@ -26,7 +26,7 @@ async def index(database: Database, user_context: Annotated[Optional[UserContext
     )
     committees = (await database.exec(query)).all()
 
-    if not user or not user_can(user_context.permissions, VIEW, "Subscription", committees):
+    if not user_context:
         return [CommitteePublicResponse.model_validate(committee) for committee in committees]
     return [CommitteeExtendedResponse.model_validate(committee) for committee in committees]
 
@@ -39,14 +39,10 @@ async def get_committee(id: int, database: Database, user_context: Annotated[Opt
     query = (
         select(Committee)
         .where(Committee.id == id)
-        .options(
-            selectinload(Committee.memberships),
-            selectinload(Committee.memberships).selectinload(CommitteeMember.user),
-        )
     )
     committee = (await database.exec(query)).first()
 
-    if committee is None:
+    if not committee:
         raise HTTPException(status_code=404, detail="Committee not found")
     
     if not user_context or not user_can(user_context.permissions, VIEW, "Subscription", committee):
