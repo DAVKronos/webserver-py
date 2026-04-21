@@ -4,12 +4,13 @@ from sqlmodel import select
 from ..dependencies import Database
 from ..models.user import *
 from ..authentication import get_current_user
+from ..permissions import UserContext
 
 router = APIRouter(prefix="/user_type")
 
 @router.get("s", response_model=list[UserTypeResponse])
-async def index(r: Request, database: Database, active_user: Annotated[User, Depends(get_current_user)]):
-    if active_user is None:
+async def index(r: Request, database: Database, user_context: Annotated[UserContext, Depends(get_current_user)]):
+    if not user_context:
         raise HTTPException(status.HTTP_401_UNAUTHORIZED)
     
     query = select(UserType) \
@@ -20,8 +21,8 @@ async def index(r: Request, database: Database, active_user: Annotated[User, Dep
     return usertypes.all()
 
 @router.get("/{id}", response_model=UserTypeResponse)
-async def get_usertype(id: int, r: Request, database: Database, active_user: Annotated[User, Depends(get_current_user)]):
-    if active_user is None:
+async def get_usertype(id: int, r: Request, database: Database, user_context: Annotated[UserContext, Depends(get_current_user)]):
+    if not user_context:
         raise HTTPException(status.HTTP_401_UNAUTHORIZED)
     
     query = select(UserType) \
