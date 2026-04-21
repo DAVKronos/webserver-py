@@ -4,7 +4,7 @@ from .base import TimestampModel
 from datetime import datetime
 from sqlalchemy.orm import selectinload 
 
-from .user import UserResponse
+from .user import UserBasicResponse
 if TYPE_CHECKING:
     from .user import User
   
@@ -39,7 +39,7 @@ class AgendaItem(AgendaItemBase, table=True):
 class AgendaItemPublicResponse(AgendaItemBase):
     id: int
 
-class AgendaItemPrivateResponse(AgendaItemPublicResponse):
+class AgendaItemExtendedResponse(AgendaItemPublicResponse):
     created_by_user_id: int
     subscriptions: List["SubscriptionResponse"] = []
 
@@ -103,4 +103,4 @@ class Subscription(SubscriptionBase, table=True):
 
 class SubscriptionResponse(SubscriptionBase):
     id: int
-    user: "UserResponse"
+    user: "UserBasicResponse"

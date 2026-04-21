@@ -4,9 +4,10 @@ from fastapi.responses import Response
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlmodel import select, func, column
 from ..authentication import *
+from ..models.committees import Committee, CommitteeMember
 from ..models.user import *
 from ..dependencies import Database
-from ..permissions import Ability, can, cannot
+from ..permissions import *
 from ..config import config
 from ..time_utils import now
 
@@ -28,7 +29,7 @@ async def login(
     if not verify_password(password, user.password):
         return Response("Invalid password", 403)
     
-    token = create_token(str(user.id))
+    token = create_token(user)
     return Token(access_token=token, token_type="bearer")
 
 @router.post("/logout")
@@ -37,9 +38,9 @@ async def logout():
     # => No need for calling this endpoint
     return {"detail": "Successfully logged out"}
 
-@router.get("/current_user", response_model=UserResponse)
-async def get_current_user(current_user: Annotated[Optional[User], Depends(get_current_user)]):
-    return UserResponse.model_validate(current_user)
+@router.get("/current_user", response_model=UserExtendedResponse)
+async def endpoint_current_user(user_context: Annotated[UserContext, Depends(get_current_user)]):
+    return UserExtendedResponse.model_validate(user_context.user)
 
 
 # maybe this belongs more to user administration than authentication?
@@ -69,8 +70,12 @@ async def reset_password():
     # requires valid token that  has {can_reset_password:true }
     return Response(200)
 
+@router.get("/permissions", response_model=List[Ability])
+async def get_permissions(r: Request, database: Database, user_context: Annotated[UserContext, Depends(get_current_user)]):
+    return await get_user_permissions(user_context.user, database)
 
-# # TODO: don't need this anymore when the JWT contains scopes
+
+# OLD CODE:
 # @router.get("/permissions", response_model= list[Ability], response_model_exclude_none=True)
 # async def permissions(request: Request, database: Database, user: Annotated[Optional[User], Depends(current_user)]):
 #     everyone = [can('read', 'all'),
