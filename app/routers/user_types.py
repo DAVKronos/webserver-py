@@ -1,22 +1,35 @@
-# from fastapi import APIRouter, Request, HTTPException
-# from sqlmodel import select
-# from ..dependencies import Database
-# from ..models.user import *
-# from ..schemas.user import *
+from typing import Annotated
+from fastapi import APIRouter, Depends, HTTPException, Request, status
+from sqlmodel import select
+from ..dependencies import Database
+from ..models.user import *
+from ..authentication import get_current_user
 
-# router = APIRouter(prefix="/user_types")
+router = APIRouter(prefix="/user_type")
 
-# @router.get("", response_model=list[UserTypeResponse])
-# async def get_all_usertypes(r: Request, database: Database):
-#     query = select(UserType) \
-#         .order_by(UserType.id.desc())
+@router.get("s", response_model=list[UserTypeResponse])
+async def index(r: Request, database: Database, active_user: Annotated[User, Depends(get_current_user)]):
+    if active_user is None:
+        raise HTTPException(status.HTTP_401_UNAUTHORIZED)
+    
+    query = select(UserType) \
+        .order_by(UserType.id.desc())
+        
+    usertypes = await database.exec(query)
+    
+    return usertypes.all()
 
-#     usertypes = await database.exec(query)
-#     return usertypes.all()
-
-# @router.get("/{id}", response_model=UserTypeResponse)
-# async def get_one_usertype(id: int, r: Request, database: Database):
-#     user_type = await database.get(UserType, id)
-#     if not user_type:
-#         raise HTTPException(status_code=404, detail="Usertype not found")
-#     return user_type
+@router.get("/{id}", response_model=UserTypeResponse)
+async def get_usertype(id: int, r: Request, database: Database, active_user: Annotated[User, Depends(get_current_user)]):
+    if active_user is None:
+        raise HTTPException(status.HTTP_401_UNAUTHORIZED)
+    
+    query = select(UserType) \
+        .where(UserType.id == id)
+    
+    user_type = (await database.exec(query)).first()
+    
+    if user_type is None:
+        raise HTTPException(status_code=404, detail="Usertype not found")
+    
+    return user_type

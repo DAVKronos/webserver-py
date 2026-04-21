@@ -19,7 +19,7 @@ class UserBase(TimestampModel):
     institution: Optional[str] = None
     joined_in: Optional[int] = None
     avatar_file_id: Optional[int] = None
-    user_type_id: Optional[int] = None
+    user_type_id: Optional[int] = Field(default=None, foreign_key="user_types.id")
 
 
 class User(UserBase, table=True):
@@ -50,6 +50,11 @@ class User(UserBase, table=True):
     committee_memberships: List["CommitteeMember"] = Relationship(
         back_populates="user"
     )
+    user_type: Optional["UserType"] = Relationship(
+        back_populates="users",
+        sa_relationship_kwargs={"foreign_keys": "[User.user_type_id]"}
+    )
+
 
 class UserBasicResponse(UserBase):
     id: int
@@ -90,3 +95,25 @@ class UserUpdate(SQLModel):
     unioncard_number: Optional[str] = None
     institution: Optional[str] = None
     user_type_id: Optional[int] = None
+
+
+
+
+class UserTypeBase(TimestampModel):
+    name_nl: str
+    name_en: str
+    is_donor: bool = False
+    is_competition: bool = False
+
+
+class UserType(UserTypeBase, table=True):
+    __tablename__ = "user_types"
+
+    id: Optional[int] = Field(default=None, primary_key=True)
+    
+    # Relationship
+    users: List["User"] = Relationship(back_populates="user_type")
+
+
+class UserTypeResponse(UserTypeBase):
+    id: int
