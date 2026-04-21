@@ -1,6 +1,6 @@
 from sqlmodel import select
-from typing import Annotated, Depends
-from fastapi import APIRouter, Request, HTTPException, status
+from typing import Annotated
+from fastapi import APIRouter, Request, HTTPException, status, Depends
 from sqlmodel import select
 from ..dependencies import Database
 from ..models.page import *
@@ -18,7 +18,7 @@ async def get_all(r: Request, database: Database, user_context: Annotated[Option
     if not user_context: # Not logged in
         pages = filter(lambda page: page.is_public, pages)
 
-    return filter()
+    return pages
 
 @router.get("/{id}", response_model=PageResponse)
 async def get(id: int, r: Request, database: Database, user_context: Annotated[Optional[UserContext], Depends(get_optional_user)]):
@@ -47,7 +47,7 @@ async def create_page(
 
     return page
 
-@router.patch("/{id}", reponse_model=PageResponse)
+@router.patch("/{id}", response_model=PageResponse)
 async def update_page(
     id: int,
     data: PageUpdate,
@@ -76,7 +76,7 @@ async def delete_page(
     database: Database,
     user_context: Annotated[UserContext, Depends(get_current_user)]
 ):
-    committee = await database.get(Committee, id)
+    committee = await database.get(Page, id)
 
     if not committee:
         raise HTTPException(status_code=404, detail="Committee not found")
