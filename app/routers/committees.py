@@ -19,7 +19,7 @@ router = APIRouter(prefix="/committees")
 # ============================================================
 
 @router.get("")
-async def index(r: Request, database: Database, user_context: Annotated[Optional[UserContext], Depends(get_optional_user)]):
+async def index(database: Database, user_context: Annotated[Optional[UserContext], Depends(get_optional_user)]):
     query = (
         select(Committee) \
         .order_by(Committee.created_at.desc())
@@ -35,7 +35,7 @@ async def index(r: Request, database: Database, user_context: Annotated[Optional
 # ============================================================
 
 @router.get("/{id}")
-async def get_committee(id: int, r: Request, database: Database, user_context: Annotated[Optional[UserContext], Depends(get_optional_user)]):
+async def get_committee(id: int, database: Database, user_context: Annotated[Optional[UserContext], Depends(get_optional_user)]):
     query = (
         select(Committee)
         .where(Committee.id == id)

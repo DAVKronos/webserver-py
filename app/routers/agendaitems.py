@@ -14,7 +14,6 @@ router = APIRouter()
 
 @router.get("/agendaitems")
 async def get(
-    r: Request, 
     database: Database, 
     user_context: Annotated[Optional[UserContext], Depends(get_optional_user)],
     year: Annotated[int, Query(alias="date[year]")] = datetime.now().year,
@@ -34,7 +33,7 @@ async def get(
 
 
 @router.get("/agendaitems/{id}")
-async def get(id : int , r: Request, database: Database, user_context: Annotated[Optional[UserContext], Depends(get_optional_user)]):
+async def get(id : int, database: Database, user_context: Annotated[Optional[UserContext], Depends(get_optional_user)]):
     agendaitem = await database.get(AgendaItem, id) 
     if agendaitem is None : 
         raise HTTPException(status.HTTP_404_NOT_FOUND, detail="Agenda item not found")
@@ -48,14 +47,14 @@ async def get(id : int , r: Request, database: Database, user_context: Annotated
     return AgendaItemPublicResponse.model_validate(agendaitem)
 
 @router.get("/agendaitemtypes/{id}", response_model=AgendaItemTypeResponse)
-async def get(id : int, r: Request, database: Database):
+async def get(id : int, database: Database):
     agendaitemType = await database.get(AgendaItemType, id) 
     if agendaitemType is None : 
         raise HTTPException(status_code=404, detail="Agenda item type not found")
     return agendaitemType
 
 @router.get("/agendaitemtypes", response_model=list[AgendaItemType])
-async def get(r: Request, database: Database):
+async def get(database: Database):
     query = select(AgendaItemType)
     agendaitemTypes = await database.exec(query) 
     if agendaitemTypes is None : 
@@ -65,7 +64,7 @@ async def get(r: Request, database: Database):
 
 
 @router.get("/agendaitems/{id}/subscriptions", response_model=list[SubscriptionResponse])
-async def get(r: Request, id: int, database: Database, user_context: Annotated[UserContext, Depends(get_current_user)]
+async def get(id: int, database: Database, user_context: Annotated[UserContext, Depends(get_current_user)]
 ):
     query = select(Subscription) \
         .where(Subscription.agendaitem_id == id) \

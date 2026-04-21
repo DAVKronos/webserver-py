@@ -13,7 +13,7 @@ from ..permissions import *
 router = APIRouter(prefix="/newsitems")
 
 @router.get("")
-async def index(r: Request, database: Database, user_context: Annotated[Optional[UserContext], Depends(get_optional_user)]):
+async def index(database: Database, user_context: Annotated[Optional[UserContext], Depends(get_optional_user)]):
     query = select(NewsItem) \
         .where(NewsItem.approved == True) \
         .order_by(NewsItem.created_at.desc())
@@ -24,7 +24,7 @@ async def index(r: Request, database: Database, user_context: Annotated[Optional
     return [NewsItemExtendedResponse.model_validate(item) for item in newsitems]
 
 @router.get("/{id}")
-async def get_newsitem(id: int, r: Request, database: Database, user_context: Annotated[Optional[UserContext], Depends(get_optional_user)]):
+async def get_newsitem(id: int, database: Database, user_context: Annotated[Optional[UserContext], Depends(get_optional_user)]):
     query = select(NewsItem) \
         .where(NewsItem.approved == True) \
         .where(NewsItem.id == id)
@@ -68,7 +68,7 @@ async def update_newsitem(id: int, data: NewsItemUpdate, database: Database, use
     return newsitem
 
 @router.delete("/{id}")
-async def delete_newsitem(id: int, r: Request, database: Database, user_context: Annotated[UserContext, Depends(get_current_user)]):
+async def delete_newsitem(id: int, database: Database, user_context: Annotated[UserContext, Depends(get_current_user)]):
     newsitem = await database.get(NewsItem, id)
 
     if not newsitem:
@@ -80,12 +80,12 @@ async def delete_newsitem(id: int, r: Request, database: Database, user_context:
 
 # TODO: Implement
 @router.put("/{id}/photo")
-async def insert_photo(r: Request, database: Database):
+async def insert_photo(database: Database):
     pass
 
 # TODO: Implement
 @router.put("/{id}/photo")
-async def delete_photo(r: Request, database: Database):
+async def delete_photo(database: Database):
     pass
 
 @router.get("/{id}/comments", response_model=list[NewsCommentResponse])

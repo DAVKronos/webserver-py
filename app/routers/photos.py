@@ -18,13 +18,13 @@ PHOTO_DIR.mkdir(parents=True, exist_ok=True)
 
 
 @router.get("", response_model=list[PhotoAlbumResponse])
-async def get_all(r: Request, database: Database):
+async def get_all(database: Database):
     query = select(PhotoAlbum).order_by(PhotoAlbum.name.desc())
     photoalbums = await database.exec(query)  # Ensure async execution
     return photoalbums.all()
 
 @router.get("/{id}", response_model=PhotoAlbumResponse)
-async def get_one(id: int, r: Request, database: Database):
+async def get_one(id: int, database: Database):
     photoalbum = await database.get(PhotoAlbum, id)  # Fixed model reference
     if not photoalbum:
         raise HTTPException(status_code=404, detail="PhotoAlbum not found")

@@ -9,7 +9,7 @@ from ..permissions import UserContext
 router = APIRouter(prefix="/user_type")
 
 @router.get("s", response_model=list[UserTypeResponse])
-async def index(r: Request, database: Database, user_context: Annotated[UserContext, Depends(get_current_user)]):
+async def index(database: Database, user_context: Annotated[UserContext, Depends(get_current_user)]):
     if not user_context:
         raise HTTPException(status.HTTP_401_UNAUTHORIZED)
     
@@ -21,7 +21,7 @@ async def index(r: Request, database: Database, user_context: Annotated[UserCont
     return usertypes.all()
 
 @router.get("/{id}", response_model=UserTypeResponse)
-async def get_usertype(id: int, r: Request, database: Database, user_context: Annotated[UserContext, Depends(get_current_user)]):
+async def get_usertype(id: int, database: Database, user_context: Annotated[UserContext, Depends(get_current_user)]):
     if not user_context:
         raise HTTPException(status.HTTP_401_UNAUTHORIZED)
     

@@ -17,7 +17,7 @@ router = APIRouter(
 )
 
 @router.get("")
-async def get_all(r: Request, database: Database, user_context: Annotated[UserContext, Depends(get_current_user)]):
+async def get_all(database: Database, user_context: Annotated[UserContext, Depends(get_current_user)]):
     query = select(User) \
         .order_by(User.name.asc())
     users = (await database.exec(query)).all()
@@ -32,7 +32,7 @@ async def get_all(r: Request, database: Database, user_context: Annotated[UserCo
     return users_response
 
 @router.get("/birthdays", response_model=list[UserBasicResponse])
-async def get_birthdays(r: Request, database: Database):
+async def get_birthdays(database: Database):
     today = date.today()
     next_month = (today.month % 12) + 1
     query = select(User).where(
@@ -50,7 +50,7 @@ async def get_birthdays(r: Request, database: Database):
     return users.all()
 
 @router.get("/{id}")
-async def get_one(id: int, r: Request, database: Database, user_context: Annotated[UserContext, Depends(get_current_user)]):
+async def get_one(id: int, database: Database, user_context: Annotated[UserContext, Depends(get_current_user)]):
     user = await database.get(User, id)
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
@@ -61,7 +61,7 @@ async def get_one(id: int, r: Request, database: Database, user_context: Annotat
 
 
 @router.delete("/{id}")
-async def delete_user(id: int, r: Request, database: Database, user_context: Annotated[UserContext, Depends(get_current_user)]):
+async def delete_user(id: int, database: Database, user_context: Annotated[UserContext, Depends(get_current_user)]):
     user = await database.get(User, id)
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
@@ -88,7 +88,7 @@ async def update_user(id: int, data: UserUpdate, database: Database, user_contex
     return user
 
 @router.get("/{id}/committees", response_model=list[CommitteePublicResponse])
-async def get_committees(id: int, r: Request, database: Database):
+async def get_committees(id: int, database: Database):
     query = (
         select(Committee)
         .join(CommitteeMember)

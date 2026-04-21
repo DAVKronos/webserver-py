@@ -71,7 +71,7 @@ async def reset_password():
     return Response(200)
 
 @router.get("/permissions", response_model=List[Ability])
-async def get_permissions(r: Request, database: Database, user_context: Annotated[UserContext, Depends(get_current_user)]):
+async def get_permissions(database: Database, user_context: Annotated[UserContext, Depends(get_current_user)]):
     return await get_user_permissions(user_context.user, database)
 
 

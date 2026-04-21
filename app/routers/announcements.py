@@ -10,7 +10,7 @@ router = APIRouter(prefix="/announcements")
 
 # TODO: More endpoints
 @router.get("/current", response_model=list[AnnouncementResponse])
-async def current(r: Request, database: Database):
+async def current(database: Database):
     query = select(Announcement) \
         .order_by(Announcement.created_at.desc())
     

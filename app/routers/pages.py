@@ -11,7 +11,7 @@ from ..time_utils import now
 router = APIRouter(prefix="/pages")
 
 @router.get("", response_model=list[PageResponse])
-async def get_all(r: Request, database: Database, user_context: Annotated[Optional[UserContext], Depends(get_optional_user)]):
+async def get_all(database: Database, user_context: Annotated[Optional[UserContext], Depends(get_optional_user)]):
     query = select(Page)
 
     pages: List[Page] = (await database.exec(query)).all()
@@ -21,7 +21,7 @@ async def get_all(r: Request, database: Database, user_context: Annotated[Option
     return pages
 
 @router.get("/{id}", response_model=PageResponse)
-async def get(id: int, r: Request, database: Database, user_context: Annotated[Optional[UserContext], Depends(get_optional_user)]):
+async def get(id: int, database: Database, user_context: Annotated[Optional[UserContext], Depends(get_optional_user)]):
     page = await database.get(Page, id)
     if not page:
         raise HTTPException(status_code=404, detail="Page not found")
