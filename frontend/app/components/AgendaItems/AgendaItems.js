@@ -29,7 +29,7 @@ function AgendaItemsFilter ({ filter, onChangeFilter }) {
               active={filter === agendaItemType.id}
               onClick={() => onChangeFilter(agendaItemType.id)}
             >
-              <MultiLanguageText nl={agendaItemType.name} en={agendaItemType.name_en} />
+              <MultiLanguageText nl={agendaItemType.name_nl} en={agendaItemType.name_en} />
             </Nav.Link>
           </Nav.Item>
         )
@@ -99,7 +99,7 @@ const AgendaItems = () => {
                       <h4><small>{format(itemDate, 'p', lang)}</small></h4>
                     </Col>
                     <Col xs={8}>
-                      <h4><MultiLanguageText nl={item.name} en={item.name_en} /> <small><AgendaItemTypeName agendaItemType={item.agendaitemtype} /></small></h4>
+                      <h4><MultiLanguageText nl={item.name_nl} en={item.name_en} /> </h4>
                     </Col>
                   </Row>
                 </Card>
