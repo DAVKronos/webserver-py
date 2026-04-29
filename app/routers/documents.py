@@ -2,7 +2,7 @@ from fastapi import APIRouter, Request, HTTPException
 from sqlmodel import select
 
 from ..dependencies import Database
-from ..models.document import Folder
+from ..models.documents import Folder, Document
 from ..models.files import File
 
 router = APIRouter()
@@ -32,7 +32,7 @@ async def get_one_folder(id: int, r: Request, database: Database):
 
 @router.get("/kronometers", response_model=list[File])
 async def get_all_files(r: Request, database: Database):
-    query = select(File).order_by(File.name.desc())
+    query = select(File).order_by(File.file_name.desc())
     files = await database.exec(query)
     return files.all()
 
@@ -41,8 +41,10 @@ async def get_all_files(r: Request, database: Database):
 async def get_files_by_folder(id: int, r: Request, database: Database):
     query = (
         select(File)
-        .where(File.folder_id == id)
-        .order_by(File.created_at.desc())
+        .join(Document, Document.file_id == File.id)
+        .where(Document.folder_id == id)
+        .order_by(File.file_name.desc())
     )
+
     files = await database.exec(query)
     return files.all()

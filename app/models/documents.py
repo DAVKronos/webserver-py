@@ -2,7 +2,7 @@ from fastapi import APIRouter, Request, HTTPException
 from sqlmodel import select
 
 from ..dependencies import Database
-from ..models.files import File, Folder
+from .files import File, Folder , Document
 
 router = APIRouter()
 
@@ -38,8 +38,10 @@ async def get_all_files(database: Database):
 async def get_files_by_folder(id: int, database: Database):
     query = (
         select(File)
-        .where(File.folder_id == id)
+        .join(Document)
+        .where(Document.folder_id == id)
         .order_by(File.created_at.desc())
     )
     result = await database.exec(query)
     return result.all()
+
