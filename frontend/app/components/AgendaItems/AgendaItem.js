@@ -90,7 +90,6 @@ function AgendaItem (props) {
         </Col>
 
         <Col md={4}>
-          <AgendaItemEventsCard agendaItemId={agendaItem.id} agendaItemTypeId={agendaItem.agendaitemtype_id} />
           <Can I='read' a='Subscription' passThrough>
             {allowed => <SubscriptionsCard agendaItem={agendaItem} allowed={allowed} />}
           </Can>
