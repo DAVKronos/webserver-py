@@ -47,6 +47,7 @@ const EditFolderButtons = ({ folderId }) => {
           {t('edit')}
         </Button>
       </Can>
+
       <Can I='delete' a='Folder'>
         <Button
           variant='danger'
@@ -63,33 +64,41 @@ const EditFolderButtons = ({ folderId }) => {
 
 const Kronometers = (props) => {
   const queryCache = useQueryCache()
+
   const folderId =
     props.match &&
     props.match.params &&
     props.match.params.folder_id &&
     parseInt(props.match.params.folder_id)
+
   let folderName,
     folders,
     isFolderLoading,
     kronometers,
     isKronometerLoading,
     parentId
+
   let queryParams
   const { t } = useTranslation('kronometerPage')
+
   if (!folderId) {
     const folderQuery = useQuery('folders', getFolders)
     queryParams = 'kronometers'
     const kronometerQuery = useQuery(queryParams, getKronometers)
+
     isFolderLoading = folderQuery.isLoading
     folderName = t('mainFolder')
     folders = folderQuery.data
+
     kronometers = kronometerQuery.data
     isKronometerLoading = kronometerQuery.isLoading
   } else {
     const folderQuery = useQuery(['folders', folderId], getFolderById)
     queryParams = ['folders', folderId, 'kronometers']
     const kronometerQuery = useQuery(queryParams, getKronometersByFolder)
+
     isFolderLoading = folderQuery.isLoading
+
     if (folderQuery.data) {
       folderName = folderQuery.data.name
       folders = folderQuery.data.folders
@@ -107,11 +116,18 @@ const Kronometers = (props) => {
   }
 
   const parentUrl = parentId ? `/kronometers/${parentId}` : '/kronometers'
+
   const parentButton = folderId && (
     <Button as={Link} to={parentUrl} size='sm'>
       <BsArrowUp />
     </Button>
   )
+
+  // ✅ LIMIT ITEMS (same style, no layout change)
+  const MAX_KRONOMETERS = 8
+  const visibleKronometers = kronometers
+    ? kronometers.slice(0, MAX_KRONOMETERS)
+    : []
 
   return (
     <>
@@ -121,6 +137,7 @@ const Kronometers = (props) => {
         </Col>
         <EditFolderButtons folderId={folderId} />
       </Row>
+
       <Row>
         <Col>
           <h2>
@@ -128,70 +145,77 @@ const Kronometers = (props) => {
           </h2>
         </Col>
       </Row>
+
       <Row>
         {isFolderLoading && <DefaultSpinner />}
         {folders &&
-          folders.map((folder) => {
-            return (
-              <Col key={folder.id} md={3} sm={4}>
-                <Card>
-                  <Card.Body>
-                    <Card.Title>
-                      <Link to={`/kronometers/${folder.id}`}>
-                        <BsFolder /> {folder.name}
-                      </Link>
-                    </Card.Title>
-                  </Card.Body>
-                </Card>
-              </Col>
-            )
-          })}
+          folders.map((folder) => (
+            <Col key={folder.id} md={3} sm={4}>
+              <Card>
+                <Card.Body>
+                  <Card.Title>
+                    <Link to={`/kronometers/${folder.id}`}>
+                      <BsFolder /> {folder.name}
+                    </Link>
+                  </Card.Title>
+                </Card.Body>
+              </Card>
+            </Col>
+          ))}
       </Row>
+
       <Row>
         <Col>
           <h2>{t('documents')}</h2>
         </Col>
       </Row>
+
       <Row>
         {isKronometerLoading && <DefaultSpinner />}
-        {kronometers &&
-          kronometers.map((kronometer) => {
-            return (
-              <Col key={kronometer.id} md={3} sm={4}>
-                <Card>
-                  <a target='_blank' href={kronometer.url_original} rel='noreferrer'>
-                    <Card.Img src={kronometer.url_thumb} />
-                  </a>
-                  <Card.Body>
-                    <Card.Title>{kronometer.name}</Card.Title>
-                    <Card.Subtitle className='mb-2 text-muted'>
-                      {kronometer.date}
-                    </Card.Subtitle>
-                    <Can I='update' a='Kronometer'>
-                      <Button
-                        size='sm'
-                        variant='warning'
-                        as={Link}
-                        to={`/kronometers/${kronometer.id}/edit`}
-                      >
-                        {t('edit')}
-                      </Button>
-                    </Can>
-                    <Can I='delete' a='Kronometer'>
-                      <Button
-                        size='sm'
-                        variant='danger'
-                        onClick={() => onClickRemove(kronometer.id)}
-                      >
-                        {t('remove')}
-                      </Button>
-                    </Can>
-                  </Card.Body>
-                </Card>
-              </Col>
-            )
-          })}
+        {visibleKronometers &&
+          visibleKronometers.map((kronometer) => (
+            <Col key={kronometer.id} md={3} sm={4}>
+              <Card>
+                <a
+                  target='_blank'
+                  href={kronometer.url_original}
+                  rel='noreferrer'
+                >
+                  <Card.Img src={kronometer.url_thumb} />
+                </a>
+
+                <Card.Body>
+                  <Card.Title>{kronometer.name}</Card.Title>
+                  <Card.Subtitle className='mb-2 text-muted'>
+                    {kronometer.date}
+                  </Card.Subtitle>
+
+                  <Can I='update' a='Kronometer'>
+                    <Button
+                      size='sm'
+                      variant='warning'
+                      as={Link}
+                      to={`/kronometers/${kronometer.id}/edit`}
+                    >
+                      {t('edit')}
+                    </Button>
+                  </Can>
+
+                  <Can I='delete' a='Kronometer'>
+                    <Button
+                      size='sm'
+                      variant='danger'
+                      onClick={() => onClickRemove(kronometer.id)}
+                    >
+                      {t('remove')}
+                    </Button>
+                  </Can>
+                </Card.Body>
+              </Card>
+            </Col>
+          ))}
       </Row>
+
       <Row>
         <Col>
           <Can I='create' a='Folder'>
@@ -201,6 +225,7 @@ const Kronometers = (props) => {
               })}
             </Button>
           </Can>
+
           <Can I='create' a='Kronometer'>
             <Button as={Link} to='/kronometers/new'>
               {t('generic:addModel', {
