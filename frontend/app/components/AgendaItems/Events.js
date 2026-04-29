@@ -7,7 +7,6 @@ import { EventResults } from './EventsResults'
 import { FieldControl } from '../Generic/FormField'
 import { BsPlus } from 'react-icons/bs'
 import { getUsers } from '../Users/queries'
-import { createResult } from '../Results/queries'
 import { useTranslation } from 'react-i18next'
 import { Can } from '../../utils/auth-helper'
 
@@ -31,12 +30,12 @@ const AddResult = ({ eventId, agendaItemId }) => {
     setValues({ ...values, result })
   }
 
-  const onClickAddResult = () => {
-    createResult(eventId, values).then(() => {
-      queryCache.invalidateQueries(['agendaitemevents', agendaItemId])
-      setValues({})
-    })
-  }
+  // const onClickAddResult = () => {
+  //   createResult(eventId, values).then(() => {
+  //     queryCache.invalidateQueries(['agendaitemevents', agendaItemId])
+  //     setValues({})
+  //   })
+  // }
 
   return (
     <Form>

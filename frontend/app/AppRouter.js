@@ -12,7 +12,7 @@ import AgendaItemsRouter from './components/AgendaItems'
 import Contact from './components/Contact/Contact'
 import PhotoAlbumsRouter from './components/PhotoAlbums'
 import CommitteesRouter from './components/Committees'
-import ResultsRouter from './components/Results'
+import ClubRecordsRouter from './components/Clubrecords'
 import PagesRouter from './components/Pages'
 import UsersRouter from './components/Users'
 import AgendaItemTypesRouter from './components/AgendaItemTypes'
@@ -51,8 +51,8 @@ const AppRouter = () => {
             <Route path='/committees'>
               <CommitteesRouter />
             </Route>
-            <Route path='/results'>
-              <ResultsRouter />
+            <Route path='/ClubRecords'>
+              <ClubRecordsRouter />
             </Route>
             <Route path='/pages'>
               <PagesRouter />

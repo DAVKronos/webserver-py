@@ -38,7 +38,8 @@
     "contact": "Contact",
     "users": "Leden",
     "committees": "Commissies",
-    "kronometers": "Kronometers"
+    "kronometers": "Kronometers",
+    "Club Records": "Clubrecords"
   },
   "loginMenu": {
     "login": "Inloggen",
@@ -116,7 +117,8 @@
   "contactPage": {
     "title": "Stuur ons een bericht"
   },
-  "recordPage": {
+  "ClubRecordsPage": {
+    "header": "Clubrecords",
     "event": "Onderdeel",
     "result": "Prestatie",
     "recordholder": "Recordhouder",

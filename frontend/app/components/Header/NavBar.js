@@ -54,7 +54,7 @@ const NavBar = () => {
             {getPageLinksForMenu(pages, 'Wedstrijden')}
           </NavDropdown>
           <Nav.Link as={NavLink} to='/agendaitems' href='/agendaitems'>{t('agenda')}</Nav.Link>
-          <Nav.Link as={NavLink} to='/results' href='/results'>{t('results')}</Nav.Link>
+          <Nav.Link as={NavLink} to='/ClubRecords?loc=out&sex=male' href='/ClubRecords?loc=out&sex=male'>{t('Club Records')}</Nav.Link>
           <Nav.Link as={NavLink} to='/photoalbums' href='/photoalbums'>{t('photos')}</Nav.Link>
           <Nav.Link as={NavLink} to='/contact' href='/contact'>{t('contact')}</Nav.Link>
 
