@@ -121,7 +121,6 @@ function NewsItem(props) {
 
   const item = data
 
-  // 🌍 helper voor vertaling
   const isDutch = i18n.language.startsWith('nl')
   const getLocalized = (nl, en) => (isDutch ? nl : (en || nl))
 
