@@ -32,7 +32,7 @@ async def get_one_folder(id: int, r: Request, database: Database):
 
 @router.get("/kronometers", response_model=list[File])
 async def get_all_files(r: Request, database: Database):
-    query = select(File).order_by(File.file_name.desc())
+    query = select(File).order_by(File.name.desc())
     files = await database.exec(query)
     return files.all()
 

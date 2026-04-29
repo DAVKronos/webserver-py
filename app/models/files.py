@@ -3,8 +3,8 @@ from sqlmodel import Field, SQLModel
 from .base import TimestampModel
 
 
-class FileBase(TimestampModel):
-    name: str
+class FileBase(SQLModel):
+    file_name: str
     content_type: str
     file_size: int
     folder_id: Optional[int] = None
