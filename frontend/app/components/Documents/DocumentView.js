@@ -18,9 +18,11 @@ const DocumentView = () => {
 
   // IMPORTANT: backend must return real file URL
   const fileUrl =
-    data.url ||
-    data.file_url ||
-    data.download_url
+  data.file_url ||
+  data.url ||
+  data.download_url ||
+  (data.file?.url) ||
+  (data.file?.download_url)
 
   if (!fileUrl) {
     return <div>No file URL provided by API</div>

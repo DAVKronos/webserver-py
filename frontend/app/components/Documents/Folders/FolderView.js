@@ -5,7 +5,12 @@ import DocumentExplorer from '../DocumentExplorer'
 const FolderView = () => {
   const { id } = useParams()
 
-  return <DocumentExplorer folderId={parseInt(id)} />
+  const folderId = id ? Number(id) : null
+
+  // 🚨 prevent NaN
+  const safeFolderId = Number.isNaN(folderId) ? null : folderId
+
+  return <DocumentExplorer folderId={safeFolderId} />
 }
 
 export default FolderView

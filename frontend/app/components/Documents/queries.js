@@ -38,8 +38,14 @@ export function removeFolder(id) {
 
 /* ================= DOCUMENTS ================= */
 
-export function getDocuments() {
-  return restCall('documents').then(res => res.data)
+export function getDocuments(folderId = null) {
+  if (!folderId) {
+    // root should NEVER load documents anymore
+    return Promise.resolve([])
+  }
+
+  return restCall(`folders/${folderId}/documents`)
+    .then(res => res.data)
 }
 
 export function getDocumentById(_, id) {

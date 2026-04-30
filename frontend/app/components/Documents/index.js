@@ -1,7 +1,6 @@
 import React from 'react'
-import { Route, Switch } from 'react-router-dom'
+import { Route, Switch, Redirect } from 'react-router-dom'
 
-import DocumentsPage from './Documents'
 import DocumentView from './DocumentView'
 import NewDocument from './NewDocument'
 import EditDocument from './EditDocument'
@@ -11,8 +10,10 @@ const DocumentRouter = () => {
   return (
     <Switch>
 
-      {/* ALL DOCUMENTS OR FOLDER VIEW */}
-      <Route exact path='/documents' component={DocumentsPage} />
+      {/* 🚨 NO MORE DOCUMENT LISTING */}
+      <Route exact path='/documents'>
+        <Redirect to='/folders' />
+      </Route>
 
       {/* CREATE */}
       <PrivateRoute
@@ -30,7 +31,7 @@ const DocumentRouter = () => {
         subject='document'
       />
 
-      {/* 🔥 THIS IS THE FIX: SINGLE FILE VIEW */}
+      {/* FILE VIEW ONLY */}
       <Route exact path='/documents/:id' component={DocumentView} />
 
     </Switch>
