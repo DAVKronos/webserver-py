@@ -39,7 +39,8 @@
     "users": "Leden",
     "committees": "Commissies",
     "kronometers": "Kronometers",
-    "Club Records": "Clubrecords"
+    "Club Records": "Clubrecords",
+    "documents": "Documenten"
   },
   "loginMenu": {
     "login": "Inloggen",

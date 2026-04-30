@@ -12,7 +12,7 @@ const NewFolder = () => {
   const onSuccess = (savedFolder) => {
     queryCache.setQueryData(['folders', savedFolder.id], savedFolder)
     queryCache.invalidateQueries('folders')
-    history.push(`/kronometers/${savedFolder.id}`)
+    history.push(`/documents/${savedFolder.id}`)
   }
 
   return (

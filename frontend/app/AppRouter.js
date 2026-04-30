@@ -16,8 +16,8 @@ import ClubRecordsRouter from './components/Clubrecords'
 import PagesRouter from './components/Pages'
 import UsersRouter from './components/Users'
 import AgendaItemTypesRouter from './components/AgendaItemTypes'
-import KronometerRouter from './components/Kronometers'
-import FolderRouter from './components/Kronometers/Folders'
+import DocumentRouter from './components/Documents'
+import FolderRouter from './components/Documents/Folders'
 import UserTypesRouter from './components/UserTypes'
 import AdminRouter from './components/Admin'
 import { Container } from 'react-bootstrap'
@@ -66,8 +66,8 @@ const AppRouter = () => {
             <Route path='/agendaitemtypes'>
               <AgendaItemTypesRouter />
             </Route>
-            <Route path='/kronometers'>
-              <KronometerRouter />
+            <Route path='/documents'>
+              <DocumentRouter />
             </Route>
             <Route path='/folders'>
               <FolderRouter />

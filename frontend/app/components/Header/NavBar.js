@@ -43,7 +43,7 @@ const NavBar = () => {
           <NavDropdown title={t('association')} id='basic-nav-dropdown'>
             <NavDropdown.Item as={NavLink} to='/Committees' href='/Committees'>{t('committees')}</NavDropdown.Item>
             {getPageLinksForMenu(pages, 'Vereniging')}
-            <NavDropdown.Item as={NavLink} to='/kronometers' href='/kronometers'>{t('kronometers')}</NavDropdown.Item>
+            <NavDropdown.Item as={NavLink} to='/documents' href='/documents '>{t('documents')}</NavDropdown.Item>
           </NavDropdown>
           <NavDropdown title={t('trainings')} id='basic-nav-dropdown'>
             {getPageLinksForMenu(pages, 'Trainingen')}

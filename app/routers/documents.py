@@ -33,18 +33,31 @@ async def get_subfolders(id: int, database: Database):
 
 
 # -------------------------
-# FILES / KRONOMETERS
+# FILES 
 # -------------------------
 
-@router.get("/kronometers", response_model=list[File])
+@router.get("/documents", response_model=list[File])
 async def get_all_files(database: Database):
     query = select(File).order_by(File.file_name.desc())
     result = await database.exec(query)
     return result.all()
 
 
+
+@router.get("/documents/{id}", response_model=File)
+async def get_document_by_id(id: int, database: Database):
+    query = select(File).where(File.id == id)
+    result = await database.exec(query)
+    file = result.first()
+
+    if not file:
+        raise HTTPException(status_code=404, detail="File not found")
+
+    return file
+
+
 # ✅ GET FILES BY FOLDER (via Document link table)
-@router.get("/folders/{id}/kronometers", response_model=list[File])
+@router.get("/folders/{id}/documents", response_model=list[File])
 async def get_files_by_folder(id: int, database: Database):
     query = (
         select(File)

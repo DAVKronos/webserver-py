@@ -1,7 +1,7 @@
 import { restCall, convertToFormData } from '../../utils/rest-helper'
 
-function getKronometers (queryKey) {
-  return restCall('kronometers/').then((res) => res.data)
+function getDocuments (queryKey) {
+  return restCall('documents/').then((res) => res.data)
 }
 
 function getFolders (queryKey) {
@@ -12,12 +12,12 @@ function getFolderById (queryKey, folder_id) {
   return restCall(`folders/${folder_id}`).then((res) => res.data)
 }
 
-function getKronometersByFolder (queryKey, folder_id) {
-  return restCall(`folders/${folder_id}/kronometers`).then((res) => res.data)
+function getDocumentsByFolder (queryKey, folder_id) {
+  return restCall(`folders/${folder_id}/documents`).then((res) => res.data)
 }
 
-function getKronometerById (queryKey, kronometerId) {
-  return restCall(`kronometers/${kronometerId}`).then((res) => res.data)
+function getDocumentById (queryKey, documentId) {
+  return restCall(`documents/${documentId}`).then((res) => res.data)
 }
 
 function createFolder (data) {
@@ -38,36 +38,36 @@ function removeFolder (id) {
   return restCall(`folders/${id}`, { method: 'DELETE' })
 }
 
-function createKronometer (data) {
-  const formData = convertToFormData('kronometer', data)
-  return restCall('kronometers', {
+function createDocument (data) {
+  const formData = convertToFormData('document', data)
+  return restCall('documents', {
     method: 'POST',
     data: formData
   }).then((res) => res.data)
 }
 
-function updateKronometer (id, data) {
-  const formData = convertToFormData('kronometer', data)
-  return restCall(`kronometers/${id}`, {
+function updateDocument (id, data) {
+  const formData = convertToFormData('document', data)
+  return restCall(`documents/${id}`, {
     method: 'PUT',
     data: formData
   }).then((res) => res.data)
 }
 
-function removeKronometer (id) {
-  return restCall(`kronometers/${id}`, { method: 'DELETE' })
+function removeDocument (id) {
+  return restCall(`documents/${id}`, { method: 'DELETE' })
 }
 
 export {
-  getKronometers,
+  getDocuments,
   getFolders,
   getFolderById,
-  getKronometersByFolder,
-  getKronometerById,
+  getDocumentsByFolder,
+  getDocumentById,
   createFolder,
   updateFolder,
   removeFolder,
-  createKronometer,
-  updateKronometer,
-  removeKronometer
+  createDocument,
+  updateDocument,
+  removeDocument
 }
