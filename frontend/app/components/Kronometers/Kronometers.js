@@ -123,7 +123,6 @@ const Kronometers = (props) => {
     </Button>
   )
 
-  // ✅ LIMIT ITEMS (same style, no layout change)
   const MAX_KRONOMETERS = 8
   const visibleKronometers = kronometers
     ? kronometers.slice(0, MAX_KRONOMETERS)
@@ -155,7 +154,7 @@ const Kronometers = (props) => {
                 <Card.Body>
                   <Card.Title>
                     <Link to={`/kronometers/${folder.id}`}>
-                      <BsFolder /> {folder.name}
+                      <BsFolder /> {folder.name || 'No name'}
                     </Link>
                   </Card.Title>
                 </Card.Body>

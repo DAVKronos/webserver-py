@@ -1,47 +1,25 @@
-from fastapi import APIRouter, Request, HTTPException
-from sqlmodel import select
-
-from ..dependencies import Database
-from .files import File, Folder , Document
-
-router = APIRouter()
-
-# ---------------- FOLDERS ----------------
-
-@router.get("/folders")
-async def get_all_folders(database: Database):
-    query = select(Folder).order_by(Folder.name.desc())
-    result = await database.exec(query)
-    return result.all()
+from typing import Optional, List
+from sqlmodel import Field, SQLModel, Relationship
 
 
-@router.get("/folders/{id}")
-async def get_folder(id: int, database: Database):
-    folder = await database.get(Folder, id)
+class Folder(SQLModel, table=True):
+    __tablename__ = "document_folders"
 
-    if not folder:
-        raise HTTPException(status_code=404, detail="Folder not found")
+    id: Optional[int] = Field(default=None, primary_key=True)
+    name: str
 
-    return folder
-
-
-# ---------------- FILES ----------------
-
-@router.get("/kronometers")
-async def get_all_files(database: Database):
-    query = select(File).order_by(File.file_name.desc())
-    result = await database.exec(query)
-    return result.all()
+    # relationship to Document
+    documents: List["Document"] = Relationship(back_populates="folder")
 
 
-@router.get("/folders/{id}/kronometers")
-async def get_files_by_folder(id: int, database: Database):
-    query = (
-        select(File)
-        .join(Document)
-        .where(Document.folder_id == id)
-        .order_by(File.created_at.desc())
-    )
-    result = await database.exec(query)
-    return result.all()
+class Document(SQLModel, table=True):
+    __tablename__ = "documents"
 
+    id: Optional[int] = Field(default=None, primary_key=True)
+
+    file_id: int = Field(foreign_key="files.id")
+    folder_id: int = Field(foreign_key="document_folders.id")
+
+    # relationships
+    file: Optional["File"] = Relationship(back_populates="documents")
+    folder: Optional["Folder"] = Relationship(back_populates="documents")

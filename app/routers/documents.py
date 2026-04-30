@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Request, HTTPException
+from fastapi import APIRouter, HTTPException
 from sqlmodel import select
 
 from ..dependencies import Database
@@ -12,18 +12,24 @@ router = APIRouter()
 # -------------------------
 
 @router.get("/folders", response_model=list[Folder])
-async def get_all_folders(r: Request, database: Database):
+async def get_all_folders(database: Database):
     query = select(Folder).order_by(Folder.name.desc())
-    folders = await database.exec(query)
-    return folders.all()
+    result = await database.exec(query)
+    return result.all()
 
 
 @router.get("/folders/{id}", response_model=Folder)
-async def get_one_folder(id: int, r: Request, database: Database):
+async def get_one_folder(id: int, database: Database):
     folder = await database.get(Folder, id)
     if not folder:
         raise HTTPException(status_code=404, detail="Folder not found")
     return folder
+
+@router.get("/folders/{id}/folders", response_model=list[Folder])
+async def get_subfolders(id: int, database: Database):
+    query = select(Folder).where(Folder.parent_folder_id == id)
+    result = await database.exec(query)
+    return result.all()
 
 
 # -------------------------
@@ -31,14 +37,15 @@ async def get_one_folder(id: int, r: Request, database: Database):
 # -------------------------
 
 @router.get("/kronometers", response_model=list[File])
-async def get_all_files(r: Request, database: Database):
+async def get_all_files(database: Database):
     query = select(File).order_by(File.file_name.desc())
-    files = await database.exec(query)
-    return files.all()
+    result = await database.exec(query)
+    return result.all()
 
 
+# ✅ GET FILES BY FOLDER (via Document link table)
 @router.get("/folders/{id}/kronometers", response_model=list[File])
-async def get_files_by_folder(id: int, r: Request, database: Database):
+async def get_files_by_folder(id: int, database: Database):
     query = (
         select(File)
         .join(Document, Document.file_id == File.id)
@@ -46,5 +53,5 @@ async def get_files_by_folder(id: int, r: Request, database: Database):
         .order_by(File.file_name.desc())
     )
 
-    files = await database.exec(query)
-    return files.all()
+    result = await database.exec(query)
+    return result.all()
