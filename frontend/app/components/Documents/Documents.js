@@ -14,7 +14,7 @@ import DefaultSpinner from '../Generic/Spinner'
 import { BsFileText, BsFolder, BsExclamationTriangle } from 'react-icons/bs'
 import { Can } from '../../utils/auth-helper'
 
-/* ---------------- DOCUMENT CARD ---------------- */
+/* ================= DOCUMENT CARD ================= */
 
 const DocumentCard = ({ document, onRemove, t }) => {
   const title =
@@ -23,18 +23,15 @@ const DocumentCard = ({ document, onRemove, t }) => {
     document.file_name ||
     t('untitled', 'Untitled')
 
-  const handleRemove = async () => {
-    if (!window.confirm(t('confirmDeleteDoc', 'Delete document?'))) return
-    await onRemove(document.id)
-  }
-
   return (
     <Col md={3} sm={4} className="mb-4">
       <Card className="h-100 shadow-sm">
         <Card.Body className="d-flex flex-column">
+
+          {/* ALWAYS FILE VIEW */}
           <Card.Title className="h6">
             <Link
-              to={`/documents/${document.id}`}   // ✅ ALWAYS file → document view
+              to={`/documents/${document.id}`}
               className="text-dark text-decoration-none"
             >
               <BsFileText className="me-2 text-primary" />
@@ -43,19 +40,24 @@ const DocumentCard = ({ document, onRemove, t }) => {
           </Card.Title>
 
           <div className="mt-auto d-flex gap-2">
-            <Can I='delete' a='document'>
-              <Button size="sm" variant="danger" onClick={handleRemove}>
+            <Can I="delete" a="document">
+              <Button
+                size="sm"
+                variant="danger"
+                onClick={() => onRemove(document.id)}
+              >
                 {t('delete', 'Delete')}
               </Button>
             </Can>
           </div>
+
         </Card.Body>
       </Card>
     </Col>
   )
 }
 
-/* ---------------- FOLDER CARD ---------------- */
+/* ================= FOLDER CARD ================= */
 
 const FolderCard = ({ folder }) => {
   return (
@@ -63,7 +65,7 @@ const FolderCard = ({ folder }) => {
       <Card className="bg-light shadow-sm">
         <Card.Body>
           <Link
-            to={`/folders/${folder.id}`}   // ✅ folders go to folders route
+            to={`/folders/${folder.id}`}
             className="text-dark text-decoration-none"
           >
             <BsFolder className="me-2 text-warning" />
@@ -75,12 +77,14 @@ const FolderCard = ({ folder }) => {
   )
 }
 
-/* ---------------- MAIN PAGE ---------------- */
+/* ================= MAIN PAGE ================= */
 
 const Documents = () => {
   const { t } = useTranslation('documentPage')
   const queryCache = useQueryCache()
   const [showAll, setShowAll] = useState(false)
+
+  /* ---------- DATA ---------- */
 
   const {
     data: documents = [],
@@ -89,20 +93,28 @@ const Documents = () => {
   } = useQuery('documents', getDocuments)
 
   const {
-  data: foldersData = [],
-  isLoading: foldersLoading,
-  error: foldersError
+    data: folders = [],
+    isLoading: foldersLoading,
+    error: foldersError
   } = useQuery('folders', getFolders)
 
-  const folders = foldersData.filter(
-    f => f.parent_folder_id === null || f.parent_folder_id === 0
-    )
-
+  /* ---------- DELETE ---------- */
 
   const handleRemoveDocument = async (id) => {
     await removeDocument(id)
     queryCache.invalidateQueries('documents')
   }
+
+  /* ---------- FILTER TOP FOLDERS ONLY ---------- */
+  const topFolders = folders.filter(
+    f => !f.parent_folder_id || f.parent_folder_id === 0
+  )
+
+  const visibleDocuments = showAll
+    ? documents
+    : documents.slice(0, 8)
+
+  /* ---------- ERROR ---------- */
 
   if (docsError || foldersError) {
     return (
@@ -115,42 +127,40 @@ const Documents = () => {
     )
   }
 
-  const visibleDocuments = showAll ? documents : documents.slice(0, 8)
-
   return (
     <Container fluid className="py-4">
 
       {/* HEADER */}
       <h2 className="mb-4">
-        {t('documentsAndFolders', 'Documents & Folders')}
+        Documents & Folders
       </h2>
 
-      {/* ---------------- FOLDERS ---------------- */}
+      {/* ================= FOLDERS ================= */}
       <h4 className="mb-3">
         <BsFolder className="me-2 text-warning" />
-        {t('folders', 'Folders')}
+        Folders
       </h4>
 
       <Row className="mb-4">
         {foldersLoading ? (
           <Col><DefaultSpinner /></Col>
-        ) : folders.length > 0 ? (
-          folders.map(folder => (
+        ) : topFolders.length > 0 ? (
+          topFolders.map(folder => (
             <FolderCard key={folder.id} folder={folder} />
           ))
         ) : (
-          <Col>
-            <Alert variant="info">No folders</Alert>
+          <Col className="text-muted">
+            No folders
           </Col>
         )}
       </Row>
 
       <hr />
 
-      {/* ---------------- DOCUMENTS ---------------- */}
+      {/* ================= DOCUMENTS ================= */}
       <h4 className="mb-3">
         <BsFileText className="me-2 text-primary" />
-        {t('documents', 'Documents')}
+        Documents
       </h4>
 
       <Row>
@@ -166,29 +176,30 @@ const Documents = () => {
             />
           ))
         ) : (
-          <Col>
-            <Alert variant="info">
-              {t('noDocuments', 'No documents found')}
-            </Alert>
+          <Col className="text-muted">
+            No documents
           </Col>
         )}
       </Row>
 
-      {/* LOAD ALL BUTTON */}
+      {/* LOAD ALL */}
       {!showAll && documents.length > 8 && (
         <div className="text-center mt-3">
-          <Button variant="outline-primary" onClick={() => setShowAll(true)}>
-            {t('loadAll', 'Show all')}
+          <Button
+            variant="outline-primary"
+            onClick={() => setShowAll(true)}
+          >
+            Load all
           </Button>
         </div>
       )}
 
-      {/* ACTION */}
+      {/* UPLOAD */}
       <Row className="mt-4">
         <Col>
-          <Can I='create' a='document'>
+          <Can I="create" a="document">
             <Button as={Link} to="/documents/new" variant="success">
-              {t('uploadDocument', 'Upload Document')}
+              Upload Document
             </Button>
           </Can>
         </Col>

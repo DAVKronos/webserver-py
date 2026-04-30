@@ -4,30 +4,18 @@ import { Switch, Route } from 'react-router-dom'
 import FolderView from './FolderView'
 import NewFolder from './NewFolder'
 import EditFolder from './EditFolder'
-import PrivateRoute from '../../Generic/PrivateRoute'
 
 const FolderRouter = () => {
   return (
     <Switch>
 
-      {/* ROOT + SUBFOLDERS VIEW */}
-      <Route exact path='/folders/:id?' component={FolderView} />
+      <Route exact path='/folders' component={FolderView} />
 
-      {/* CREATE */}
-      <PrivateRoute
-        path='/folders/new'
-        component={NewFolder}
-        action='create'
-        subject='Folder'
-      />
+      <Route exact path='/folders/new' component={NewFolder} />
 
-      {/* EDIT */}
-      <PrivateRoute
-        path='/folders/:id/edit'
-        component={EditFolder}
-        action='update'
-        subject='Folder'
-      />
+      <Route exact path='/folders/:id/edit' component={EditFolder} />
+
+      <Route exact path='/folders/:id' component={FolderView} />
 
     </Switch>
   )
