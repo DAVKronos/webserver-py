@@ -1,29 +1,38 @@
 import React from 'react'
 import { Route, Switch } from 'react-router-dom'
 
-import documents from './Documents'
+import DocumentsPage from './Documents'
+import DocumentView from './DocumentView'
+import NewDocument from './NewDocument'
+import EditDocument from './EditDocument'
 import PrivateRoute from '../Generic/PrivateRoute'
-import Newdocument from './NewDocument'
-import Editdocument from './EditDocument'
 
 const DocumentRouter = () => {
   return (
     <Switch>
-      <Route exact path='/documents' component={documents} />
 
+      {/* ALL DOCUMENTS OR FOLDER VIEW */}
+      <Route exact path='/documents' component={DocumentsPage} />
+
+      {/* CREATE */}
       <PrivateRoute
         path='/documents/new'
-        component={Newdocument}
+        component={NewDocument}
         action='create'
         subject='document'
       />
+
+      {/* EDIT */}
       <PrivateRoute
         path='/documents/:id/edit'
-        component={Editdocument}
+        component={EditDocument}
         action='update'
         subject='document'
       />
-      <Route path='/documents/:folder_id' component={documents} />
+
+      {/* 🔥 THIS IS THE FIX: SINGLE FILE VIEW */}
+      <Route exact path='/documents/:id' component={DocumentView} />
+
     </Switch>
   )
 }
