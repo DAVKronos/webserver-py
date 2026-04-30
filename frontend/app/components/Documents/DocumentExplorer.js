@@ -140,12 +140,6 @@ const DocumentExplorer = ({ folderId = null }) => {
         </>
       )}
 
-      {/* ---------------- ROOT MESSAGE ---------------- */}
-      {!safeFolderId && (
-        <div className="text-muted">
-          Select a folder to view documents
-        </div>
-      )}
 
     </Container>
   )
