@@ -7,6 +7,7 @@ class Folder(SQLModel, table=True):
 
     id: Optional[int] = Field(default=None, primary_key=True)
     name: str
+    parent_folder_id: Optional[int] = Field(default=None, foreign_key="document_folders.id")
 
     # relationship to Document
     documents: List["Document"] = Relationship(back_populates="folder")
