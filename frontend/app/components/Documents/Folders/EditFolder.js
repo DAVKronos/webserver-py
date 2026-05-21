@@ -22,7 +22,7 @@ const EditFolder = ({ folder }) => {
   const editableFields = { name, folder_id }
   const onSuccess = (savedFolder) => {
     queryCache.setQueryData(['folders', savedFolder.id], savedFolder)
-    history.push(`/kronometers/${savedFolder.id}`)
+    history.push(`/documents/${savedFolder.id}`)
   }
 
   return (

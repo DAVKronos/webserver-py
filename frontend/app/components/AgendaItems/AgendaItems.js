@@ -12,31 +12,7 @@ import { Can } from '../../utils/auth-helper'
 import { useTranslation } from 'react-i18next'
 import MultiLanguageText from '../Generic/MultiLanguageText'
 
-function AgendaItemsFilter ({ filter, onChangeFilter }) {
-  const { t } = useTranslation('generic')
-  const { isLoading, isError, data, error } = useQuery('agendaitemtypes', getAgendaitemTypes)
-  return (
-    <Nav variant='pills'>
-      <Nav.Item key='all'>
-        <Nav.Link active={filter == null} onClick={() => onChangeFilter(null)}>
-          {t('allItems')}
-        </Nav.Link>
-      </Nav.Item>
-      {data && data.map(agendaItemType => {
-        return (
-          <Nav.Item key={agendaItemType.id}>
-            <Nav.Link
-              active={filter === agendaItemType.id}
-              onClick={() => onChangeFilter(agendaItemType.id)}
-            >
-              <MultiLanguageText nl={agendaItemType.name} en={agendaItemType.name_en} />
-            </Nav.Link>
-          </Nav.Item>
-        )
-      })}
-    </Nav>
-  )
-}
+
 
 const AgendaItems = () => {
   const { search } = useLocation()
@@ -77,11 +53,6 @@ const AgendaItems = () => {
       </Row>
       <Row className='row-margin'>
         <Col md={12}>
-          <AgendaItemsFilter filter={filter} onChangeFilter={onChangeFilter} />
-        </Col>
-      </Row>
-      <Row className='row-margin'>
-        <Col md={12}>
           {isLoading && <DefaultSpinner />}
           {agendaItems && agendaItems.map(item => {
             const itemDate = new Date(item.date)
@@ -99,7 +70,7 @@ const AgendaItems = () => {
                       <h4><small>{format(itemDate, 'p', lang)}</small></h4>
                     </Col>
                     <Col xs={8}>
-                      <h4><MultiLanguageText nl={item.name} en={item.name_en} /> <small><AgendaItemTypeName agendaItemType={item.agendaitemtype} /></small></h4>
+                      <h4><MultiLanguageText nl={item.name_nl} en={item.name_en} /> </h4>
                     </Col>
                   </Row>
                 </Card>

@@ -46,7 +46,7 @@ function AgendaItem (props) {
     <>
       <Row>
         <Col md={8}>
-          <h1><MultiLanguageText nl={agendaItem.name} en={agendaItem.name_en} /> <small><AgendaItemTypeName agendaItemType={agendaItem.agendaitemtype} /></small></h1>
+          <h1><MultiLanguageText nl={agendaItem.name_nl} en={agendaItem.name_en} /> </h1>
         </Col>
 
         <Col md={4} className='d-flex'>
@@ -63,13 +63,6 @@ function AgendaItem (props) {
             </Button>
           </Can>
 
-          <Can I='create' a='Result'>
-            <Button
-              variant='primary' className='align-self-center'
-              as={Link} to={`/agendaitems/${id}/events`}
-            >{t('models:modelNames.result_plural')}
-            </Button>
-          </Can>
         </Col>
       </Row>
       <Row>
@@ -92,16 +85,11 @@ function AgendaItem (props) {
           </Row>}
           <Row>
             <Col xs={1}><BsList /></Col>
-            <Col xs={11}><MultiLanguageText nl={agendaItem.description} en={agendaItem.description_en} renderFunction={renderDescription} /></Col>
-          </Row>
-          <Row><Col>
-            <EventsResults agendaItemId={agendaItem.id} />
-          </Col>
+            <Col xs={11}><MultiLanguageText nl={agendaItem.description_nl} en={agendaItem.description_en} renderFunction={renderDescription} /></Col>
           </Row>
         </Col>
 
         <Col md={4}>
-          <AgendaItemEventsCard agendaItemId={agendaItem.id} agendaItemTypeId={agendaItem.agendaitemtype_id} />
           <Can I='read' a='Subscription' passThrough>
             {allowed => <SubscriptionsCard agendaItem={agendaItem} allowed={allowed} />}
           </Can>

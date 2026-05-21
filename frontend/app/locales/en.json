@@ -38,7 +38,9 @@
     "contact": "Contact",
     "users": "Users",
     "committees": "Committees",
-    "kronometers": "Kronometers"
+    "kronometers": "Kronometers",
+    "Club Records": "Club Records",
+    "documents": "Documents"
   },
   "loginMenu": {
     "login": "Log in",
@@ -117,6 +119,7 @@
     "title": "Send us a message"
   },
   "recordPage": {
+    "header": "Club Records",
     "event": "Event",
     "result": "Result",
     "recordholder": "Recordholder",
@@ -290,5 +293,8 @@
       "folder_id": "Parent folder",
       "file": "File"
     }
+
+    
   }
 }
+

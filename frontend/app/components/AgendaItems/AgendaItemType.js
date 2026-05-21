@@ -1,9 +1,27 @@
-import { useTranslation } from 'react-i18next'
+import { useTranslation } from 'react-i18next';
 
-const AgendaItemTypeName = ({ agendaItemType }) => {
-  const { i18n } = useTranslation('generic')
-  const name = i18n.language === 'nl' ? agendaItemType && agendaItemType.name : agendaItemType && agendaItemType.name_en
-  return name
-}
+const AgendaItemTypeName = ({ agendaItemType, fallback = '' }) => {
+  const { i18n } = useTranslation('generic');
+  
+  if (!agendaItemType) {
+    return fallback ? <>{fallback}</> : null;
+  }
+  
+  const language = i18n?.language?.split('-')[0] ?? 'en';
+  
+  const name = language === 'nl' 
+    ? agendaItemType.name_nl 
+    : agendaItemType.name_en;
+  
+  const text = name 
+    ?? (language === 'nl' ? agendaItemType.name_en : agendaItemType.name_nl)
+    ?? fallback;
+  
+  if (!text) {
+    return null;
+  }
+  
+  return <>{text}</>;
+};
 
-export { AgendaItemTypeName }
+export { AgendaItemTypeName };
