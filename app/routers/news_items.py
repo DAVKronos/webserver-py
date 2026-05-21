@@ -108,7 +108,7 @@ async def create_comment(data: NewsCommentCreate, database: Database, user_conte
         raise HTTPException(status.HTTP_403_FORBIDDEN, detail="Not enough permissions.")
     
     t = now()
-    comment = NewsComment.model_validate(data, update={'created_at': t, 'updated_at': t, 'user_id': user.id })
+    comment = NewsComment.model_validate(data, update={'created_at': t, 'updated_at': t, 'user_id': user_context.user.id })
     database.add(comment)
     await database.commit()
     await database.refresh(comment)
