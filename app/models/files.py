@@ -5,7 +5,7 @@ from .documents import Document
 class FileBase(SQLModel):
     file_name: str
     content_type: str
-    file_size: int
+    file_size: Optional[int] = None
 
 class File(FileBase, table=True):
     __tablename__ = "files"
