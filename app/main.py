@@ -27,8 +27,8 @@ from . import api, database
 import jinja2
 templates = Jinja2Templates(directory="templates")
 
-app.mount("/api/v1", api.app)
 app.mount("/static", StaticFiles(directory="static", follow_symlink=True), name="static")
+app.mount("/api/v1", api.app)
 app.include_router(authentication.router)
 
 @app.get("/{full_path:path}", response_class=HTMLResponse)

@@ -7,6 +7,7 @@ services:
       - frontend_build:/app/static/react
       - ./config.toml:/app/config.toml
       - ./app:/app/app
+      - ./static:/app/static
     ports:
       - 8000:8000
   
