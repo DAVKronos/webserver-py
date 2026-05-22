@@ -19,7 +19,7 @@ const NewsItemCarousel = ({ items }) => {
         <Carousel.Item key={item.id}>
           <img
             className='d-block w-100'
-            src={getAPIHostUrl(item.photo_file.file_name)}
+            src={`/static/newsitem_photos/${item.photo_file.file_name}`}
             alt={item.title_en}
           />
           <Carousel.Caption>

@@ -26,4 +26,4 @@ class Announcement(AnnouncementBase, table=True):
 
 class AnnouncementResponse(AnnouncementBase):
     id: int
-    photo_file: Optional["FileResponse"]
+    photo_file: Optional["FileResponse"] = None

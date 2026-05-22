@@ -151,7 +151,7 @@ function NewsItem(props) {
         <Col md={{ span: 8, offset: 2 }}>
           <h1>{title}</h1>
           <p>
-            {format(item.created_at, 'PPP p', i18n.language)} |{' '}
+            {format(item.created_at, 'PPP p', i18n.language)} | {' '}
             {item.creator?.name || 'Unknown'}
           </p>
         </Col>
@@ -160,7 +160,8 @@ function NewsItem(props) {
       <Row>
         <Col md={{ span: 8, offset: 2 }}>
           <img
-            src={getAPIHostUrl(item.articlephoto_url_carrousel)}
+            // src={getAPIHostUrl(item.photo_file.file_name)}
+            src={`/static/newsitem_photos/${item.photo_file.file_name}`}
             alt={title}
           />
 

@@ -4,9 +4,11 @@ from .base import TimestampModel
 
 # Put all model imports outside the if statement
 from .user import UserBasicResponse
+from .files import FileResponse
 if TYPE_CHECKING:
     # Put all scheme (table) import in the if statement
     from .user import User
+    from .files import File
 
 class NewsItemBase(TimestampModel):
     title_nl: str
@@ -16,7 +18,6 @@ class NewsItemBase(TimestampModel):
     approved: bool = False
     photo_file_id: Optional[int] = None
 
-    
 
 class NewsItem(NewsItemBase, table=True):
     __tablename__ = "news_items"
@@ -26,6 +27,7 @@ class NewsItem(NewsItemBase, table=True):
     # Foreign Keys
     creator_id: Optional[int] = Field(foreign_key="users.id")
     approved_by: Optional[int] = Field(default=None, foreign_key="users.id")
+    photo_file_id: Optional[int] = Field(default=None, foreign_key="files.id")
 
     # Relationships
     comments: List["NewsComment"] = Relationship(back_populates="news_item", sa_relationship_kwargs={'lazy': 'selectin'})
@@ -36,15 +38,18 @@ class NewsItem(NewsItemBase, table=True):
     approver: Optional["User"] = Relationship(
         sa_relationship_kwargs={"foreign_keys": "[NewsItem.approved_by]", 'lazy': 'selectin'}
     )
+    photo_file: Optional["File"] = Relationship(
+        sa_relationship_kwargs={"foreign_keys": "[NewsItem.photo_file_id]", 'lazy': 'selectin'}
+    )
 
 class NewsItemPublicResponse(NewsItemBase):
     id: int
+    photo_file: Optional["FileResponse"] = None
 
 class NewsItemExtendedResponse(NewsItemPublicResponse):
     creator: Optional["UserBasicResponse"] = None
     comments: List["NewsCommentResponse"] = None
     approved_by: Optional[int] = None
-    
 
 
 class NewsItemUpdate(SQLModel):
