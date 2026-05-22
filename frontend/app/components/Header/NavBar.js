@@ -22,7 +22,7 @@ function getPageLinksForMenu (pages, title) {
 }
 
 function getHighlightPages (pages) {
-  return pages.filter((page) => {
+  return pages.filter((page) => { 
     return page.highlight
   }).map(page => {
     return <Nav.Link className='highlight' key={page.pagetag} as={NavLink} to={`/${page.pagetag}`} href={`/${page.pagetag}`}><MultiLanguageText nl={page.pagetag} en={page.pagetag_en} /></Nav.Link>
@@ -54,9 +54,7 @@ const NavBar = () => {
             {getPageLinksForMenu(pages, 'Wedstrijden')}
           </NavDropdown>
           <Nav.Link as={NavLink} to='/agendaitems' href='/agendaitems'>{t('agenda')}</Nav.Link>
-          <Nav.Link as={NavLink} to='/ClubRecords?loc=out&sex=male' href='/ClubRecords?loc=out&sex=male'>{t('Club Records')}</Nav.Link>
           <Nav.Link as={NavLink} to='/photoalbums' href='/photoalbums'>{t('photos')}</Nav.Link>
-          <Nav.Link as={NavLink} to='/contact' href='/contact'>{t('contact')}</Nav.Link>
 
         </Nav>
         <Nav>
