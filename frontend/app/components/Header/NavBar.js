@@ -43,7 +43,7 @@ const NavBar = () => {
           <NavDropdown title={t('association')} id='basic-nav-dropdown'>
             <NavDropdown.Item as={NavLink} to='/Committees' href='/Committees'>{t('committees')}</NavDropdown.Item>
             {getPageLinksForMenu(pages, 'Vereniging')}
-            <NavDropdown.Item as={NavLink} to='/kronometers' href='/kronometers'>{t('kronometers')}</NavDropdown.Item>
+            <NavDropdown.Item as={NavLink} to='/documents' href='/documents '>{t('documents')}</NavDropdown.Item>
           </NavDropdown>
           <NavDropdown title={t('trainings')} id='basic-nav-dropdown'>
             {getPageLinksForMenu(pages, 'Trainingen')}
@@ -54,7 +54,7 @@ const NavBar = () => {
             {getPageLinksForMenu(pages, 'Wedstrijden')}
           </NavDropdown>
           <Nav.Link as={NavLink} to='/agendaitems' href='/agendaitems'>{t('agenda')}</Nav.Link>
-          <Nav.Link as={NavLink} to='/results' href='/results'>{t('results')}</Nav.Link>
+          <Nav.Link as={NavLink} to='/ClubRecords?loc=out&sex=male' href='/ClubRecords?loc=out&sex=male'>{t('Club Records')}</Nav.Link>
           <Nav.Link as={NavLink} to='/photoalbums' href='/photoalbums'>{t('photos')}</Nav.Link>
           <Nav.Link as={NavLink} to='/contact' href='/contact'>{t('contact')}</Nav.Link>
 

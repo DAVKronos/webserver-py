@@ -3,7 +3,7 @@ import FormField from '../Generic/FormField'
 import { Form } from 'react-bootstrap'
 import { getFolders } from './queries'
 
-const kronometerFields = [
+const documentFields = [
   {
     name: 'name',
     type: 'text',
@@ -31,16 +31,16 @@ const kronometerFields = [
 ]
 
 // TODO: make required do something (with react-hook-form)
-const KronometerForm = ({ values, setValue, children }) => {
+const documentForm = ({ values, setValue, children }) => {
   return (
     <Form>
-      {kronometerFields.map(
+      {documentFields.map(
         ({ name, type, required, itemQuery, ...otherProps }) => {
           return (
             <FormField
               {...otherProps}
               key={name}
-              modelName='kronometer'
+              modelName='document'
               fieldName={name}
               value={values[name]}
               setValue={(v) => setValue(name, v)}
@@ -56,4 +56,4 @@ const KronometerForm = ({ values, setValue, children }) => {
   )
 }
 
-export default KronometerForm
+export default documentForm

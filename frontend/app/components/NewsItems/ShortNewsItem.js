@@ -45,7 +45,7 @@ const ShortNewsItem = ({item}) => {
                 <header>
                     <Link to={`/newsitems/${item.id}`}><h2><MultiLanguageText nl={item.title_nl} en={item.title_en}/></h2>
                     </Link>
-                    <p>{format(item.created_at, 'PPP p', i18n.language)} | {item.creator.name}{commentCount}</p>
+                    <p> {format(item.created_at, 'PPP p', i18n.language)} | {item.creator?.name || 'Unknown'}{commentCount}</p>
                 </header>
                 <div>
                     <MultiLanguageText nl={item.news} en={item.news_en} renderFunction={renderNews}/>

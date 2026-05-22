@@ -28,7 +28,7 @@ const ShortNewsItem = ({ item }) => {
       <Col md={9}>
         <header>
           <Link to={`/newsitems/${item.id}`}><h2><MultiLanguageText nl={item.title_nl} en={item.title_en} /></h2></Link>
-          <p>{format(item.created_at, 'PPP p', i18n.language)} | {item.creator.name}{commentCount}</p>
+          <p>{format(item.created_at, 'PPP p', i18n.language)} | {item.creator?.name || 'Unknown'}{commentCount}</p>
         </header>
         <MultiLanguageText nl={item.content_nl} en={item.content_en} renderFunction={renderNews} />
         <Link to={`/newsitems/${item.id}`}>{t('readMore')}</Link>

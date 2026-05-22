@@ -100,61 +100,102 @@ const Comment = ({ comment }) => {
   )
 }
 
-function NewsItem (props) {
+
+
+function NewsItem(props) {
   const { t, i18n } = useTranslation('generic')
   const history = useHistory()
-  const id = parseInt(props.match.params.id)
+  const id = parseInt(props.match.params.id, 10)
+
   const { isLoading, isError, data, error } = useQuery(['newsitems', id], getNewsItem)
 
   if (isLoading) {
     return <DefaultSpinner />
   }
 
+  if (isError) {
+    return <div>Error: {error.message}</div>
+  }
+
+  if (!data) return null
+
   const item = data
-  if (!data) {
-    return null
-  }
 
-  const onClickRemove = () => {
-    removeNewsItem(id).then(() => {
+  const isDutch = i18n.language.startsWith('nl')
+  const getLocalized = (nl, en) => (isDutch ? nl : (en || nl))
+
+  const title = getLocalized(item.title_nl, item.title_en)
+  const news = getLocalized(item.content_nl, item.content_en)
+
+  const onClickRemove = async () => {
+    try {
+      await removeNewsItem(id)
       history.goBack()
-    })
+    } catch (e) {
+      console.error(e)
+    }
   }
 
-  const onClickApprove = () => {
-    approveNewsItem(id).then(() => {
+  const onClickApprove = async () => {
+    try {
+      await approveNewsItem(id)
       history.push('/admin/approve-news')
-    })
+    } catch (e) {
+      console.error(e)
+    }
   }
-
-  const title = i18n.language === 'nl' ? item.title : item.title_en
-  const news = i18n.language === 'nl' ? item.news : item.news_en
 
   return (
     <>
       <Row>
         <Col md={{ span: 8, offset: 2 }}>
           <h1>{title}</h1>
-          <p>{format(item.created_at, 'PPP p', i18n.language)} | {item.user.name}</p>
+          <p>
+            {format(item.created_at, 'PPP p', i18n.language)} |{' '}
+            {item.creator?.name || 'Unknown'}
+          </p>
         </Col>
       </Row>
+
       <Row>
         <Col md={{ span: 8, offset: 2 }}>
-          <img src={getAPIHostUrl(item.articlephoto_url_carrousel)} alt={item.title} />
-          <ReactMarkdown children={news} />
+          <img
+            src={getAPIHostUrl(item.articlephoto_url_carrousel)}
+            alt={title}
+          />
+
+          <ReactMarkdown>
+            {news}
+          </ReactMarkdown>
+
           <Can I='read' a='Comment'>
-            {item && <NewsItemComments newsItemId={item.id} />}
+            <NewsItemComments newsItemId={item.id} />
           </Can>
         </Col>
+
         <Col md={2}>
-          {!item.agreed && <Can I='manage' subject='all'>
-            <Button variant='success' onClick={onClickApprove}>{t('approve')}</Button>
-                           </Can>}
+          {!item.approved && (
+            <Can I='manage' subject='all'>
+              <Button variant='success' onClick={onClickApprove}>
+                {t('approve')}
+              </Button>
+            </Can>
+          )}
+
           <Can I='update' a='Newsitem'>
-            <Button variant='warning' as={Link} to={`/newsitems/${id}/edit`}>{t('edit')}</Button>
+            <Button
+              variant='warning'
+              as={Link}
+              to={`/newsitems/${id}/edit`}
+            >
+              {t('edit')}
+            </Button>
           </Can>
+
           <Can I='destroy' a='Newsitem'>
-            <Button variant='danger' onClick={onClickRemove}>{t('remove')}</Button>
+            <Button variant='danger' onClick={onClickRemove}>
+              {t('remove')}
+            </Button>
           </Can>
         </Col>
       </Row>

@@ -1,6 +1,5 @@
 import React from 'react'
 import { useHistory } from 'react-router-dom'
-import MonthSwitcher from './MonthSwitcher'
 import { Col, Row, Nav, Table } from 'react-bootstrap'
 import { useTranslation } from 'react-i18next'
 
@@ -47,26 +46,23 @@ const CategorySwitcher = () => {
   )
 }
 
-const Records = () => {
-  const date = new Date()
+const ClubRecords = () => {
 
+  const { t } = useTranslation('ClubRecordsPage')
   return (
     <>
       <Row>
-        <Col md={12}>
-          <h1>Clubrecords</h1>
+        <Col md={8}>
+           <h1>{t('header')}</h1>
         </Col>
       </Row>
-      <Row className='row-margin'>
-        <Col md={12}>
-          <MonthSwitcher date={date} />
-        </Col>
-      </Row>
+
       <Row style={{ marginTop: '5px' }}>
         <Col md={12}>
           <CategorySwitcher />
         </Col>
       </Row>
+
       <Row>
         <Col md={12}>
           <RecordTable loc={parseQueryString('loc')} sex={parseQueryString('sex')} />
@@ -77,7 +73,7 @@ const Records = () => {
 }
 
 const RecordTable = (data) => {
-  const { t } = useTranslation('recordPage')
+  const { t } = useTranslation('ClubRecordsPage')
   const loc = data.loc
   const sex = data.sex
   if (loc === 'out' && sex === 'male') {
@@ -801,4 +797,4 @@ const RecordTable = (data) => {
   return null
 }
 
-export default Records
+export default ClubRecords
