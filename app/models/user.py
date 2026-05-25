@@ -4,10 +4,12 @@ from .base import TimestampModel
 from datetime import datetime, date
 
 # This only runs during type checking, not at runtime
+from .files import FileResponse
 if TYPE_CHECKING:
     from .agendaitem import AgendaItem
     from .news_item import NewsItem
     from .committees import CommitteeMember
+    from .files import File
 
 class UserBase(TimestampModel):
     name: str
@@ -18,7 +20,7 @@ class UserBase(TimestampModel):
     phonenumber: Optional[str] = None
     institution: Optional[str] = None
     joined_in: Optional[int] = None
-    avatar_file_id: Optional[int] = None
+    avatar_file_id: Optional[int] = Field(default=None, foreign_key="files.id")
     user_type_id: Optional[int] = Field(default=None, foreign_key="user_types.id")
 
 
@@ -52,7 +54,10 @@ class User(UserBase, table=True):
     )
     user_type: Optional["UserType"] = Relationship(
         back_populates="users",
-        sa_relationship_kwargs={"foreign_keys": "[User.user_type_id]"}
+        sa_relationship_kwargs={"foreign_keys": "[User.user_type_id]", 'lazy': 'selectin'}
+    )
+    avatar_file: Optional["File"] = Relationship(
+        sa_relationship_kwargs={"foreign_keys": "[User.avatar_file_id]", 'lazy': 'selectin'},
     )
 
 
@@ -65,6 +70,7 @@ class UserExtendedResponse(UserBasicResponse):
     address: Optional[str] = None
     postalcode: Optional[str] = None
     city: Optional[str] = None
+    avatar_file: Optional["FileResponse"] = None
 
 class UserCreate(SQLModel):
     name: str
