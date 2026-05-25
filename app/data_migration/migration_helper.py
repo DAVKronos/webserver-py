@@ -116,18 +116,24 @@ async def migrate_photos(old_conn, new_conn):
     rows = res.mappings().all()
 
     field_names = {
-        "file_name": "photo_file_name",
+        "path": "photo_file_name",
         "content_type": "photo_content_type",
         "file_size": "photo_file_size",
         "updated_at": "photo_updated_at"
     }
-    new_file_ids = await upload_files(new_conn, rows, field_names)
+
+    rows_with_file = [r for r in rows if r[field_names["path"]] is not None]
+    if not rows_with_file:
+        print("No valid photo files to migrate.")
+        return
+
+    new_file_ids = await upload_files(new_conn, rows_with_file, field_names, "/static/photos/")
 
     valid_refs = await get_valid_references(new_conn, {"photoalbum_id": "photo_albums"})
     invalid_ref_count = 0
 
     to_insert = []
-    for i, row in enumerate(rows):
+    for i, row in enumerate(rows_with_file):
         data = {
             "id": row["id"],
             "file_id": new_file_ids[i],
@@ -161,6 +167,8 @@ async def upload_files(conn, rows, field_names, path):
         
         for j, r in enumerate(chunk):
             # Unique keys within this specific chunk
+            if r[field_names["path"]] is None:
+                print("None path:", r["id"])
             params.update({
                 f"fn_{j}": path + r[field_names["path"]],
                 f"ct_{j}": r[field_names["content_type"]],
