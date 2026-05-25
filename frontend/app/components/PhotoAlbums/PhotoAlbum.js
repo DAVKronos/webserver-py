@@ -13,7 +13,7 @@ const PhotoItem = ({ item: photo }) => {
   return (
     <Link to={`/photoalbums/${photo.photoalbum_id}/${photo.id}`}>
       <Card>
-        <Card.Img src={`/static/photos/${photo.photo_url_thumb?.split('/').pop()}`}  />
+        <Card.Img src={photo.thumbnail_file?.path}  />
       </Card>
     </Link>
   )
@@ -42,7 +42,7 @@ const PhotoAlbum = (props) => {
     <>
       <Row>
         <Col>
-          <h1>{photoAlbum.name}</h1>
+          <h1>{photoAlbum.name_nl}</h1>
           <p>{t('models:generic.created_at')}: {format(photoAlbum.created_at, 'PPP p', i18n.language)}</p>
         </Col>
       </Row>

@@ -6,9 +6,11 @@ from pathlib import Path
 from datetime import datetime, timezone
 import hashlib
 import os
+from ..time_utils import now
+
 
 from ..dependencies import Database
-from ..models.photos import PhotoAlbum, PhotoAlbumResponse, PhotoAlbumUpdate, Photo, PhotoResponse, PhotoTag, HasTag
+from ..models.photos import *
 
 router = APIRouter(prefix="/photoalbums")
 
@@ -77,8 +79,6 @@ async def add_photo(
     database: Database,
     photo: UploadFile = File(...),
 ):
-    print(f"📸 Uploading photo to album {album_id}")
-
     album = await database.get(PhotoAlbum, album_id)
     if not album:
         raise HTTPException(status_code=404, detail="Photo album not found")
@@ -103,15 +103,12 @@ async def add_photo(
 
 @router.post("/", response_model=PhotoAlbumResponse, status_code=status.HTTP_201_CREATED)
 async def create_photoalbum(
-    data: PhotoAlbum,
+    data: PhotoAlbumCreate,
     database: Database
 ):
     try:
-        new_album = PhotoAlbum(
-            **data.dict(exclude_unset=True),
-            created_at=datetime.now(timezone.utc).replace(tzinfo=None),
-            updated_at=datetime.now(timezone.utc).replace(tzinfo=None),
-        )
+        t = now()
+        new_album = PhotoAlbum.model_validate(data, update={"created_at": t, "updated_at": t})
 
         if new_album.is_public is None:
             new_album.is_public = True

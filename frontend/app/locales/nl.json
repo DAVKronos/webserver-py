@@ -58,9 +58,6 @@
   "footer": {
     "sponsors": "Sponsoren"
   },
-  "photoAlbum": {
-    "no_photos": "Geen foto's in dit album"
-  },
   "agendaItemPage": {
     "header": "Agenda",
     "subscriptions": {
@@ -222,11 +219,13 @@
       "sort_order": "Volgorde"
     },
     "photoalbum": {
-      "name": "Naam (Nederlands)",
+      "name_nl": "Naam (Nederlands)",
       "name_en":"Naam (Engels)",
-      "date": "Datum",
-      "public": "Publiek",
-      "external_url": "Externe URL"
+      "event_date": "Datum",
+      "is_public": "Publiek",
+      "url": "URL",
+      "no_photos": "Geen foto's in dit album"
+
     },
     "contact": {
       "name": "Naam",

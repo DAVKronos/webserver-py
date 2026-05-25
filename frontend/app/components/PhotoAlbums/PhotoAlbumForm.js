@@ -3,7 +3,7 @@ import FormField from '../Generic/FormField'
 import { Form } from 'react-bootstrap'
 
 const photoAlbumFields = [{
-  name: 'name',
+  name: 'name_nl',
   type: 'text',
   required: true
 }, {
@@ -11,15 +11,15 @@ const photoAlbumFields = [{
   type: 'text',
   required: true
 }, {
-  name: 'public',
+  name: 'is_public',
   type: 'boolean',
   required: true
 }, {
-  name: 'date',
+  name: 'event_date',
   type: 'date',
   required: true
 }, {
-  name: 'external_url',
+  name: 'url',
   type: 'text'
 }]
 
