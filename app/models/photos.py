@@ -32,10 +32,8 @@ class PhotoTagResponse(PhotoTagBase):
 
 
 class PhotoBase(TimestampModel):
-    exif_date: Optional[datetime] = None
-    url: Optional[str] = None
-    thumbnail_url: Optional[str] = None
     file_id: int = Field(foreign_key="files.id")
+    thumbnail_file_id = Field(foreign_key="files.id")
     photoalbum_id: int = Field(foreign_key="photo_albums.id")
 
 
@@ -45,13 +43,15 @@ class Photo(PhotoBase, table=True):
 
     album: "PhotoAlbum" = Relationship(back_populates="photos")
     tags: List[PhotoTag] = Relationship(back_populates="photos", link_model=HasTag)
-    file: "File" = Relationship()
+    file: "File" = Relationship(sa_relationship_kwargs={'lazy': 'selectin'})
+    thumbnail_file : "File" = Relationship(sa_relationship_kwargs={'lazy': 'selectin'})
 
 
 class PhotoResponse(PhotoBase):
     id: int
     tags: List[PhotoTagResponse] = []
     file: "FileResponse"
+    thumbnail_file: "FileResponse"
 
 class PhotoAlbumBase(TimestampModel):
     name_nl: Optional[str] = None
