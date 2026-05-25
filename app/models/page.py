@@ -8,7 +8,7 @@ class PageBase(TimestampModel):
     page_title_nl: str
     page_title_en: str
     menu_item: Optional[str] = None
-    is_highlight: bool = False
+    is_highlight: Optional[bool] = False
     is_public: bool = True
 
 class Page(PageBase, table=True):
