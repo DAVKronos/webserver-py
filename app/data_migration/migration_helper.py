@@ -88,7 +88,7 @@ def user_criteria(row):
     return not bool(re.fullmatch(regex, row["name"]))
 
 # Create a file for each row and updating the corresponding row's file_id
-async def migrate_table_file(old_conn, new_conn, old_table, new_table, field_names, file_id_field):
+async def migrate_table_file(old_conn, new_conn, old_table, new_table, field_names, file_id_field, path):
     print(f"Starting {new_table} file migration...")
     
     res = await old_conn.execute(text(f"SELECT id, {', '.join(field_names.values())} FROM {old_table}"))
@@ -98,7 +98,7 @@ async def migrate_table_file(old_conn, new_conn, old_table, new_table, field_nam
     if not rows_with_file:
         return
 
-    new_file_ids = await upload_files(new_conn, rows_with_file, field_names)
+    new_file_ids = await upload_files(new_conn, rows_with_file, field_names, path)
     
     updates = [
         {"table_id": rows_with_file[i]["id"], "file_id": new_file_ids[i]}
@@ -148,7 +148,8 @@ async def migrate_photos(old_conn, new_conn):
     await bulk_insert(new_conn, to_insert, "photos")
     print(f"Finished photo migration. Inserted {len(new_file_ids)} files and {len(to_insert)} photos with {invalid_ref_count} invalid refs.")
 
-async def upload_files(conn, rows, field_names):
+# Uploads files with the file_name prefixed with the given path
+async def upload_files(conn, rows, field_names, path):
     chunk_size = 5000
     all_new_ids = []
     
@@ -161,7 +162,7 @@ async def upload_files(conn, rows, field_names):
         for j, r in enumerate(chunk):
             # Unique keys within this specific chunk
             params.update({
-                f"fn_{j}": r[field_names["path"]],
+                f"fn_{j}": path + r[field_names["path"]],
                 f"ct_{j}": r[field_names["content_type"]],
                 f"fs_{j}": r[field_names["file_size"]],
                 f"ua_{j}": r[field_names["updated_at"]]

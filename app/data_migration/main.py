@@ -1,10 +1,10 @@
-# TO RUN THIS FILE  : docker compose run --rm python python3 -m app.data_migration.main
+# TO RUN THIS FILE  : docker compose run --rm python python3 -m tasks.data_migration.main
 
 import asyncio
 from datetime import datetime
 from sqlalchemy import text
-from ...app.database import create_ssh_engine
-import tasks.data_migration.migration_helper as helper
+from ..database import create_ssh_engine
+import app.data_migration.migration_helper as helper
 
 async def empty_db(conn):
     # Empty the new database first
@@ -277,7 +277,7 @@ async def migrate(old_conn, new_conn):
         "file_size": "avatar_file_size",
         "updated_at": "avatar_updated_at"
     }
-    await helper.migrate_table_file(old_conn, new_conn, "users", "users", user_avatar_field_names, "avatar_file_id")
+    await helper.migrate_table_file(old_conn, new_conn, "users", "users", user_avatar_field_names, "avatar_file_id", "/static/avatars/")
 
     newsitem_file_field_names = {
         "path": "articlephoto_file_name",
@@ -285,7 +285,7 @@ async def migrate(old_conn, new_conn):
         "file_size": "articlephoto_file_size",
         "updated_at": "articlephoto_updated_at"
     }
-    await helper.migrate_table_file(old_conn, new_conn, "newsitems", "news_items", newsitem_file_field_names, "photo_file_id")
+    await helper.migrate_table_file(old_conn, new_conn, "newsitems", "news_items", newsitem_file_field_names, "photo_file_id", "/static/newsitems/")
 
     announcement_file_field_names = {
         "path": "background_file_name",
@@ -293,7 +293,7 @@ async def migrate(old_conn, new_conn):
         "file_size": "background_file_size",
         "updated_at": "background_updated_at"
     }
-    await helper.migrate_table_file(old_conn, new_conn, "announcements", "announcements", announcement_file_field_names, "photo_file_id")
+    await helper.migrate_table_file(old_conn, new_conn, "announcements", "announcements", announcement_file_field_names, "photo_file_id", "/static/announcements")
 
     document_file_field_names = {
         "path": "file_file_name",
@@ -301,7 +301,7 @@ async def migrate(old_conn, new_conn):
         "file_size": "file_file_size",
         "updated_at": "file_updated_at"
     }
-    await helper.migrate_table_file(old_conn, new_conn, "kronometers", "documents", document_file_field_names, "file_id")
+    await helper.migrate_table_file(old_conn, new_conn, "kronometers", "documents", document_file_field_names, "file_id", "/static/documents")
 
     # A lot of refs are now invalid because the photoalbums table in the test database has been whiped,
     # so there are a lot of photos missing. This will be different on the prod database
