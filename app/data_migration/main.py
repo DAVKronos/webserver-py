@@ -16,7 +16,7 @@ async def empty_db(conn):
             mailing_lists, users, agendaitems, committee_members, 
             mailing_list_members, photo_albums, photos, 
             reset_password_actions, subscriptions, announcements, 
-            has_tags, news_items, news_comments 
+            has_tag, news_items, news_comments 
         RESTART IDENTITY CASCADE;
     """))
     print("Database cleared.")
@@ -31,17 +31,17 @@ async def migrate(old_conn, new_conn):
     await helper.migrate_table(old_conn, new_conn, "tag_", "photo_tags", photo_tags_mapping)
 
     pages_mapping = {
-    "id": "id",
-    "information": "content_nl",
-    "information_en": "content_en",
-    "pagetag": "page_title_nl",
-    "pagetag_en": "page_title_en",
-    "menu": "menu_item",
-    "highlight": "is_highlight",
-    "public": "is_public",
-    "created_at": "created_at",
-    "updated_at": "updated_at"
-}
+        "id": "id",
+        "information": "content_nl",
+        "information_en": "content_en",
+        "pagetag": "page_title_nl",
+        "pagetag_en": "page_title_en",
+        "menu": "menu_item",
+        "highlight": "is_highlight",
+        "public": "is_public",
+        "created_at": "created_at",
+        "updated_at": "updated_at"
+    }
     await helper.migrate_table(old_conn, new_conn, "pages", "pages", pages_mapping)
 
     mail_alias_mapping = {
@@ -272,36 +272,36 @@ async def migrate(old_conn, new_conn):
     await helper.migrate_table(old_conn, new_conn, "kronometers", "documents", document_mapping)
 
     user_avatar_field_names = {
-        "file_name": "avatar_file_name",
+        "path": "avatar_file_name",
         "content_type": "avatar_content_type",
         "file_size": "avatar_file_size",
         "updated_at": "avatar_updated_at"
     }
-    await helper.migrate_table_file(old_conn, new_conn, "users", "users", user_avatar_field_names, "avatar_file_id")
+    await helper.migrate_table_file(old_conn, new_conn, "users", "users", user_avatar_field_names, "avatar_file_id", "/static/avatars/")
 
     newsitem_file_field_names = {
-        "file_name": "articlephoto_file_name",
+        "path": "articlephoto_file_name",
         "content_type": "articlephoto_content_type",
         "file_size": "articlephoto_file_size",
         "updated_at": "articlephoto_updated_at"
     }
-    await helper.migrate_table_file(old_conn, new_conn, "newsitems", "news_items", newsitem_file_field_names, "photo_file_id")
+    await helper.migrate_table_file(old_conn, new_conn, "newsitems", "news_items", newsitem_file_field_names, "photo_file_id", "/static/newsitems/")
 
     announcement_file_field_names = {
-        "file_name": "background_file_name",
+        "path": "background_file_name",
         "content_type": "background_content_type",
         "file_size": "background_file_size",
         "updated_at": "background_updated_at"
     }
-    await helper.migrate_table_file(old_conn, new_conn, "announcements", "announcements", announcement_file_field_names, "photo_file_id")
+    await helper.migrate_table_file(old_conn, new_conn, "announcements", "announcements", announcement_file_field_names, "photo_file_id", "/static/announcements/")
 
     document_file_field_names = {
-        "file_name": "file_file_name",
+        "path": "file_file_name",
         "content_type": "file_content_type",
         "file_size": "file_file_size",
         "updated_at": "file_updated_at"
     }
-    await helper.migrate_table_file(old_conn, new_conn, "kronometers", "documents", document_file_field_names, "file_id")
+    await helper.migrate_table_file(old_conn, new_conn, "kronometers", "documents", document_file_field_names, "file_id", "/static/documents/")
 
     # A lot of refs are now invalid because the photoalbums table in the test database has been whiped,
     # so there are a lot of photos missing. This will be different on the prod database

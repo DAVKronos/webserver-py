@@ -31,7 +31,7 @@ const Announcement = ({ announcement, isLoading }) => {
   }
 
   return (
-    <Jumbotron style={{ marginTop: 10, background: `#fff url('static/announcement_photos/${announcement.photo_file.file_name}') no-repeat right top` }}>
+    <Jumbotron style={{ marginTop: 10, background: `#fff url('${announcement.photo_file.path}') no-repeat right top` }}>
       <h1>{announcement.title}</h1>
       <p>{announcement.content}</p>
       <p>

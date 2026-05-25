@@ -55,7 +55,7 @@ const NewComment = ({ newsItemId }) => {
   return (
     <Row style={{ borderTop: '1px solid #eee', paddingTop: 10, display: 'flex', alignItems: 'center' }}>
       <Col md={2} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-        {user && <Image src={user.avatar_url_thumb} roundedCircle />}
+        {user && <Image src={user.avatar_file.path} roundedCircle />}
         {user && <h5>{user.name}</h5>}
       </Col>
       <Col md={8} style={{ display: 'flex', alignItems: 'center' }}>
@@ -85,7 +85,7 @@ const Comment = ({ comment }) => {
   return (
     <Row style={{ borderTop: '1px solid #eee', paddingTop: 10, display: 'flex', alignItems: 'center' }}>
       <Col md={2} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-        {commentUser && <Image src={commentUser.avatar_url_thumb} roundedCircle />}
+        {commentUser && <Image src={commentUser.avatar_file.path} roundedCircle />}
         {commentUser && <h5>{commentUser.name}</h5>}
       </Col>
       <Col md={8} style={{ display: 'flex', alignItems: 'center' }}>

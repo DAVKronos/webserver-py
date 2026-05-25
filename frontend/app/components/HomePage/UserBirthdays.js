@@ -44,7 +44,7 @@ const UserBirthday = ({ user }) => {
         <small>{format(birthdate, 'MMM')}</small>
       </h5>
       </Col>
-      <Col xs={2}><Image roundedCircle src={user.avatar_url_thumb} /> </Col>
+      <Col xs={2}><Image roundedCircle src={user.avatar_file.path} /> </Col>
       <Col xs={7}><h5>{user.name}</h5></Col>
     </Row>
   )

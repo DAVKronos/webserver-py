@@ -152,7 +152,7 @@ const User = (props) => {
           <Col>
             <section className='polaroid'>
               <figure>
-                <Image src={user.avatar_url_medium} />
+                <Image src={user.avatar_file.path} />
                 <figcaption>{user.name}</figcaption>
               </figure>
             </section>

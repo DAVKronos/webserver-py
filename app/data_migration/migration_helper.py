@@ -88,17 +88,17 @@ def user_criteria(row):
     return not bool(re.fullmatch(regex, row["name"]))
 
 # Create a file for each row and updating the corresponding row's file_id
-async def migrate_table_file(old_conn, new_conn, old_table, new_table, field_names, file_id_field):
+async def migrate_table_file(old_conn, new_conn, old_table, new_table, field_names, file_id_field, path):
     print(f"Starting {new_table} file migration...")
     
     res = await old_conn.execute(text(f"SELECT id, {', '.join(field_names.values())} FROM {old_table}"))
     rows = res.mappings().all()
-    rows_with_file = [r for r in rows if r[field_names["file_name"]] is not None]
+    rows_with_file = [r for r in rows if r[field_names["path"]] is not None]
     
     if not rows_with_file:
         return
 
-    new_file_ids = await upload_files(new_conn, rows_with_file, field_names)
+    new_file_ids = await upload_files(new_conn, rows_with_file, field_names, path)
     
     updates = [
         {"table_id": rows_with_file[i]["id"], "file_id": new_file_ids[i]}
@@ -115,26 +115,39 @@ async def migrate_photos(old_conn, new_conn):
     res = await old_conn.execute(text("SELECT * FROM photos"))
     rows = res.mappings().all()
 
+    
+    rows_with_file = [r for r in rows if r["photo_file_name"] is not None]
+    if not rows_with_file:
+        print("No valid photo files to migrate.")
+        return
+    
     field_names = {
-        "file_name": "photo_file_name",
         "content_type": "photo_content_type",
         "file_size": "photo_file_size",
         "updated_at": "photo_updated_at"
     }
-    new_file_ids = await upload_files(new_conn, rows, field_names)
+
+    # Upload full photos
+    field_names["path"] = "photo_url_original"
+    new_file_ids = await upload_files(new_conn, rows_with_file, field_names, "")
+    # Upload thumbnail photos
+    field_names["path"] = "photo_url_thumb"
+    new_thumb_ids = await upload_files(new_conn, rows_with_file, field_names, "")
+
 
     valid_refs = await get_valid_references(new_conn, {"photoalbum_id": "photo_albums"})
     invalid_ref_count = 0
 
     to_insert = []
-    for i, row in enumerate(rows):
+    for i, row in enumerate(rows_with_file):
         data = {
             "id": row["id"],
             "file_id": new_file_ids[i],
+            "thumbnail_file_id": new_thumb_ids[i],
             "photoalbum_id": row["photoalbum_id"],
-            "exif_date": row["exif_date"],
-            "url": row["photo_url_original"],
-            "thumbnail_url": row["photo_url_thumb"],
+            # "exif_date": row["exif_date"],
+            # "url": row["photo_url_original"],
+            # "thumbnail_url": row["photo_url_thumb"],
             "created_at": row["created_at"],
             "updated_at": row["updated_at"]
         }
@@ -148,7 +161,8 @@ async def migrate_photos(old_conn, new_conn):
     await bulk_insert(new_conn, to_insert, "photos")
     print(f"Finished photo migration. Inserted {len(new_file_ids)} files and {len(to_insert)} photos with {invalid_ref_count} invalid refs.")
 
-async def upload_files(conn, rows, field_names):
+# Uploads files with the file_name prefixed with the given path
+async def upload_files(conn, rows, field_names, path):
     chunk_size = 5000
     all_new_ids = []
     
@@ -159,9 +173,14 @@ async def upload_files(conn, rows, field_names):
         value_strings = []
         
         for j, r in enumerate(chunk):
+            full_path = path + r[field_names["path"]]
+            # Replace old path 'system' to 'static'
+            if full_path.startswith("/system"):
+                full_path = full_path.replace("/system", "/static", 1)
+
             # Unique keys within this specific chunk
             params.update({
-                f"fn_{j}": r[field_names["file_name"]],
+                f"fn_{j}": full_path,
                 f"ct_{j}": r[field_names["content_type"]],
                 f"fs_{j}": r[field_names["file_size"]],
                 f"ua_{j}": r[field_names["updated_at"]]
@@ -169,7 +188,7 @@ async def upload_files(conn, rows, field_names):
             value_strings.append(f"(:fn_{j}, :ct_{j}, :fs_{j}, :ua_{j})")
 
         stmt_text = f"""
-            INSERT INTO files (file_name, content_type, file_size, updated_at) 
+            INSERT INTO files (path, content_type, file_size, updated_at) 
             VALUES {', '.join(value_strings)} 
             RETURNING id
         """
