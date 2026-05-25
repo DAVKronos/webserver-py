@@ -3,7 +3,7 @@ from sqlmodel import Field, SQLModel, Relationship
 from .documents import Document
 
 class FileBase(SQLModel):
-    file_name: str
+    path: str
     content_type: str
     file_size: Optional[int] = None
 
