@@ -115,19 +115,25 @@ async def migrate_photos(old_conn, new_conn):
     res = await old_conn.execute(text("SELECT * FROM photos"))
     rows = res.mappings().all()
 
+    
+    rows_with_file = [r for r in rows if r["photo_file_name"] is not None]
+    if not rows_with_file:
+        print("No valid photo files to migrate.")
+        return
+    
     field_names = {
-        "path": "photo_file_name",
         "content_type": "photo_content_type",
         "file_size": "photo_file_size",
         "updated_at": "photo_updated_at"
     }
 
-    rows_with_file = [r for r in rows if r[field_names["path"]] is not None]
-    if not rows_with_file:
-        print("No valid photo files to migrate.")
-        return
+    # Upload full photos
+    field_names["path"] = "photo_url_original"
+    new_file_ids = await upload_files(new_conn, rows_with_file, field_names, "")
+    # Upload thumbnail photos
+    field_names["path"] = "photo_url_thumb"
+    new_thumb_ids = await upload_files(new_conn, rows_with_file, field_names, "")
 
-    new_file_ids = await upload_files(new_conn, rows_with_file, field_names, "/static/photos/")
 
     valid_refs = await get_valid_references(new_conn, {"photoalbum_id": "photo_albums"})
     invalid_ref_count = 0
@@ -137,10 +143,11 @@ async def migrate_photos(old_conn, new_conn):
         data = {
             "id": row["id"],
             "file_id": new_file_ids[i],
+            "thumbnail_file_id": new_thumb_ids[i],
             "photoalbum_id": row["photoalbum_id"],
-            "exif_date": row["exif_date"],
-            "url": row["photo_url_original"],
-            "thumbnail_url": row["photo_url_thumb"],
+            # "exif_date": row["exif_date"],
+            # "url": row["photo_url_original"],
+            # "thumbnail_url": row["photo_url_thumb"],
             "created_at": row["created_at"],
             "updated_at": row["updated_at"]
         }
@@ -166,11 +173,14 @@ async def upload_files(conn, rows, field_names, path):
         value_strings = []
         
         for j, r in enumerate(chunk):
+            full_path = path + r[field_names["path"]]
+            # Replace old path 'system' to 'static'
+            if full_path.startswith("/system"):
+                full_path = full_path.replace("/system", "/static", 1)
+
             # Unique keys within this specific chunk
-            if r[field_names["path"]] is None:
-                print("None path:", r["id"])
             params.update({
-                f"fn_{j}": path + r[field_names["path"]],
+                f"fn_{j}": full_path,
                 f"ct_{j}": r[field_names["content_type"]],
                 f"fs_{j}": r[field_names["file_size"]],
                 f"ua_{j}": r[field_names["updated_at"]]
