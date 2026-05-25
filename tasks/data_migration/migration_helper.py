@@ -93,7 +93,7 @@ async def migrate_table_file(old_conn, new_conn, old_table, new_table, field_nam
     
     res = await old_conn.execute(text(f"SELECT id, {', '.join(field_names.values())} FROM {old_table}"))
     rows = res.mappings().all()
-    rows_with_file = [r for r in rows if r[field_names["file_name"]] is not None]
+    rows_with_file = [r for r in rows if r[field_names["path"]] is not None]
     
     if not rows_with_file:
         return
@@ -161,7 +161,7 @@ async def upload_files(conn, rows, field_names):
         for j, r in enumerate(chunk):
             # Unique keys within this specific chunk
             params.update({
-                f"fn_{j}": r[field_names["file_name"]],
+                f"fn_{j}": r[field_names["path"]],
                 f"ct_{j}": r[field_names["content_type"]],
                 f"fs_{j}": r[field_names["file_size"]],
                 f"ua_{j}": r[field_names["updated_at"]]
@@ -169,7 +169,7 @@ async def upload_files(conn, rows, field_names):
             value_strings.append(f"(:fn_{j}, :ct_{j}, :fs_{j}, :ua_{j})")
 
         stmt_text = f"""
-            INSERT INTO files (file_name, content_type, file_size, updated_at) 
+            INSERT INTO files (path, content_type, file_size, updated_at) 
             VALUES {', '.join(value_strings)} 
             RETURNING id
         """
