@@ -91,7 +91,7 @@ const LoggedInMenu = ({ user }) => {
   return (
     <>
       <div className='logged-in-menu'>
-        <Image src={user.avatar_url_thumb} roundedCircle />
+        <Image src={user.avatar_file.path} roundedCircle />
         <h3>{firstName}</h3>
       </div>
 

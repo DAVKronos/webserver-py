@@ -123,7 +123,7 @@ const Users = () => {
                   <Link to={`/users/${user.id}`} className='user'>
                     <div className='thumbnail'>
                       <figure>
-                        <Image src={user.avatar_url_pass} />
+                        <Image src={user.avatar_file.path} />
                         <figcaption>{user.name}</figcaption>
                       </figure>
                     </div>

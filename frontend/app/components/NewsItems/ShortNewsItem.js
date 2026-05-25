@@ -37,7 +37,7 @@ const ShortNewsItem = ({item}) => {
         <Row>
             <Col md={3} style={{display: 'flex'}}>
                 <Link to={`/newsitems/${item.id}`} className='align-self-center'>
-                    <Image className='d-block w-100' src={`/static/newsitem_photos/${item.photo_file.file_name}`} alt={item.title}
+                    <Image className='d-block w-100' src={item.photo_file.path} alt={item.title}
                            thumbnail/>
                     
                 </Link>

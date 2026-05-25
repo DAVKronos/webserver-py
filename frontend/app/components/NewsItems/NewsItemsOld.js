@@ -25,7 +25,7 @@ const NewsItemCover = ({ newsItem }) => {
     <div className='newsitem'>
       <Row className='newscontent'>
         <Col lg={12}>
-          <Image src={newsItem.articlephoto_url_normal} className='thumbnail' />
+          <Image src={newsItem.photo_file.path} className='thumbnail' />
           <h2>
             <Link to={`/newsitems/${newsItem.id}`} className='newslink'>
               <MultiLanguageText nl={newsItem.title} en={newsItem.title_en} />
