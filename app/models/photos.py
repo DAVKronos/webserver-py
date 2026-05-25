@@ -85,3 +85,10 @@ class PhotoAlbumUpdate(SQLModel):
     event_date: Optional[str] = None
     url: Optional[str] = None
     is_public: Optional[bool] = None
+
+class PhotoAlbumCreate(SQLModel):
+    name_nl: str
+    name_en: str
+    event_date: Optional[datetime] = None
+    url: Optional[str] = ""
+    is_public: Optional[bool] = False
