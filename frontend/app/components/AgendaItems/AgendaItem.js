@@ -50,7 +50,7 @@ function AgendaItem (props) {
         </Col>
 
         <Col md={4} className='d-flex'>
-          <Can I='update' this={subject('Agendaitem', agendaItem)}>
+          <Can I='edit' this={subject('Agendaitem', agendaItem)}>
             <Button
               variant='warning' className='align-self-center' as={Link}
               to={`/agendaitems/${id}/edit`}
@@ -90,7 +90,7 @@ function AgendaItem (props) {
         </Col>
 
         <Col md={4}>
-          <Can I='read' a='Subscription' passThrough>
+          <Can I='view' a='Subscription' passThrough>
             {allowed => <SubscriptionsCard agendaItem={agendaItem} allowed={allowed} />}
           </Can>
         </Col>
