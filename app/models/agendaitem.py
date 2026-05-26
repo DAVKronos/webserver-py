@@ -104,3 +104,6 @@ class Subscription(SubscriptionBase, table=True):
 class SubscriptionResponse(SubscriptionBase):
     id: int
     user: Optional["UserBasicResponse"]
+
+class SubscriptionCreate(SQLModel):
+    comment: str
