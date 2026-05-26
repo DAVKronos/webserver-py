@@ -5,7 +5,6 @@ import { useQuery } from 'react-query'
 import DefaultSpinner from '../Generic/Spinner'
 import { getUserBirthdays } from './queries'
 import { Link } from 'react-router-dom'
-import { getAPIHostUrl } from '../../utils/rest-helper'
 import { useTranslation } from 'react-i18next'
 
 const UserBirthdays = () => {

@@ -27,11 +27,13 @@ function getPhotos (queryKey, photoAlbumId) {
 }
 
 async function addPhotosToAlbums(photoAlbumId, photos, progressCallBack) {
+  if (!photos) return
   const total = photos.length
 
   for (let idx = 0; idx < total; idx++) {
     const photo = photos[idx]
-    const formData = convertToFormData('photo', { photo })
+    const formData = new FormData()
+    formData.append('photo', photo)
 
     const onUploadProgress = (e) => {
       if (e.lengthComputable) {
@@ -43,6 +45,9 @@ async function addPhotosToAlbums(photoAlbumId, photos, progressCallBack) {
       await restCall(`photoalbums/${photoAlbumId}/photos`, {
         method: 'POST',
         data: formData,
+        headers: {
+          'Content-Type': 'multipart/form-data' // Tells your wrapper not to overwrite this with JSON
+        },
         onUploadProgress
       })
       progressCallBack({ loaded: idx + 1, total })

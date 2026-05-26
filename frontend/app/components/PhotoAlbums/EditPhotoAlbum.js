@@ -19,8 +19,8 @@ const EditPhotoAlbumWithData = (props) => {
 const EditPhotoAlbum = ({ photoAlbum }) => {
   const queryCache = useQueryCache()
   const history = useHistory()
-  const { id, name, name_en, public: public_status, date, external_url } = photoAlbum
-  const editableFields = { name, name_en, public: public_status, date, external_url }
+  const { id, name_nl, name_en, public: public_status, date, url } = photoAlbum
+  const editableFields = { name_nl, name_en, is_public: public_status, date, url }
   const onSuccess = (savedPhotoAlbum) => {
     queryCache.setQueryData(['photoalbums', savedPhotoAlbum.id], savedPhotoAlbum)
     history.push(`/photoalbums/${savedPhotoAlbum.id}`)

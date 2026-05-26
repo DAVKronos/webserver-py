@@ -1,7 +1,6 @@
 import React, { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { Nav, Col, Row, Image, FormControl, Button } from 'react-bootstrap'
-import { getAPIHostUrl } from '../../utils/rest-helper'
 import { format } from '../../utils/date-format'
 import { useQuery } from 'react-query'
 import { getUsers, getUserTypes } from './queries'

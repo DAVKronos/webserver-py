@@ -2,7 +2,6 @@ import React, { useState } from 'react'
 import { useQuery, useQueryCache } from 'react-query'
 import { addPhotosToAlbums, deletePhoto, getPhotos } from './queries'
 import { Button, Card, Col, Form, ProgressBar, Row } from 'react-bootstrap'
-import { getAPIHostUrl } from '../../utils/rest-helper'
 import DefaultSpinner from '../Generic/Spinner'
 import { useTranslation } from 'react-i18next'
 
@@ -54,7 +53,7 @@ const EditPhotos = ({ photoAlbumId }) => {
           return (
             <Col key={photo.id} md={2} sm={2} style={{ marginBottom: 5 }}>
               <Card>
-                <Card.Img src={`/static/photos/${photo.photo_url_thumb?.split('/').pop()}`} />
+                <Card.Img src={`/${photo.file.path}`} />
                 <Card.Body style={{ padding: '0.2rem' }}>
                   <Button size='sm' variant='danger' onClick={() => onClickRemove(photo.id)}>{t('generic:remove')}</Button>
                 </Card.Body>

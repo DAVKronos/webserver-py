@@ -26,9 +26,9 @@ function PhotoAlbums (props) {
 
       <Can I='create' a='Photoalbum'>
         <Button as={Link} to='/photoalbums/new'>{t('addModel', { model: t('models:modelNames.photoAlbum') })}</Button>
-        <Button as={Link} to='/photoalbums/search' variant='secondary' className='ml-2'>
+        {/* <Button as={Link} to='/photoalbums/search' variant='secondary' className='ml-2'>
           {t('Search Photos')}
-        </Button>
+        </Button> */}
 
       </Can>
     </>

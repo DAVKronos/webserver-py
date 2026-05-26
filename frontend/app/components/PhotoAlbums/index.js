@@ -13,8 +13,8 @@ const PhotoAlbumsRouter = () => {
     <Switch>
       <Route exact path='/photoalbums' component={PhotoAlbums} />
       <PrivateRoute exact path='/photoalbums/new' action='create' subject='Photoalbum' component={NewPhotoAlbum} />
-      <PrivateRoute path="/photoalbums/search" component={PhotoSearch} />
-      <PrivateRoute path='/photoalbums/:id/edit' action='update' subject='Photoalbum' component={EditPhotoAlbum} />
+      {/* <PrivateRoute path="/photoalbums/search" component={PhotoSearch} /> */}
+      <PrivateRoute path='/photoalbums/:id/edit' action='edit' subject='Photoalbum' component={EditPhotoAlbum} />
       <Route exact path='/photoalbums/:id' component={PhotoAlbum} />
       <Route path='/photoalbums/:album_id/:photo_id' component={Photo} />
     </Switch>

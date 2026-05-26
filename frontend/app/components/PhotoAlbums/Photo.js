@@ -81,14 +81,14 @@ function Photo(props) {
       <Row>
         <Col className='photo'>
           <Image
-            src={photo.file.path}
+            src={`/${photo.file.path}`}
             fluid
             style={{ borderRadius: '12px', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}
           />
         </Col>
       </Row>
 
-      <Row className='row-margin mt-4'>
+      {/* <Row className='row-margin mt-4'>
         <Col>
           {combinedTags.length > 0 && (
             <>
@@ -137,7 +137,7 @@ function Photo(props) {
             </InputGroup.Append>
           </InputGroup>
         </Col>
-      </Row>
+      </Row> */}
 
       <Row className='row-margin mt-4'>
         <Col className='photo-buttons'>

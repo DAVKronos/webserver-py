@@ -1,6 +1,5 @@
 import React, { useState, useContext } from 'react'
 import { Button, Col, Row, Image, Form } from 'react-bootstrap'
-import { getAPIHostUrl } from '../../utils/rest-helper'
 import { format } from '../../utils/date-format'
 import { useQuery, useQueryCache } from 'react-query'
 import {
@@ -160,8 +159,7 @@ function NewsItem(props) {
       <Row>
         <Col md={{ span: 8, offset: 2 }}>
           <img
-            // src={getAPIHostUrl(item.photo_file.file_name)}
-            src={`/static/newsitem_photos/${item.photo_file.file_name}`}
+            src={`/${item.photo_file.path}`}
             alt={title}
           />
 
