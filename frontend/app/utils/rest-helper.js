@@ -41,15 +41,11 @@ function restCall (url, params = {}, method = 'get') {
   return axios.request({ ...getConfig(), url: `${API_HOST}/${url}`, method, ...params })
 }
 
-function getAPIHostUrl (url) {
-  return url
-}
 
 export {
   axiosInstance,
   restCall,
   API_HOST,
-  getAPIHostUrl,
   getConfig,
   convertToFormData
 }

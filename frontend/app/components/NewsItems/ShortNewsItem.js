@@ -1,7 +1,6 @@
 import React from 'react'
 import {Link} from 'react-router-dom'
 import {Button, Col, Image, Row} from 'react-bootstrap'
-import {getAPIHostUrl} from '../../utils/rest-helper'
 import {format} from '../../utils/date-format.js'
 import {useTranslation} from 'react-i18next'
 import ReactMarkdown from 'react-markdown'

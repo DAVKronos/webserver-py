@@ -222,11 +222,11 @@
       "sort_order": "Sort order"
     },
     "photoalbum": {
-      "name": "Name (Dutch)",
+      "name_nl": "Name (Dutch)",
       "name_en": "Name (English)",
-      "date": "Date",
-      "public": "Public",
-      "external_url": "External URL"
+      "event_date": "Date",
+      "is_public": "Public",
+      "url": "External URL"
     },
     "contact": {
       "name": "Name",

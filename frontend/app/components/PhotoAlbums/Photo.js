@@ -88,7 +88,7 @@ function Photo(props) {
         </Col>
       </Row>
 
-      <Row className='row-margin mt-4'>
+      {/* <Row className='row-margin mt-4'>
         <Col>
           {combinedTags.length > 0 && (
             <>
@@ -137,7 +137,7 @@ function Photo(props) {
             </InputGroup.Append>
           </InputGroup>
         </Col>
-      </Row>
+      </Row> */}
 
       <Row className='row-margin mt-4'>
         <Col className='photo-buttons'>

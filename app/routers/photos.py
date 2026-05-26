@@ -6,9 +6,12 @@ from pathlib import Path
 from datetime import datetime, timezone
 import hashlib
 import os
+from ..time_utils import now
+
 
 from ..dependencies import Database
-from ..models.photos import PhotoAlbum, PhotoAlbumResponse, PhotoAlbumUpdate, Photo, PhotoResponse, PhotoTag, HasTag
+from ..models.photos import *
+from ..models.files import File as FileModel
 
 router = APIRouter(prefix="/photoalbums")
 
@@ -76,9 +79,7 @@ async def add_photo(
     album_id: int,
     database: Database,
     photo: UploadFile = File(...),
-):
-    print(f"📸 Uploading photo to album {album_id}")
-
+):  
     album = await database.get(PhotoAlbum, album_id)
     if not album:
         raise HTTPException(status_code=404, detail="Photo album not found")
@@ -90,28 +91,48 @@ async def add_photo(
         with open(file_path, "wb") as f:
             f.write(await photo.read())
 
-        return {
-            "status": "success",
-            "filename": filename,
-            "path": f"/static/photos/{filename}",
-        }
+        # TODO: Compress file and create thumbnail
+
+        # Upload File
+        file_size  = os.path.getsize(file_path)
+        t = now()
+        db_file = FileModel(
+            file_name = filename,
+            content_type=photo.content_type,
+            path='/' + str(PHOTO_DIR / filename),
+            size=file_size,
+            created_at=t,
+            updated_at=t,
+        )
+        database.add(db_file)
+        await database.flush() # Retrieves id of the File
+
+        db_photo = Photo(
+            photoalbum_id=album_id,
+            file_id=db_file.id,
+            thumbnail_file_id=db_file.id,
+            created_at=t,
+            updated_at=t
+        )
+        database.add(db_photo)
+        await database.commit()
+        await database.refresh(db_photo)
+
+        return db_photo
 
     except Exception as e:
-        print(f"❌ Error uploading photo: {e}")
+        print(e)
         raise HTTPException(status_code=500, detail="Failed to upload photo")
 
 
 @router.post("/", response_model=PhotoAlbumResponse, status_code=status.HTTP_201_CREATED)
 async def create_photoalbum(
-    data: PhotoAlbum,
+    data: PhotoAlbumCreate,
     database: Database
 ):
     try:
-        new_album = PhotoAlbum(
-            **data.dict(exclude_unset=True),
-            created_at=datetime.now(timezone.utc).replace(tzinfo=None),
-            updated_at=datetime.now(timezone.utc).replace(tzinfo=None),
-        )
+        t = now()
+        new_album = PhotoAlbum.model_validate(data, update={"created_at": t, "updated_at": t})
 
         if new_album.is_public is None:
             new_album.is_public = True
@@ -120,11 +141,9 @@ async def create_photoalbum(
         await database.commit()
         await database.refresh(new_album)
 
-        print("✅ Album created with ID:", new_album.id)
         return new_album
 
     except Exception as e:
-        print("❌ Exception while creating album:", e)
         raise HTTPException(status_code=400, detail=f"Could not create album: {e}")
 
 
