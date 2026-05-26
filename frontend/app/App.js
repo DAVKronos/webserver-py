@@ -18,6 +18,10 @@ const queryCache = new QueryCache({
 
 const EnvContext = React.createContext({})
 
+// Very crappy code to activate the import of the language package
+activate(i18n)
+function activate(obj) {return}
+
 const App = (props) => {
   return (
     <EnvContext.Provider value={props}>

@@ -1,9 +1,9 @@
-import { axiosInstance } from './rest-helper'
+import { axiosInstance, getConfig } from './rest-helper'
 import { Ability } from '@casl/ability'
 import { createCanBoundTo } from '@casl/react'
 
 function getAbilities () {
-  return axiosInstance.get('/auth/permissions').then(res => res.data)
+  return axiosInstance.get('/auth/permissions', {...getConfig()}).then(res => res.data)
 }
 
 function updateAbilities (ability) {
