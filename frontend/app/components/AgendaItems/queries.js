@@ -52,7 +52,7 @@ function getSubscriptions (queryKey, agendaitemId) {
 }
 
 function createSubscription (agendaItemId, data) {
-  return restCall(`agendaitems/${agendaItemId}/subscriptions/`, { method: 'POST', data: { subscription: data } }).then(res => res.data)
+  return restCall(`agendaitems/${agendaItemId}/subscriptions`, { method: 'POST', data: data }).then(res => res.data)
 }
 
 function removeSubscription (agendaItemId, id) {

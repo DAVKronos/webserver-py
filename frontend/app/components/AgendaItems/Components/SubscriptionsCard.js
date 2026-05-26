@@ -12,8 +12,9 @@ import { subject } from '@casl/ability'
 
 const SubscriptionsCard = ({ allowed, agendaItem }) => {
   const { t } = useTranslation('agendaItemPage')
+
   let body
-  if (!agendaItem.subscribe) {
+  if (!agendaItem.can_subscribe) {
     return null
   }
 
@@ -55,20 +56,17 @@ const Subscriptions = ({ agendaItem }) => {
   }
 
   const onClickSubscribe = () => {
-    createSubscription(agendaItem.id, { name: user.name, comment: text }).then(() => {
+    createSubscription(agendaItem.id, { comment: text }).then(() => {
       queryCache.invalidateQueries(['agendaitems', agendaItem.id, 'subscriptions'])
     })
   }
 
-  const subscriptionOpen = new Date(agendaItem.subscriptiondeadline) > new Date()
+  const subscriptionOpen = new Date(agendaItem.subscription_deadline) > new Date()
 
-  const subscribeButton = userSubscription
+  const can_subscribe = !userSubscription && subscriptionOpen
+
+  const subscribeButton = can_subscribe
     ? (
-      <>
-        <Button variant='danger' onClick={() => onClickUnsubscribe(userSubscription.id)}>{t('subscriptions.unsubscribe')}</Button>
-      </>
-      )
-    : (
       <>
         <Col md={8} style={{ display: 'flex', alignItems: 'center' }}>
           <Form.Control as='textarea' value={text} onChange={e => setText(e.target.value)} placeholder={t('comment')} />
@@ -76,22 +74,27 @@ const Subscriptions = ({ agendaItem }) => {
         <Button variant='success' onClick={onClickSubscribe}>{t('subscriptions.subscribe')}</Button>
       </>
       )
+    : (
+      <>
+        <Button variant='danger' onClick={() => onClickUnsubscribe(userSubscription.id)}>{t('subscriptions.unsubscribe')}</Button>
+      </>
+      )
 
   return (
     <>
       <Card.Header>
         {t('subscriptions.list')} <br />
-        <small>{formatDistanceToNow(new Date(agendaItem.subscriptiondeadline), lang, true)}</small><br />
-        {subscriptionOpen && agendaItem.maxsubscription && <small>{t('subscriptions.placesLeft', { places: agendaItem.maxsubscription - subscriptions.length })}</small>}
+        <small>{formatDistanceToNow(new Date(agendaItem.subscription_deadline), lang, true)}</small><br />
+        {subscriptionOpen && agendaItem.max_subscriptions && <small>{t('subscriptions.placesLeft', { places: agendaItem.maxsubscription - subscriptions.length })}</small>}
       </Card.Header>
       <ListGroup variant='flush'>
         {subscriptions && subscriptions.map(subscription => {
           return (
             <ListGroup.Item key={subscription.id} style={{ alignItems: 'center' }}>
-              <div>{subscription.name}</div>
+              <div>{subscription.user?.name}</div>
               <small>{subscription.comment}</small>
               <br />
-              <Can I='destroy' this={subject('Subscription', subscription)}>
+              <Can I='delete' this={subject('Subscription', subscription)}>
                 <Button size='sm' variant='danger' onClick={() => onClickUnsubscribe(subscription.id)}>{t('subscriptions.unsubscribe')}</Button>
               </Can><br />
 
