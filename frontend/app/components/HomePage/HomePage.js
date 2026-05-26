@@ -24,8 +24,8 @@ const HomePage = () => {
         </Col>
         <Col md={4}>
           <AgendaItemsSidebar />
-          <StravaSidebar />
-          <Can I='read' a='User'>
+          {/* <StravaSidebar /> */}
+          <Can I='view' a='User'>
             <UserBirthdays />
           </Can>
         </Col>
