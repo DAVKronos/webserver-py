@@ -90,7 +90,7 @@ class AgendaItemTypeResponse(AgendaItemTypeBase):
 
 class SubscriptionBase(TimestampModel):
     comment: Optional[str] = None
-    user_id: int = Field(foreign_key="users.id")
+    user_id: Optional[int] = Field(foreign_key="users.id")
     agendaitem_id: int = Field(foreign_key="agendaitems.id")
 
 class Subscription(SubscriptionBase, table=True):
@@ -103,4 +103,4 @@ class Subscription(SubscriptionBase, table=True):
 
 class SubscriptionResponse(SubscriptionBase):
     id: int
-    user: "UserBasicResponse"
+    user: Optional["UserBasicResponse"]
