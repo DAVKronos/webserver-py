@@ -34,7 +34,19 @@ const FieldLabel = ({ modelName, fieldName }) => {
 
 const ReferenceControl = ({ value, setValue, required, itemQuery, multiple, ...props }) => {
   const { isLoading, data = [] } = useQuery(...itemQuery)
-  const options = data.map(item => ({ label: item.name, value: item.id }))
+
+  const { i18n } = useTranslation()
+  const lang = i18n.language
+  const options = data.map(item => {
+    // If name_nl or name_en exist, select the right language string. 
+    // Fall back to a standard generic 'name' string if available.
+    const labelText = item[`name_${lang}`] || item.name || item.name_en || 'Unnamed Option'
+    
+    return { 
+      label: labelText, 
+      value: item.id 
+    }
+  })
 
   let selectValue
   if (multiple) {

@@ -39,8 +39,8 @@ function getEventType (id) {
   return restCall(`eventtypes/${id}`).then(res => res.data)
 }
 
-function getCommitteeForUser (queryKey, userId) {
-  return restCall(`users/${userId}/Committees`).then(res => res.data)
+function getCommittees(queryKey, userId) {
+  return restCall(`committees`).then(res => res.data)
 }
 
 function removeAgendaitem (id) {
@@ -79,7 +79,7 @@ export {
   getAgendaitemEvents,
   createAgendaitem,
   updateAgendaitem,
-  getCommitteeForUser,
+  getCommittees,
   removeAgendaitem,
   getSubscriptions,
   removeSubscription,
