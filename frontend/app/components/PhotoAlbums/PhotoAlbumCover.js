@@ -33,7 +33,7 @@ const PhotoAlbumCover = ({ photoAlbum }) => {
       {hasThumbnail && <Card.Img
         variant='top'
         className={isImageLoaded ? 'd-block' : 'd-none'}
-        src={`/${photos[0].thumbnail_file.path}`}
+        src={photos[0].thumbnail_file.path}
         onLoad={() => setIsImageLoaded(true)}
                      />}
       <Card.Body>

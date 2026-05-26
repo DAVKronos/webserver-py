@@ -53,7 +53,7 @@ const EditPhotos = ({ photoAlbumId }) => {
           return (
             <Col key={photo.id} md={2} sm={2} style={{ marginBottom: 5 }}>
               <Card>
-                <Card.Img src={`/${photo.file.path}`} />
+                <Card.Img src={photo.file.path} />
                 <Card.Body style={{ padding: '0.2rem' }}>
                   <Button size='sm' variant='danger' onClick={() => onClickRemove(photo.id)}>{t('generic:remove')}</Button>
                 </Card.Body>

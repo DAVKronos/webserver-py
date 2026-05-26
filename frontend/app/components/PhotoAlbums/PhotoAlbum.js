@@ -12,7 +12,7 @@ const PhotoItem = ({ item: photo }) => {
   return (
     <Link to={`/photoalbums/${photo.photoalbum_id}/${photo.id}`}>
       <Card>
-        <Card.Img src={`/${photo.thumbnail_file?.path}`} />
+        <Card.Img src={photo.thumbnail_file?.path} />
       </Card>
     </Link>
   )

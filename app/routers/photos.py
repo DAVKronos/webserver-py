@@ -99,7 +99,7 @@ async def add_photo(
         db_file = FileModel(
             file_name = filename,
             content_type=photo.content_type,
-            path=str(PHOTO_DIR / filename),
+            path='/' + str(PHOTO_DIR / filename),
             size=file_size,
             created_at=t,
             updated_at=t,

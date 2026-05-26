@@ -159,7 +159,7 @@ function NewsItem(props) {
       <Row>
         <Col md={{ span: 8, offset: 2 }}>
           <img
-            src={`/${item.photo_file.path}`}
+            src={item.photo_file.path}
             alt={title}
           />
 

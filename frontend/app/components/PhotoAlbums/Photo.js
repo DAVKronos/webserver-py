@@ -81,7 +81,7 @@ function Photo(props) {
       <Row>
         <Col className='photo'>
           <Image
-            src={`/${photo.file.path}`}
+            src={photo.file.path}
             fluid
             style={{ borderRadius: '12px', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}
           />
