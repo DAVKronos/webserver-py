@@ -103,6 +103,7 @@
     "postalcode": "Postal code",
     "city": "City",
     "study": "Study",
+    "memberSince": "Member since",
     "institution": "Institution",
     "sex": "Gender",
     "licensenumber": "License number",

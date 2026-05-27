@@ -84,13 +84,13 @@ const User = (props) => {
                   <td>
                     <b>{t('institution')}</b>
                   </td>
-                  <td>{user.instelling}</td>
+                  <td>{user.institution}</td>
                 </tr>
                 <tr>
                   <td>
-                    <b>Start</b>
+                    <b>{t('memberSince')}</b>
                   </td>
-                  <td>{user.aanvang}</td>
+                  <td>{user.joined_in}</td>
                 </tr>
                 <tr>
                   <td>
@@ -100,34 +100,16 @@ const User = (props) => {
                 </tr>
                 <tr>
                   <td>
-                    <b>{t('licensenumber')}</b>
-                  </td>
-                  <td>{user.licensenumber}</td>
-                </tr>
-                <tr>
-                  <td>
                     <b>{t('unioncardnumber')}</b>
                   </td>
-                  <td>{user.xtracard}</td>
+                  <td>{user.unioncard_number}</td>
                 </tr>
-                <tr>
-                  <td>
-                    <b>{t('paperkronometer')}</b>
-                  </td>
-                  <td>{user.papieren_kronometer.toString()}</td>
-                </tr>
-                <Can I='manage' this='User'>
+                <Can I='view.extended' this='User'>
                   <tr>
                     <td>
                       <b>{t('banknumber')}</b>
                     </td>
                     <td>{user.bank_account_number}</td>
-                  </tr>
-                  <tr>
-                    <td>
-                      <b>IBAN</b>
-                    </td>
-                    <td>{user.iban}</td>
                   </tr>
                   <tr>
                     <td>
@@ -141,8 +123,8 @@ const User = (props) => {
                     <b>{t('Committees')}</b>
                   </td>
                   <td>
-                    {user.Committees
-                      .map((c) => (lang === 'nl' ? c.name : c.name_en))
+                    {user.committees
+                      .map((c) => (lang === 'nl' ? c.name_nl : c.name_en))
                       .toString()}
                   </td>
                 </tr>
@@ -152,7 +134,7 @@ const User = (props) => {
           <Col>
             <section className='polaroid'>
               <figure>
-                <Image src={user.avatar_file.path} />
+                <Image src={user.avatar_file?.path} />
                 <figcaption>{user.name}</figcaption>
               </figure>
             </section>
@@ -160,16 +142,16 @@ const User = (props) => {
         </Row>
         <Row>
           <Col>
-            <Can I='update' this={subject('User', user)}>
+            <Can I='edit' this={subject('User', user)}>
               <Button as={Link} to={`/users/${user.id}/edit`}>
                 {t('generic:edit')}
               </Button>
             </Can>
-            <Can I='editpassword' this={subject('User', user)}>
+            {/* <Can I='editpassword' this={subject('User', user)}>
               <Button as={Link} to={`/users/${user.id}/password/edit`}>
                 {t('changePassword')}
               </Button>
-            </Can>
+            </Can> */}
           </Col>
         </Row>
       </>
