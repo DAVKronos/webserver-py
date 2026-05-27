@@ -79,7 +79,7 @@ const AgendaItems = () => {
           })}
         </Col>
       </Row>
-      <Can I='create' a='Agendaitem'>
+      <Can I='create' a='AgendaItem'>
         <Button as={Link} to='/agendaitems/new'>{t('addModel', { model: t('models:modelNames.agendaItem', { count: 0 }) })}</Button>
       </Can>
     </>
