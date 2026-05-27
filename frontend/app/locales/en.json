@@ -190,19 +190,19 @@
       "announcement_plural": "Announcements"
     },
     "agendaitem": {
-      "name": "Name (Dutch)",
+      "name_nl": "Name (Dutch)",
       "name_en": "Name (English)",
       "date": "Date",
       "agendaitemtype_id": "Agenda item type",
-      "intern": "Private",
-      "description": "Description (Dutch)",
+      "is_internal": "Internal",
+      "description_nl": "Description (Dutch)",
       "description_en": "Description (English)",
       "location": "Location",
       "url": "URL",
-      "Committee_id": "Committee",
-      "subscribe": "Subscription",
-      "subscriptiondeadline": "Subscription deadline",
-      "maxsubscription": "Maximum subscriptions"
+      "committee_id": "Committee",
+      "can_subscribe": "Subscription",
+      "subscription_deadline": "Subscription deadline",
+      "max_subscription": "Maximum subscriptions"
     },
     "newsitem": {
       "title": "Title (Dutch)",

@@ -1,12 +1,12 @@
 import { useQuery } from 'react-query'
-import { getAgendaitemTypes, getCommitteeForUser } from './queries'
+import { getAgendaitemTypes, getCommittees } from './queries'
 import React, { useContext } from 'react'
 import FormField from '../Generic/FormField'
 import { authContext } from '../../utils/AuthContext'
 import { Form } from 'react-bootstrap'
 
 const agendaItemFields = [{
-  name: 'name',
+  name: 'name_nl',
   type: 'text',
   required: true
 }, {
@@ -14,7 +14,6 @@ const agendaItemFields = [{
   type: 'text',
   required: true
 }, {
-
   name: 'agendaitemtype_id',
   type: 'reference',
   required: true,
@@ -24,10 +23,10 @@ const agendaItemFields = [{
   type: 'datetime',
   required: true
 }, {
-  name: 'intern',
+  name: 'is_internal',
   type: 'boolean'
 }, {
-  name: 'description',
+  name: 'description_nl',
   type: 'textarea'
 }, {
   name: 'description_en',
@@ -39,20 +38,20 @@ const agendaItemFields = [{
   name: 'url',
   type: 'text'
 }, {
-  name: 'Committee_id',
+  name: 'committee_id',
   type: 'reference',
-  itemQuery: userId => [['users', userId, 'Committees'], getCommitteeForUser, { enabled: !!userId }]
+  itemQuery: userId => [['committees'], getCommittees, { enabled: userId }]
 }, {
-  name: 'subscribe',
+  name: 'can_subscribe',
   type: 'boolean'
 }, {
-  name: 'subscriptiondeadline',
+  name: 'subscription_deadline',
   type: 'datetime',
-  conditionField: 'subscribe'
+  conditionField: 'can_subscribe'
 }, {
-  name: 'maxsubscription',
+  name: 'max_subscription',
   type: 'number',
-  conditionField: 'subscribe'
+  conditionField: 'can_subscribe'
 }]
 
 // TODO: make required do something (with react-hook-form)
@@ -62,7 +61,7 @@ const AgendaItemForm = ({ values, setValue, children }) => {
   return (
     <Form>
       {agendaItemFields.map(({ name, type, required, itemQuery, conditionField, ...otherProps }) => {
-        const newItemQuery = name === 'Committee_id' ? itemQuery(userId) : itemQuery
+        const newItemQuery = name === 'committee_id' ? itemQuery(userId) : itemQuery
         if (!conditionField || values[conditionField]) {
           return (
             <FormField

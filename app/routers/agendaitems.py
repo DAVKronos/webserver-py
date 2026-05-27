@@ -64,7 +64,7 @@ async def get(database: Database):
 
 
 @router.get("/agendaitems/{id}/subscriptions", response_model=list[SubscriptionResponse])
-async def get(id: int, database: Database, user_context: Annotated[UserContext, Depends(get_current_user)]
+async def get_subscriptions(id: int, database: Database, user_context: Annotated[UserContext, Depends(get_current_user)]
 ):
     query = select(Subscription) \
         .where(Subscription.agendaitem_id == id) \
@@ -74,6 +74,29 @@ async def get(id: int, database: Database, user_context: Annotated[UserContext, 
     
     return subscriptions
 
+@router.post("/agendaitems/{agendaitem_id}/subscriptions", response_model=SubscriptionResponse)
+async def create_subscription(agendaitem_id: int, data: SubscriptionCreate, database: Database, user_context: Annotated[UserContext, Depends(get_current_user)]
+):
+    t = now()
+    subscription = Subscription.model_validate(data, update={'created_at': t, 'updated_at': t, 'user_id': user_context.user.id, 'agendaitem_id': agendaitem_id})
+
+    database.add(subscription)
+    await database.commit()
+    await database.refresh(subscription)
+    return subscription
+
+@router.delete("/agendaitems/{agendaitem_id}/subscriptions/{subscription_id}")
+async def delete_subscription(agendaitem_id: int, subscription_id: int, database: Database, user_context: Annotated[UserContext, Depends(get_current_user)]
+):
+    subscription = await database.get(Subscription, subscription_id)
+
+    if not subscription:
+        raise HTTPException(status_code=404, detail="Subscription not found")
+    if not user_can(user_context.permissions, DELETE, "Subscription", subscription):
+        raise HTTPException(status.HTTP_403_FORBIDDEN, detail="Not enough permissions")
+
+    await database.delete(subscription)
+    await database.commit()
 
 
 @router.post("/agendaitems", response_model=AgendaItemExtendedResponse)

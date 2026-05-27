@@ -5,8 +5,10 @@ from datetime import datetime
 from sqlalchemy.orm import selectinload 
 
 from .user import UserBasicResponse
+from .committees import CommitteePublicResponse
 if TYPE_CHECKING:
     from .user import User
+    from .committees import Committee
   
 class AgendaItemBase(TimestampModel):
     name_nl: str
@@ -31,17 +33,23 @@ class AgendaItem(AgendaItemBase, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
     
     created_by_user_id: int = Field(foreign_key="users.id")
+    agendaitem_type_id: int = Field(foreign_key="agendaitem_types.id")
+    committee_id: int = Field(foreign_key="committees.id")
 
     # Relationships
     creator: "User" = Relationship(back_populates="created_agenda_items", sa_relationship_kwargs={'lazy': 'selectin'})
     subscriptions: List["Subscription"] = Relationship(back_populates="agenda_item", sa_relationship_kwargs={'lazy': 'selectin'})
+    agendaitem_type: Optional["AgendaItemType"] = Relationship(sa_relationship_kwargs={'lazy': 'selectin'})
+    committee: Optional["Committee"] = Relationship(sa_relationship_kwargs={'lazy': 'selectin'})
 
 class AgendaItemPublicResponse(AgendaItemBase):
     id: int
 
 class AgendaItemExtendedResponse(AgendaItemPublicResponse):
-    created_by_user_id: int
+    creator: "UserBasicResponse"
     subscriptions: List["SubscriptionResponse"] = []
+    agendaitem_type: Optional["AgendaItemType"] = None
+    committee: Optional["CommitteePublicResponse"] = None
 
 class AgendaItemCreate(SQLModel):
     name_nl: str
@@ -90,7 +98,7 @@ class AgendaItemTypeResponse(AgendaItemTypeBase):
 
 class SubscriptionBase(TimestampModel):
     comment: Optional[str] = None
-    user_id: int = Field(foreign_key="users.id")
+    user_id: Optional[int] = Field(foreign_key="users.id")
     agendaitem_id: int = Field(foreign_key="agendaitems.id")
 
 class Subscription(SubscriptionBase, table=True):
@@ -103,4 +111,7 @@ class Subscription(SubscriptionBase, table=True):
 
 class SubscriptionResponse(SubscriptionBase):
     id: int
-    user: "UserBasicResponse"
+    user: Optional["UserBasicResponse"]
+
+class SubscriptionCreate(SQLModel):
+    comment: str

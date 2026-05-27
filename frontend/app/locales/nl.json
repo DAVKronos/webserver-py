@@ -187,19 +187,19 @@
       "announcement_plural": "Banners"
     },
     "agendaitem": {
-      "name": "Naam (Nederlands)",
+      "name_nl": "Naam (Nederlands)",
       "name_en": "Naam (Engels)",
       "date": "Datum",
       "agendaitemtype_id": "Agenda item type",
-      "intern": "Prive",
-      "description": "Beschrijving (Nederlands)",
+      "is_internal": "Intern",
+      "description_nl": "Beschrijving (Nederlands)",
       "description_en": "Beschrijving (Engels)",
       "location": "Locatie",
       "url": "URL",
-      "Committee_id": "Commissie",
-      "subscribe": "Inschrijven",
-      "subscriptiondeadline": "Inschrijfdeadline",
-      "maxsubscription": "Maximum inschrijvingen"
+      "committee_id": "Commissie",
+      "can_subscribe": "Inschrijven",
+      "subscription_deadline": "Inschrijfdeadline",
+      "max_subscription": "Maximum inschrijvingen"
     },
     "newsitem": {
       "title": "Kop (Nederlands)",

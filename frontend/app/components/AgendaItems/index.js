@@ -12,7 +12,7 @@ const AgendaItemsRouter = () => {
     <Switch>
       <Route exact path='/agendaitems' component={AgendaItems} />
       <PrivateRoute action='create' subject='Agendaitem' path='/agendaitems/new' component={NewAgendaItem} />
-      <PrivateRoute action='update' subject='Agendaitem' path='/agendaitems/:id/edit' component={EditAgendaItem} />
+      <PrivateRoute action='edit' subject='Agendaitem' path='/agendaitems/:id/edit' component={EditAgendaItem} />
       <PrivateRoute action='create' subject='Result' path='/agendaitems/:id/events' component={Events} />
       <Route path='/agendaitems/:id' component={AgendaItem} />
 
