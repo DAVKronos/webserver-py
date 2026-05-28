@@ -6,12 +6,6 @@ import { ability } from '../../utils/auth-helper'
 
 const userFields = [
   {
-    name: 'email',
-    type: 'text',
-    required: true
-  },
-
-  {
     name: 'phonenumber',
     type: 'text',
     required: true
@@ -32,24 +26,24 @@ const userFields = [
     required: true
   },
   {
-    name: 'studie',
+    name: 'study',
     type: 'text',
     required: true
   },
   {
-    name: 'instelling',
+    name: 'institution',
     type: 'text',
     required: true
   },
   {
-    name: 'aanvang',
+    name: 'sex',
+    type: 'text',
+    required: true,
+    options: ['Male', 'Female', 'Other']
+  },
+  {
+    name: 'joined_in',
     type: 'text'
-  },
-
-  {
-    name: 'papieren_kronometer',
-    type: 'boolean',
-    required: true
   },
   {
     name: 'avatar',
@@ -69,6 +63,11 @@ const adminUserFields = [
     required: true
   },
   {
+    name: 'email',
+    type: 'text',
+    required: true
+  },
+  {
     name: 'birthdate',
     type: 'date',
     required: true
@@ -79,19 +78,9 @@ const adminUserFields = [
     itemQuery: [['user_types'], getUserTypes]
   },
   ...userFields, // Add normal user fields
+  
   {
-    name: 'sex',
-    type: 'text',
-    required: true,
-    options: ['Male', 'Female', 'Other']
-  },
-  {
-    name: 'licensenumber',
-    type: 'text',
-    required: true
-  },
-  {
-    name: 'xtracard',
+    name: 'unioncard_number',
     type: 'text',
     required: true
   },
@@ -99,16 +88,12 @@ const adminUserFields = [
     name: 'bank_account_number',
     type: 'text',
     required: true
-  }, {
-    name: 'iban',
-    type: 'text',
-    required: true
-  }
+  },
 ]
 
 // TODO: make required do something (with react-hook-form)
 const UserForm = ({ values, setValue, children }) => {
-  const fields = ability.can('manage', 'User') ? adminUserFields : userFields
+  const fields = ability.can('edit', subject('User', user)) ? adminUserFields : userFields
 
   return (
     <Form>
