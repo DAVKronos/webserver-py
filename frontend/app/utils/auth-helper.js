@@ -15,7 +15,9 @@ function updateAbilities (ability) {
 
 let authDetails = {}
 const ability = new Ability()
-const updateAbility = () => { updateAbilities(ability) }
+const updateAbility = () => { 
+  return updateAbilities(ability) 
+}
 
 function getAuthDetails () {
   return Object.freeze(authDetails)
