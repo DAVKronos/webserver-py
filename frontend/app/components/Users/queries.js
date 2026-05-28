@@ -1,7 +1,7 @@
 import { restCall, convertToFormData } from '../../utils/rest-helper'
 
-function getMemberships (querykey, userId) {
-  return restCall(`users/${userId}/Committees`).then((res) => res.data)
+function getUserCommittees (querykey, userId) {
+  return restCall(`users/${userId}/committees`).then((res) => res.data)
 }
 function getUsers (queryKey) {
   return restCall('users').then((res) => res.data)
@@ -40,7 +40,7 @@ function removeUser (id) {
 }
 
 export {
-  getMemberships,
+  getUserCommittees,
   getUser,
   getUsers,
   getUserType,

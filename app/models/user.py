@@ -11,6 +11,29 @@ if TYPE_CHECKING:
     from .committees import CommitteeMember
     from .files import File
 
+
+class UserTypeBase(TimestampModel):
+    name_nl: str
+    name_en: str
+    is_donor: bool = False
+    is_competition: bool = False
+
+
+class UserType(UserTypeBase, table=True):
+    __tablename__ = "user_types"
+
+    id: Optional[int] = Field(default=None, primary_key=True)
+    
+    # Relationship
+    users: List["User"] = Relationship(back_populates="user_type")
+
+
+class UserTypeResponse(UserTypeBase):
+    id: int
+
+
+#######################################
+
 class UserBase(TimestampModel):
     name: str
     initials: Optional[str] = None
@@ -40,7 +63,7 @@ class User(UserBase, table=True):
     city: Optional[str] = None
 
     # Relationships
-    created_agenda_items: List["AgendaItem"] = Relationship(back_populates="creator")
+    created_agenda_items: list["AgendaItem"] = Relationship(back_populates="creator")
     created_news_items: List["NewsItem"] = Relationship(
         back_populates="creator", 
         sa_relationship_kwargs={"foreign_keys": "[NewsItem.creator_id]"}
@@ -53,7 +76,6 @@ class User(UserBase, table=True):
         back_populates="user"
     )
     user_type: Optional["UserType"] = Relationship(
-        back_populates="users",
         sa_relationship_kwargs={"foreign_keys": "[User.user_type_id]", 'lazy': 'selectin'}
     )
     avatar_file: Optional["File"] = Relationship(
@@ -63,6 +85,7 @@ class User(UserBase, table=True):
 
 class UserBasicResponse(UserBase):
     id: int
+    user_type: UserTypeResponse
 
 class UserExtendedResponse(UserBasicResponse):
     bank_account_number: Optional[str] = None
@@ -103,23 +126,5 @@ class UserUpdate(SQLModel):
     user_type_id: Optional[int] = None
 
 
+######################################
 
-
-class UserTypeBase(TimestampModel):
-    name_nl: str
-    name_en: str
-    is_donor: bool = False
-    is_competition: bool = False
-
-
-class UserType(UserTypeBase, table=True):
-    __tablename__ = "user_types"
-
-    id: Optional[int] = Field(default=None, primary_key=True)
-    
-    # Relationship
-    users: List["User"] = Relationship(back_populates="user_type")
-
-
-class UserTypeResponse(UserTypeBase):
-    id: int
