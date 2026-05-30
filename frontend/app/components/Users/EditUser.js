@@ -33,8 +33,6 @@ const EditUser = ({ user }) => {
   }
 
   const admin = ability.can('edit.extended', subject('User', user))
-  console.log(`admin=${admin}`)
-
 
   return (
     <EditObjectComponent

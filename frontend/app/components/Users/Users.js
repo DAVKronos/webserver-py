@@ -7,6 +7,7 @@ import { getUsers, getUserTypes } from './queries'
 import { useTranslation } from 'react-i18next'
 import DefaultSpinner from '../Generic/Spinner'
 import { Can } from '../../utils/auth-helper'
+import missingAvatar from '../../images/avatar-missing.png'
 
 function UserTypesFilter ({ filter, onChangeFilter }) {
   const { t, i18n } = useTranslation('generic')
@@ -93,6 +94,7 @@ const Users = () => {
     users = users.filter(user => user.name.toLowerCase().indexOf(nameFilter.toLowerCase()) >= 0)
   }
 
+  
   return (
     <>
       <h1>{t('kronauts')}</h1>
@@ -120,7 +122,8 @@ const Users = () => {
                   <Link to={`/users/${user.id}`} className='user'>
                     <div className='thumbnail'>
                       <figure>
-                        <Image src={user.avatar_file?.path} />
+                        {user.avatar_file && <Image src={user.avatar_file.path}/>}
+                        {!user.avatar_file && <Image src={missingAvatar}/>}
                         <figcaption>{user.name}</figcaption>
                       </figure>
                     </div>

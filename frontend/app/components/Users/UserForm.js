@@ -25,11 +25,6 @@
       required: true
     },
     {
-      name: 'study',
-      type: 'text',
-      required: true
-    },
-    {
       name: 'institution',
       type: 'text',
       required: true
@@ -93,7 +88,6 @@
   // TODO: make required do something (with react-hook-form)
   const UserForm = ({ values, setValue, children, admin }) => {
     const fields = admin ? adminUserFields : userFields
-    console.log(`admin=${admin}`)
 
     return (
       <Form>

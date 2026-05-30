@@ -38,7 +38,9 @@ function getConfig () {
 }
 
 function restCall (url, params = {}, method = 'get') {
-  return axios.request({ ...getConfig(), url: `${API_HOST}/${url}`, method, ...params })
+  const { headers: customHeaders, ...restParams } = params
+  const config = getConfig()
+  return axios.request({ ...config, url: `${API_HOST}/${url}`, method, ...params, headers: {...config.headers, ...customHeaders} })
 }
 
 

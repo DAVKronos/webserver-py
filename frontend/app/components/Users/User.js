@@ -23,7 +23,6 @@ const User = (props) => {
   const created_at = new Date(user.created_at)
   const userType = i18n.language === 'nl' ? user.user_type && user.user_type.name_nl : user.user_type && user.user_type.name_en
 
-  const missingAvatarImg = missingAvatar
   return (
     <>
       <h1>{user.name}</h1>
@@ -61,13 +60,6 @@ const User = (props) => {
                 </td>
                 <td>{user.phonenumber}</td>
               </tr>
-              
-              {user.study && <tr>
-                <td>
-                  <b>{t('study')}</b>
-                </td>
-                <td>{user.study}</td>
-              </tr>}
               {user.institution && <tr>
                 <td>
                   <b>{t('institution')}</b>
@@ -140,7 +132,7 @@ const User = (props) => {
           <section className='polaroid'>
             <figure>
               {user.avatar_file && <Image src={user.avatar_file?.path}/>}
-              {!user.avatar_file && <Image src={missingAvatarImg}/>}
+              {!user.avatar_file && <Image src={missingAvatar}/>}
               <figcaption>{user.name}</figcaption>
             </figure>
           </section>
