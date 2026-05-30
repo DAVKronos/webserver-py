@@ -2,12 +2,10 @@ from fastapi import APIRouter, Depends, HTTPException, UploadFile, File, Form, s
 from sqlmodel import select
 from sqlalchemy import func
 from sqlalchemy.orm import selectinload
-from pathlib import Path
 from datetime import datetime, timezone
-import hashlib
-import os
 from ..time_utils import now
-
+from pathlib import Path
+from ..file_utils import store_file
 
 from ..dependencies import Database
 from ..models.photos import *
@@ -65,13 +63,7 @@ async def get_photos(album_id: int, database: Database):
         raise HTTPException(status_code=500, detail="Failed to fetch photos")
 
 
-def generate_unique_filename(upload_file: UploadFile) -> str:
-    original_name = upload_file.filename or "upload"
-    timestamp = datetime.utcnow().isoformat()
-    hash_input = f"{original_name}-{timestamp}".encode()
-    hashed = hashlib.sha1(hash_input).hexdigest()
-    extension = os.path.splitext(original_name)[1]
-    return f"{hashed}{extension}"
+
 
 
 @router.post("/{album_id}/photos")
@@ -84,45 +76,21 @@ async def add_photo(
     if not album:
         raise HTTPException(status_code=404, detail="Photo album not found")
 
-    try:
-        filename = generate_unique_filename(photo)
-        file_path = PHOTO_DIR / filename
-
-        with open(file_path, "wb") as f:
-            f.write(await photo.read())
-
-        # TODO: Compress file and create thumbnail
-
-        # Upload File
-        file_size  = os.path.getsize(file_path)
-        t = now()
-        db_file = FileModel(
-            file_name = filename,
-            content_type=photo.content_type,
-            path='/' + str(PHOTO_DIR / filename),
-            size=file_size,
-            created_at=t,
-            updated_at=t,
-        )
-        database.add(db_file)
-        await database.flush() # Retrieves id of the File
-
-        db_photo = Photo(
+    file = await store_file(database, file, PHOTO_DIR)
+    t = now()
+    new_photo = Photo(
             photoalbum_id=album_id,
-            file_id=db_file.id,
-            thumbnail_file_id=db_file.id,
+            file_id=file.id,
+            thumbnail_file_id=file.id,
             created_at=t,
             updated_at=t
         )
-        database.add(db_photo)
-        await database.commit()
-        await database.refresh(db_photo)
+    database.add(new_photo)
+    await database.commit()
+    await database.refresh(new_photo)
 
-        return db_photo
-
-    except Exception as e:
-        print(e)
-        raise HTTPException(status_code=500, detail="Failed to upload photo")
+    return new_photo
+    
 
 
 @router.post("/", response_model=PhotoAlbumResponse, status_code=status.HTTP_201_CREATED)
