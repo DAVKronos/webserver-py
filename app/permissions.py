@@ -65,6 +65,7 @@ async def get_user_permissions(user: User, database: Database) -> List[Ability]:
 
 CREATE = "create"
 EDIT = "edit"
+EDIT_EXTENDED = "edit.extended"
 DELETE = "delete"
 APPROVE = "approve"
 VIEW = "view"
@@ -96,7 +97,7 @@ def permission_scopes(user_id: int):
         scopes["contributor"] + \
         [
             can(VIEW_EXTENDED, "User"),            # Without restriction
-            can([CREATE, EDIT, DELETE], "User"), 
+            can([CREATE, EDIT, EDIT_EXTENDED, DELETE], "User"), 
             can(APPROVE, "NewsItem"),
             can([CREATE, EDIT, DELETE], "Committee"),
             can([CREATE, EDIT, DELETE], "CommitteeMember"),

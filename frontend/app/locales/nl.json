@@ -276,15 +276,12 @@
       "address": "Adres",
       "postalcode": "Postcode",
       "city": "Stad",
-      "studie": "Studie",
-      "instelling": "Instelling",
+      "study": "Studie",
+      "institution": "Instelling",
       "sex": "Geslacht",
-      "licensenumber": "Licentienummer",
-      "xtracard": "Unioncard nummer",
-      "papieren_kronometer": "Papieren Kronometer",
+      "unioncard_number": "Unioncard nummer",
       "bank_account_number": "Bankrekeningnummer",
-      "iban": "IBAN Bankrekeningnummer",
-      "aanvang": "Studie aanvang"
+      "joined_in": "Lid sinds"
     },
     "kronometer": {
       "name": "Naam",
