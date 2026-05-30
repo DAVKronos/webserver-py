@@ -139,8 +139,8 @@ const User = (props) => {
         <Col>
           <section className='polaroid'>
             <figure>
-              {user.avatar_file && <Image src={user.avatar_file?.path} />}
-              <Image src={missingAvatarImg} />
+              {user.avatar_file && <Image src={user.avatar_file?.path}/>}
+              {!user.avatar_file && <Image src={missingAvatarImg}/>}
               <figcaption>{user.name}</figcaption>
             </figure>
           </section>
