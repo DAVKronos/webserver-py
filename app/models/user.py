@@ -120,6 +120,7 @@ class UserUpdate(SQLModel):
     city: Optional[str] = None
     sex: Optional[str] = None
     phonenumber: Optional[str] = None
+    joined_in: Optional[str] = None
     bank_account_number: Optional[str] = None
     unioncard_number: Optional[str] = None
     institution: Optional[str] = None
