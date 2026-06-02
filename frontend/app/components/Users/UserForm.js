@@ -37,7 +37,7 @@ const newUserFields = [
     required: true,
     options: ['Male', 'Female', 'Other'],
     adminOnly: false
-  }
+  },
 
   // --- SECTION 2: CONTACT & ADDRESS ---
   {
