@@ -127,6 +127,19 @@ async def upload_user_avatar(
         print(f"Avatar upload failed: {e}")
         raise HTTPException(status_code=500, detail="Failed to upload avatar")
 
+@router.post("", response_model=UserExtendedResponse)
+async def create_user(data: UserCreate, database: Database, user_context: Annotated[UserContext, Depends(get_current_user)]):
+    if not user_can(user_context.permissions, CREATE, "User"):
+        raise HTTPException(status.HTTP_403_FORBIDDEN, detail="Not enough permissions.")
+    
+    t = now()
+    user = User.model_validate(data, update={'created_at': t, 'updated_at': t })
+    
+    database.add(user)
+    await database.commit()
+    await database.refresh(user)
+     
+    return user
 
 @router.get("/{id}/committees", response_model=list[CommitteePublicResponse])
 async def get_committees(id: int, database: Database):

@@ -37,7 +37,7 @@ async def get_newsitem(id: int, database: Database, user_context: Annotated[Opti
         return NewsItemPublicResponse.model_validate(newsitem)
     return NewsItemExtendedResponse.model_validate(newsitem)
 
-@router.post("/", response_model=NewsItemExtendedResponse)
+@router.post("", response_model=NewsItemExtendedResponse)
 async def create_newsitem(data: NewsItemCreate, database: Database, user_context: Annotated[UserContext, Depends(get_current_user)]):
     if not user_can(user_context.permissions, CREATE, "NewsItem"):
         raise HTTPException(status.HTTP_403_FORBIDDEN, detail="Not enough permissions.")
