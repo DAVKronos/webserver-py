@@ -4,7 +4,7 @@ import { useHistory } from 'react-router-dom'
 import DefaultSpinner from '../Generic/Spinner'
 import { useTranslation } from 'react-i18next'
 
-const NewObjectComponent = ({ FormComponent, createFunction, onSuccess, objectName }) => {
+const NewObjectComponent = ({ FormComponent, createFunction, onSuccess, objectName, ...rest}) => {
   const history = useHistory()
 
   const [values, setValues] = useState({})
@@ -43,7 +43,11 @@ const NewObjectComponent = ({ FormComponent, createFunction, onSuccess, objectNa
     <>
       <h1>{t('addModel', { model: t(`models:modelNames.${objectName}`) })}</h1>
       {error && <Alert variant='danger'><p>{error}</p></Alert>}
-      <FormComponent values={values} setValue={setValue} />
+      <FormComponent 
+      values={values} 
+      setValue={setValue}
+      {...rest}
+      />
       <Button onClick={() => create()}>
         {creating && <DefaultSpinner inline size='sm' />}
         {!creating && t('create')}

@@ -6,7 +6,7 @@ import EditObjectComponent from '../Generic/EditObjectComponent'
 import { getUser, updateUser } from './queries'
 import { ability } from '../../utils/auth-helper'
 import { subject } from '@casl/ability'
-import UserForm, { adminUserFields } from './UserForm'
+import UserForm, { adminEditUserFields, limitedEditUserFields } from './UserForm'
 
 const EditUserWithData = (props) => {
   const id = parseInt(props.match.params.id)
@@ -22,7 +22,7 @@ const EditUser = ({ user }) => {
   const history = useHistory()
   const { id, name } = user
   const editableFields = Object.fromEntries(
-    adminUserFields
+    adminEditUserFields
       .filter((fieldObject) => fieldObject.type != 'file')
       .map((fieldObject) => [fieldObject.name, user[fieldObject.name] ?? ''])
   )
@@ -33,7 +33,8 @@ const EditUser = ({ user }) => {
   }
 
   const admin = ability.can('edit.extended', subject('User', user))
-
+  const fields = admin ? adminEditUserField : limitedEditUserField
+  
   return (
     <EditObjectComponent
       id={id}
@@ -42,7 +43,7 @@ const EditUser = ({ user }) => {
       updateFunction={updateUser}
       onSuccess={onSuccess}
       FormComponent={UserForm}
-      admin={admin}
+      fields={fields}
     />
   )
 }
