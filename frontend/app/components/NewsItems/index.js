@@ -9,6 +9,8 @@ import NewNewsItem from './NewNewsItem'
 const NewsItemsRouter = () => {
   return (
     <Switch>
+      <Route exact path='/newsitems/unapproved' component={NewsItems} />
+      <Route exact path='/newsitems/unapproved/:id' component={NewsItem} />
       <Route exact path='/newsitems' component={NewsItems} />
       <PrivateRoute action='create' subject='Newsitem' exact path='/newsitems/new' component={NewNewsItem} />
       <PrivateRoute action='update' subject='Newsitem' path='/newsitems/:id/edit' component={EditNewsItem} />
