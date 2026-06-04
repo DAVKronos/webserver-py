@@ -34,6 +34,16 @@ async def index_unapproved(database: Database, user_context: Annotated[Optional[
         return [NewsItemPublicResponse.model_validate(item) for item in newsitems]
     return [NewsItemExtendedResponse.model_validate(item) for item in newsitems]
 
+@router.get("/unapproved/{id}")
+async def get_unapproved_newsitem(id: int, database: Database, user_context: Annotated[Optional[UserContext], Depends(get_optional_user)]):
+    query = select(NewsItem) \
+        .where(NewsItem.approved == False) \
+        .where(NewsItem.id == id)
+    newsitem = (await database.exec(query)).first()
+
+    if not user_context or not user_can(user_context.permissions, VIEW_EXTENDED, "NewsItem"):
+        return NewsItemPublicResponse.model_validate(newsitem)
+    return NewsItemExtendedResponse.model_validate(newsitem)
 
 @router.get("/{id}")
 async def get_newsitem(id: int, database: Database, user_context: Annotated[Optional[UserContext], Depends(get_optional_user)]):

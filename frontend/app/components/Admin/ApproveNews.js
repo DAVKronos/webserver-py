@@ -31,7 +31,7 @@ const ApproveNews = () => {
                 <td>{newsitem.title}</td>
                 <td>{newsitem.creator?.name}</td>
                 <td>{newsitem.updated_at}</td>
-                <td><Link to={`/newsitems/${newsitem.id}`}>Bekijken</Link></td>
+                <td><Link to={`/newsitems/unapproved/${newsitem.id}`}>Bekijken</Link></td>
               </tr>
             )
           })}
