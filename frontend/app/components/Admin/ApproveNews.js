@@ -28,8 +28,8 @@ const ApproveNews = () => {
           {newsitems && newsitems.map(newsitem => {
             return (
               <tr key={newsitem.id}>
-                <td>{newsitem.title}</td>
-                <td>{newsitem.creator?.name}</td>
+                <td>{newsitem.title_nl }</td>
+                <td>{newsitem.creator.name}</td>
                 <td>{newsitem.updated_at}</td>
                 <td><Link to={`/newsitems/unapproved/${newsitem.id}`}>Bekijken</Link></td>
               </tr>
