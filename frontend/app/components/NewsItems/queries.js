@@ -35,7 +35,7 @@ function removeNewsItem(id) {
 }
 
 function approveNewsItem(id) {
-  return restCall(`newsitems/${id}/agreed`, {
+  return restCall(`newsitems/${id}/approve`, {
     method: 'POST'
   }).then(res => res.data)
 }
@@ -62,7 +62,6 @@ function removeNewsItemComment(newsItemId, id) {
     'delete'
   ).then(res => res.data)
 }
-
 // ----------------------
 // EXPORTS
 // ----------------------

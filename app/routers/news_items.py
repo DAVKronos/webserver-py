@@ -150,3 +150,27 @@ async def delete_comment(comment_id: int, database: Database, user_context: Anno
     await database.delete(comment)
     await database.commit()
     return
+
+@router.post("/{id}/approve", response_model=NewsItemExtendedResponse)
+async def approve_newsitem(
+    id: int,
+    database: Database,
+    user_context: Annotated[UserContext, Depends(get_current_user)]
+):
+    newsitem = await database.get(NewsItem, id)
+
+    if not newsitem:
+        raise HTTPException(status.HTTP_404_NOT_FOUND, detail="NewsItem not found")
+
+    if not user_can(user_context.permissions, EDIT, "NewsItem", newsitem):
+        raise HTTPException(status.HTTP_403_FORBIDDEN, detail="Not enough permissions.")
+
+    newsitem.approved = True
+    newsitem.approved_by = user_context.user.id
+    newsitem.updated_at = now()
+
+    database.add(newsitem)
+    await database.commit()
+    await database.refresh(newsitem)
+
+    return newsitem
