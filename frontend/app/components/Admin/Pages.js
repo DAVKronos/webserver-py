@@ -18,10 +18,10 @@ const Pages = () => {
         <thead>
           <tr>
             <th>
-              Pagina tag
+              Pagina titel (nl)
             </th>
             <th>
-              Pagina tag (en)
+              Pagina titel (en)
             </th>
             <th>
               Menu
