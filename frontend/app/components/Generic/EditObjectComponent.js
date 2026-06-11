@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { Alert, Button } from 'react-bootstrap'
 import { useHistory } from 'react-router-dom'
 import DefaultSpinner from '../Generic/Spinner'
@@ -6,18 +6,28 @@ import { useTranslation } from 'react-i18next'
 
 const EditObjectComponent = ({ objectName, id, existingObject, updateFunction, FormComponent, onSuccess }) => {
   const history = useHistory()
+
   const [values, setValues] = useState({ ...existingObject })
+
+  // ✅ FIX: sync wanneer existingObject later binnenkomt
+  useEffect(() => {
+    if (existingObject) {
+      setValues({ ...existingObject })
+    }
+  }, [existingObject])
+
   const setValue = (fieldName, value) => {
     const newValues = { ...values, [fieldName]: value }
     setValues(newValues)
   }
-  const [saving, setSaved] = useState(false)
 
+  const [saving, setSaved] = useState(false)
   const [message, setMessage] = useState('')
 
   const cancel = () => {
     history.goBack()
   }
+
   const update = () => {
     setSaved(true)
     updateFunction(id, { ...values }).then(result => {
@@ -28,6 +38,7 @@ const EditObjectComponent = ({ objectName, id, existingObject, updateFunction, F
       setSaved(false)
     })
   }
+
   const { t } = useTranslation('generic')
 
   return (

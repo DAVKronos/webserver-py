@@ -25,7 +25,7 @@ function createNewsItem(data) {
 
 function updateNewsItem(id, data) {
   return restCall(`newsitems/${id}`, {
-    method: 'PUT',
+    method: 'PATCH',
     data
   }).then(res => res.data)
 }

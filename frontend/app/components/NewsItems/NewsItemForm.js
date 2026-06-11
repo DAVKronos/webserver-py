@@ -3,7 +3,7 @@ import FormField from '../Generic/FormField'
 import { Form } from 'react-bootstrap'
 
 const newsItemFields = [{
-  name: 'title',
+  name: 'title_nl',
   type: 'text',
   required: true
 }, {
@@ -12,11 +12,11 @@ const newsItemFields = [{
   required: true
 }, {
 
-  name: 'news',
+  name: 'content_nl',
   type: 'textarea',
   required: true
 }, {
-  name: 'news_en',
+  name: 'content_en',
   type: 'textarea',
   required: true
 }, {

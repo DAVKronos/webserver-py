@@ -135,7 +135,7 @@ const Comment = ({ comment }) => {
   )
 }
 
-/* ---------------- NEWS ITEM (AGENDA STYLE FIXED) ---------------- */
+/* ---------------- NEWS ITEM  ---------------- */
 
 function NewsItem(props) {
   const { t, i18n } = useTranslation('generic')

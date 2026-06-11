@@ -48,7 +48,6 @@ async def get_unapproved_newsitem(id: int, database: Database, user_context: Ann
 @router.get("/{id}")
 async def get_newsitem(id: int, database: Database, user_context: Annotated[Optional[UserContext], Depends(get_optional_user)]):
     query = select(NewsItem) \
-        .where(NewsItem.approved == True) \
         .where(NewsItem.id == id)
     
     newsitem = (await database.exec(query)).first()    
@@ -58,6 +57,9 @@ async def get_newsitem(id: int, database: Database, user_context: Annotated[Opti
     if not user_context or not user_can(user_context.permissions, VIEW_EXTENDED, "NewsItem"):
         return NewsItemPublicResponse.model_validate(newsitem)
     return NewsItemExtendedResponse.model_validate(newsitem)
+
+
+
 
 @router.post("/", response_model=NewsItemExtendedResponse)
 async def create_newsitem(data: NewsItemCreate, database: Database, user_context: Annotated[UserContext, Depends(get_current_user)]):
