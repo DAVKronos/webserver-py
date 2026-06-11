@@ -47,11 +47,11 @@ const Pages = () => {
 
             return (
               <tr key={page.id}>
-                <td>{page.pagetag}</td>
-                <td>{page.pagetag_en}</td>
-                <td>{page.menu}</td>
-                <td>{page.public ? <BsFillCheckCircleFill /> : <BsFillXCircleFill />}</td>
-                <td>{page.highlight ? <BsFillCheckCircleFill /> : <BsFillXCircleFill />}</td>
+                <td>{page.page_title_nl}</td>
+                <td>{page.page_title_en}</td>
+                <td>{page.menu_item}</td>
+                <td>{page.is_public ? <BsFillCheckCircleFill /> : <BsFillXCircleFill />}</td>
+                <td>{page.is_highlight ? <BsFillCheckCircleFill /> : <BsFillXCircleFill />}</td>
                 <td><Link to={`/pages/${page.id}`}>Bekijk</Link></td>
                 <td><Link to={`/pages/${page.id}/edit`}>Bewerk</Link></td>
                 <td><Link onClick={onClickRemove} to='/pages'>Verwijder</Link></td>
