@@ -15,7 +15,7 @@ function createAnnouncement (data) {
 
 function updateAnnouncement (id, data) {
   const formData = convertToFormData('announcement', data)
-  return restCall(`announcements/${id}`, { method: 'PUT', data: formData }).then(res => res.data)
+  return restCall(`announcements/${id}`, { method: 'PATCH', data: formData }).then(res => res.data)
 }
 
 function removeAnnouncement (id) {

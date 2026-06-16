@@ -259,8 +259,8 @@
     },
     "announcement": {
       "title": "Title",
-      "message": "Message",
-      "background": "Background image",
+      "content": "Content",
+      "photo_file_id": "Background image",
       "url": "Link",
       "starts_at": "Starts at",
       "ends_at": "Ends at"

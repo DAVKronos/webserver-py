@@ -7,12 +7,12 @@ const pageFields = [{
   type: 'text',
   required: true
 }, {
-  name: 'message',
+  name: 'content',
   type: 'text',
   required: true
 },
 {
-  name: 'background',
+  name: 'photo_file_id',
   type: 'file'
 },
 {

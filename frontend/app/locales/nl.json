@@ -258,8 +258,8 @@
     },
     "announcement": {
       "title": "Titel",
-      "message": "Bericht",
-      "background": "Achtergrond",
+      "content": "Inhoud",
+      "photo_file_id": "Achtergrond",
       "url": "Link",
       "starts_at": "Begint op",
       "ends_at": "Eindigt op"
