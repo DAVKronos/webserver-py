@@ -128,3 +128,17 @@ async def create_announcement(
     await database.refresh(announcement)
 
     return normalize_announcement(announcement)
+
+# ----------------------------
+# delete
+# ----------------------------
+
+@router.delete("/{id}")
+async def delete_announcement(id: int, database: Database):
+    announcement = await database.get(Announcement, id)
+
+    if announcement is None:
+        return None
+
+    await database.delete(announcement)
+    await database.commit()
