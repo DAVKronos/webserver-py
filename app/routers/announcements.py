@@ -3,29 +3,36 @@ from fastapi import APIRouter
 from sqlmodel import select
 from ..dependencies import Database
 from ..models.announcement import *
+from ..time_utils import now
 
 router = APIRouter(prefix="/announcements")
 
 
-# helper: FIX datetime -> date mismatch
-def normalize_announcement(a: Announcement):
-    if a.starts_at is not None:
-        if hasattr(a.starts_at, "date"):
-            a.starts_at = a.starts_at.date()
+# ----------------------------
+# Helpers
+# ----------------------------
 
-    if a.ends_at is not None:
-        if hasattr(a.ends_at, "date"):
-            a.ends_at = a.ends_at.date()
+def normalize_announcement(a: Announcement):
+    # convert datetime -> date for output consistency
+    if a.starts_at is not None and hasattr(a.starts_at, "date"):
+        a.starts_at = a.starts_at.date()
+
+    if a.ends_at is not None and hasattr(a.ends_at, "date"):
+        a.ends_at = a.ends_at.date()
 
     return a
 
 
-# 🔥 NEW: fix timezone mismatch (ONLY for this endpoint)
 def to_naive_datetime(value):
+    # fix timezone-aware -> naive mismatch with DB
     if isinstance(value, datetime) and value.tzinfo is not None:
         return value.replace(tzinfo=None)
     return value
 
+
+# ----------------------------
+# GET endpoints
+# ----------------------------
 
 @router.get("/current", response_model=list[AnnouncementResponse])
 async def current(database: Database):
@@ -64,6 +71,10 @@ async def get_announcement(id: int, database: Database):
     return normalize_announcement(announcement)
 
 
+# ----------------------------
+# UPDATE
+# ----------------------------
+
 @router.patch("/{id}", response_model=AnnouncementResponse)
 async def update_announcement(
     id: int,
@@ -75,10 +86,44 @@ async def update_announcement(
     if announcement is None:
         return None
 
-    # 🔥 FIX applied here
     for key, value in announcement_update.model_dump(exclude_unset=True).items():
         setattr(announcement, key, to_naive_datetime(value))
 
+    await database.commit()
+    await database.refresh(announcement)
+
+    return normalize_announcement(announcement)
+
+
+# ----------------------------
+# CREATE
+# ----------------------------
+
+@router.post("", response_model=AnnouncementResponse)
+async def create_announcement(
+    announcement_create: AnnouncementBase,
+    database: Database
+):
+    t = now()
+
+    data = announcement_create.model_dump()
+
+    # important fix: avoid UTC vs naive DB crash
+    if "starts_at" in data:
+        data["starts_at"] = to_naive_datetime(data["starts_at"])
+
+    if "ends_at" in data:
+        data["ends_at"] = to_naive_datetime(data["ends_at"])
+
+    announcement = Announcement.model_validate(
+        data,
+        update={
+            "created_at": t,
+            "updated_at": t,
+        }
+    )
+
+    database.add(announcement)
     await database.commit()
     await database.refresh(announcement)
 
