@@ -55,9 +55,9 @@ function createNewsItemComment(newsItemId, data) {
   }).then(res => res.data)
 }
 
-function removeNewsItemComment(newsItemId, id) {
+function removeNewsItemComment(id) {
   return restCall(
-    `newsitems/${newsItemId}/comments/${id}`,
+    `newsitems/comments/${id}`,
     {},
     'delete'
   ).then(res => res.data)

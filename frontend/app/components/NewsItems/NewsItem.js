@@ -103,8 +103,8 @@ const Comment = ({ comment }) => {
   const queryCache = useQueryCache()
 
   const onClickRemove = () => {
-    removeNewsItemComment(comment.commentable_id, comment.id).then(() => {
-      queryCache.invalidateQueries(['comments', comment.commentable_id])
+    removeNewsItemComment(comment.id).then(() => {
+      queryCache.invalidateQueries(['comments', comment.newsitem_id])
     })
   }
 
