@@ -1,4 +1,4 @@
-from datetime import date
+from datetime import date, datetime
 from fastapi import APIRouter
 from sqlmodel import select
 from ..dependencies import Database
@@ -18,6 +18,13 @@ def normalize_announcement(a: Announcement):
             a.ends_at = a.ends_at.date()
 
     return a
+
+
+# 🔥 NEW: fix timezone mismatch (ONLY for this endpoint)
+def to_naive_datetime(value):
+    if isinstance(value, datetime) and value.tzinfo is not None:
+        return value.replace(tzinfo=None)
+    return value
 
 
 @router.get("/current", response_model=list[AnnouncementResponse])
@@ -68,8 +75,9 @@ async def update_announcement(
     if announcement is None:
         return None
 
+    # 🔥 FIX applied here
     for key, value in announcement_update.model_dump(exclude_unset=True).items():
-        setattr(announcement, key, value)
+        setattr(announcement, key, to_naive_datetime(value))
 
     await database.commit()
     await database.refresh(announcement)
