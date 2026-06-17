@@ -205,10 +205,10 @@
       "max_subscription": "Maximum subscriptions"
     },
     "newsitem": {
-      "title": "Title (Dutch)",
+      "title_nl": "Title (Dutch)",
       "title_en": "Title (English)",
-      "news": "News message (Dutch)",
-      "news_en": "News message (English)",
+      "content_nl": "News message (Dutch)",
+      "content_en": "News message (English)",
       "articlephoto": "Photo"
     },
     "page": {

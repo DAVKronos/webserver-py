@@ -202,10 +202,10 @@
       "max_subscription": "Maximum inschrijvingen"
     },
     "newsitem": {
-      "title": "Kop (Nederlands)",
+      "title_nl": "Kop (Nederlands)",
       "title_en":"Kop (Engels)",
-      "news": "Nieuws bericht (Nederlands)",
-      "news_en": "Nieuws bericht (Engels)",
+      "content_nl": "Nieuws bericht (Nederlands)",
+      "content_en": "Nieuws bericht (Engels)",
       "articlephoto": "Foto"
     },
     "page": {
