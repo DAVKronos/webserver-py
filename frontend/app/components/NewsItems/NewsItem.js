@@ -55,9 +55,8 @@ const NewComment = ({ newsItemId }) => {
     setLoading(true)
 
     const comment = {
-      commentable_id: newsItemId,
-      commentable_type: 'Newsitem',
-      commenttext: text
+      newsitem_id: newsItemId,
+      content: text
     }
 
     createNewsItemComment(newsItemId, comment)
@@ -121,7 +120,7 @@ const Comment = ({ comment }) => {
       </Col>
 
       <Col md={8}>
-        {comment.commenttext}
+        {comment.content}
       </Col>
 
       <Col md={2}>
