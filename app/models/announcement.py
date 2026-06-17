@@ -1,7 +1,7 @@
 from typing import Optional, TYPE_CHECKING
 from sqlmodel import Field, Relationship
 from .base import TimestampModel
-from datetime import date
+from datetime import datetime
 from pydantic import BaseModel
 
 from .files import FileResponse
@@ -11,12 +11,12 @@ if TYPE_CHECKING:
 class AnnouncementBase(TimestampModel):
     title: str
     content: str
-    starts_at: Optional[date] = None
-    ends_at: Optional[date] = None
+    starts_at: Optional[datetime] = None
+    ends_at: Optional[datetime] = None
     url: Optional[str] = None
     photo_file_id: Optional[int] = Field(default=None, foreign_key="files.id")
 
-    def is_active_during(self, moment: date):
+    def is_active_during(self, moment: datetime):
         return self.starts_at <= moment and self.ends_at >= moment
 
 class Announcement(AnnouncementBase, table=True):
@@ -32,7 +32,7 @@ class AnnouncementResponse(AnnouncementBase):
 class AnnouncementUpdate(BaseModel):
     title: Optional[str] = None
     content: Optional[str] = None
-    starts_at: Optional[date] = None
-    ends_at: Optional[date] = None
+    starts_at: Optional[datetime] = None
+    ends_at: Optional[datetime] = None
     url: Optional[str] = None
     photo_file_id: Optional[int] = None
