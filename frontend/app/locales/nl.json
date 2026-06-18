@@ -209,13 +209,13 @@
       "articlephoto": "Foto"
     },
     "page": {
-      "pagetag": "Pagina tag",
-      "pagetag_en":"Pagina tag (Engels)",
-      "information": "Pagina inhoud (Nederlands)",
-      "information_en": "Pagina inhoud (Engels)",
-      "menu": "Menu",
-      "highlight": "Highlight",
-      "public": "Publiek",
+      "page_title_nl": "Pagina titel (Nederlands)",
+      "page_title_en": "Pagina titel (Engels)",
+      "content_nl": "Pagina inhoud (Nederlands)",
+      "content_en": "Pagina inhoud (Engels)",
+      "menu_item": "Menu",
+      "is_highlight": "Highlight",
+      "is_public": "Publiek",
       "sort_order": "Volgorde"
     },
     "photoalbum": {

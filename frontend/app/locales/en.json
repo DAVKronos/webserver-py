@@ -212,13 +212,13 @@
       "articlephoto": "Photo"
     },
     "page": {
-      "pagetag": "Page tag",
-      "pagetag_en": "Page tag (English)",
-      "information": "Page content (Dutch)",
-      "information_en": "Page content (English)",
-      "menu": "Menu",
-      "highlight": "Highlight",
-      "public": "Public",
+      "page_title_nl": "Page title (Dutch)",
+      "page_title_en": "Page title (English)",
+      "content_nl": "Page content (Dutch)",
+      "content_en": "Page content (English)",
+      "menu_item": "Menu",
+      "is_highlight": "Highlight",
+      "is_public": "Public",
       "sort_order": "Sort order"
     },
     "photoalbum": {
