@@ -69,6 +69,7 @@ DELETE = "delete"
 APPROVE = "approve"
 VIEW = "view"
 VIEW_EXTENDED = "view.extended"
+MANAGE = "manage"
 
 def permission_scopes(user_id: int):
     scopes = {}
@@ -103,13 +104,14 @@ def permission_scopes(user_id: int):
             can([CREATE, EDIT, DELETE], "AgendaItem"),
             can([EDIT, DELETE], "Subscription"),
             can([CREATE, EDIT, DELETE], "Page"),
-            can([VIEW, EDIT, DELETE], "NewsComment")
+            can([VIEW, EDIT, DELETE], "NewsComment"),
+            can([MANAGE], "all") 
         ]
 
     scopes["admin"] = \
         scopes["board"] + \
         [
-            can([CREATE, EDIT, DELETE, VIEW, VIEW_EXTENDED, APPROVE], 'all')
+            can([CREATE, EDIT, DELETE, VIEW, VIEW_EXTENDED, APPROVE, MANAGE], 'all')
         ]
     return scopes
 

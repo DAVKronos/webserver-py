@@ -205,20 +205,20 @@
       "max_subscription": "Maximum subscriptions"
     },
     "newsitem": {
-      "title": "Title (Dutch)",
+      "title_nl": "Title (Dutch)",
       "title_en": "Title (English)",
-      "news": "News message (Dutch)",
-      "news_en": "News message (English)",
+      "content_nl": "News message (Dutch)",
+      "content_en": "News message (English)",
       "articlephoto": "Photo"
     },
     "page": {
-      "pagetag": "Page tag",
-      "pagetag_en": "Page tag (English)",
-      "information": "Page content (Dutch)",
-      "information_en": "Page content (English)",
-      "menu": "Menu",
-      "highlight": "Highlight",
-      "public": "Public",
+      "page_title_nl": "Page title (Dutch)",
+      "page_title_en": "Page title (English)",
+      "content_nl": "Page content (Dutch)",
+      "content_en": "Page content (English)",
+      "menu_item": "Menu",
+      "is_highlight": "Highlight",
+      "is_public": "Public",
       "sort_order": "Sort order"
     },
     "photoalbum": {
@@ -259,8 +259,8 @@
     },
     "announcement": {
       "title": "Title",
-      "message": "Message",
-      "background": "Background image",
+      "content": "Content",
+      "photo_file_id": "Background image",
       "url": "Link",
       "starts_at": "Starts at",
       "ends_at": "Ends at"

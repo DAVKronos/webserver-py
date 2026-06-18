@@ -202,20 +202,20 @@
       "max_subscription": "Maximum inschrijvingen"
     },
     "newsitem": {
-      "title": "Kop (Nederlands)",
+      "title_nl": "Kop (Nederlands)",
       "title_en":"Kop (Engels)",
-      "news": "Nieuws bericht (Nederlands)",
-      "news_en": "Nieuws bericht (Engels)",
+      "content_nl": "Nieuws bericht (Nederlands)",
+      "content_en": "Nieuws bericht (Engels)",
       "articlephoto": "Foto"
     },
     "page": {
-      "pagetag": "Pagina tag",
-      "pagetag_en":"Pagina tag (Engels)",
-      "information": "Pagina inhoud (Nederlands)",
-      "information_en": "Pagina inhoud (Engels)",
-      "menu": "Menu",
-      "highlight": "Highlight",
-      "public": "Publiek",
+      "page_title_nl": "Pagina titel (Nederlands)",
+      "page_title_en": "Pagina titel (Engels)",
+      "content_nl": "Pagina inhoud (Nederlands)",
+      "content_en": "Pagina inhoud (Engels)",
+      "menu_item": "Menu",
+      "is_highlight": "Highlight",
+      "is_public": "Publiek",
       "sort_order": "Volgorde"
     },
     "photoalbum": {
@@ -258,8 +258,8 @@
     },
     "announcement": {
       "title": "Titel",
-      "message": "Bericht",
-      "background": "Achtergrond",
+      "content": "Inhoud",
+      "photo_file_id": "Achtergrond",
       "url": "Link",
       "starts_at": "Begint op",
       "ends_at": "Eindigt op"

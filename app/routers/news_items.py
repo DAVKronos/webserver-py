@@ -23,10 +23,31 @@ async def index(database: Database, user_context: Annotated[Optional[UserContext
         return [NewsItemPublicResponse.model_validate(item) for item in newsitems]
     return [NewsItemExtendedResponse.model_validate(item) for item in newsitems]
 
+@router.get("/unapproved")
+async def index_unapproved(database: Database, user_context: Annotated[Optional[UserContext], Depends(get_optional_user)]):
+    query = select(NewsItem) \
+        .where(NewsItem.approved == False) \
+        .order_by(NewsItem.created_at.desc())
+    newsitems = (await database.exec(query)).all()
+
+    if not user_context or not user_can(user_context.permissions, VIEW_EXTENDED, "NewsItem"):
+        return [NewsItemPublicResponse.model_validate(item) for item in newsitems]
+    return [NewsItemExtendedResponse.model_validate(item) for item in newsitems]
+
+@router.get("/unapproved/{id}")
+async def get_unapproved_newsitem(id: int, database: Database, user_context: Annotated[Optional[UserContext], Depends(get_optional_user)]):
+    query = select(NewsItem) \
+        .where(NewsItem.approved == False) \
+        .where(NewsItem.id == id)
+    newsitem = (await database.exec(query)).first()
+
+    if not user_context or not user_can(user_context.permissions, VIEW_EXTENDED, "NewsItem"):
+        return NewsItemPublicResponse.model_validate(newsitem)
+    return NewsItemExtendedResponse.model_validate(newsitem)
+
 @router.get("/{id}")
 async def get_newsitem(id: int, database: Database, user_context: Annotated[Optional[UserContext], Depends(get_optional_user)]):
     query = select(NewsItem) \
-        .where(NewsItem.approved == True) \
         .where(NewsItem.id == id)
     
     newsitem = (await database.exec(query)).first()    
@@ -37,7 +58,8 @@ async def get_newsitem(id: int, database: Database, user_context: Annotated[Opti
         return NewsItemPublicResponse.model_validate(newsitem)
     return NewsItemExtendedResponse.model_validate(newsitem)
 
-@router.post("/", response_model=NewsItemExtendedResponse)
+
+@router.post("", response_model=NewsItemExtendedResponse)
 async def create_newsitem(data: NewsItemCreate, database: Database, user_context: Annotated[UserContext, Depends(get_current_user)]):
     if not user_can(user_context.permissions, CREATE, "NewsItem"):
         raise HTTPException(status.HTTP_403_FORBIDDEN, detail="Not enough permissions.")
@@ -128,3 +150,27 @@ async def delete_comment(comment_id: int, database: Database, user_context: Anno
     await database.delete(comment)
     await database.commit()
     return
+
+@router.post("/{id}/approve", response_model=NewsItemExtendedResponse)
+async def approve_newsitem(
+    id: int,
+    database: Database,
+    user_context: Annotated[UserContext, Depends(get_current_user)]
+):
+    newsitem = await database.get(NewsItem, id)
+
+    if not newsitem:
+        raise HTTPException(status.HTTP_404_NOT_FOUND, detail="NewsItem not found")
+
+    if not user_can(user_context.permissions, EDIT, "NewsItem", newsitem):
+        raise HTTPException(status.HTTP_403_FORBIDDEN, detail="Not enough permissions.")
+
+    newsitem.approved = True
+    newsitem.approved_by = user_context.user.id
+    newsitem.updated_at = now()
+
+    database.add(newsitem)
+    await database.commit()
+    await database.refresh(newsitem)
+
+    return newsitem

@@ -18,9 +18,9 @@ const EditPageWithData = (props) => {
 const EditPage = ({ page }) => {
   const queryCache = useQueryCache()
   const history = useHistory()
-  const { id, pagetag, pagetag_en, menu, highlight, sort_order, information, information_en } = page
+  const { id, page_title_nl, page_title_en, menu_item, is_highlight, sort_order, content_nl, content_en } = page
 
-  const editableFields = { pagetag, pagetag_en, menu, highlight, public: page.public, sort_order, information, information_en }
+  const editableFields = { page_title_nl, page_title_en, menu_item, is_highlight, is_public: page.is_public, sort_order, content_nl, content_en }
   const onSuccess = (savedPage) => {
     queryCache.setQueryData(['pages', savedPage.id], savedPage)
     queryCache.invalidateQueries(['pages'], { exact: true })

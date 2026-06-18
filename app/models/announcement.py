@@ -2,6 +2,7 @@ from typing import Optional, TYPE_CHECKING
 from sqlmodel import Field, Relationship
 from .base import TimestampModel
 from datetime import datetime
+from pydantic import BaseModel
 
 from .files import FileResponse
 if TYPE_CHECKING:
@@ -27,3 +28,11 @@ class Announcement(AnnouncementBase, table=True):
 class AnnouncementResponse(AnnouncementBase):
     id: int
     photo_file: Optional["FileResponse"] = None
+
+class AnnouncementUpdate(BaseModel):
+    title: Optional[str] = None
+    content: Optional[str] = None
+    starts_at: Optional[datetime] = None
+    ends_at: Optional[datetime] = None
+    url: Optional[str] = None
+    photo_file_id: Optional[int] = None

@@ -31,14 +31,21 @@ const Announcement = ({ announcement, isLoading }) => {
   }
 
   return (
-    <Jumbotron style={{ marginTop: 10, background: `#fff url('${announcement.photo_file.path}') no-repeat right top` }}>
-      <h1>{announcement.title}</h1>
-      <p>{announcement.content}</p>
-      <p>
-        <Button to={announcement.url} as={Link}>{t('readMore')}</Button>
-        <Button onClick={onClick}>{t('hide')}</Button>
-      </p>
-    </Jumbotron>
+    <Jumbotron
+    style={{
+      marginTop: 10,
+      background: announcement.photo_file?.path
+        ? `#fff url('${announcement.photo_file.path}') no-repeat right top`
+        : '#fff'
+    }}
+  >
+    <h1>{announcement.title}</h1>
+    <p>{announcement.content}</p>
+    <p>
+      <Button to={announcement.url} as={Link}>{t('readMore')}</Button>
+      <Button onClick={onClick}>{t('hide')}</Button>
+    </p>
+  </Jumbotron>
   )
 }
 

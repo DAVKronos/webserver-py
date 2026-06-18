@@ -62,8 +62,12 @@ const Page = (props) => {
 }
 
 const PageWithTag = (props) => {
-  const { pagetag } = props.match.params
-  const { isLoading, isError, data, error } = useQuery(['pages', pagetag], getPageByPageTag)
+  const { page_title_nl } = props.match.params
+
+  const { isLoading, data } = useQuery(
+    ['pages', page_title_nl],
+    () => getPageByPageTag(null, page_title_nl)
+  )
 
   return <PageComponent page={data} isLoading={isLoading} />
 }
