@@ -1,31 +1,32 @@
 import { restCall, convertToFormData } from '../../utils/rest-helper'
 
-function getPage (queryKey, id) {
+function getPage(queryKey, id) {
   return restCall(`pages/${id}`).then(res => res.data)
 }
 
-function getPages (queryKey) {
+function getPages(queryKey) {
   return restCall('pages').then(res => res.data)
 }
 
-function getPageByPageTag (queryKey, pagetag) {
+function getPageByPageTag(queryKey, page_title_nl) {
   return restCall('pages').then(res => {
-    return res.data.find(page => page.pagetag.indexOf(pagetag) > -1)
+    return res.data.find(
+      page => page.page_title_nl === page_title_nl
+    )
   })
 }
 
-function createPage (data) {
-  console.log(data)
+function createPage(data) {
   const formData = convertToFormData('page', data)
   return restCall('pages/', { method: 'POST', data: formData }).then(res => res.data)
 }
 
-function updatePage (id, data) {
+function updatePage(id, data) {
   const formData = convertToFormData('page', data)
   return restCall(`pages/${id}`, { method: 'PUT', data: formData }).then(res => res.data)
 }
 
-function removePage (id) {
+function removePage(id) {
   return restCall(`pages/${id}`, { method: 'DELETE' })
 }
 
