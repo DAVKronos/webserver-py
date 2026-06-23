@@ -37,7 +37,8 @@ const EditObjectComponent = ({ objectName, id, existingObject, updateFunction, F
       <FormComponent
         values={values}
         setValue={setValue}
-        {...rest}
+        
+        
       >
         <Button onClick={() => update()} disabled={saving}>
           {saving && <DefaultSpinner inline size='sm' />}

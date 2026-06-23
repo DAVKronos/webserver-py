@@ -7,7 +7,7 @@ import DefaultSpinner from '../Generic/Spinner'
 
 function AgendaItemsSideBar () {
   const { isLoading, isError, data, error } = useQuery('agendaitems', agendaItems)
-  const agendaitems = data && data.filter(agendaitem => !agendaitem.agendaitemtype.name.match('Training'))
+  const agendaitems = data && data.filter(agendaitem => !agendaitem.agendaitem_type.name_nl.match('Training'))
   let content
   if (isLoading) {
     content = <DefaultSpinner />

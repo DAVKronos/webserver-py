@@ -33,7 +33,7 @@ const EditUser = ({ user }) => {
   }
 
   const admin = ability.can('edit.extended', subject('User', user))
-  const fields = admin ? adminEditUserField : limitedEditUserField
+  const fields = admin ? adminEditUserFields: limitedEditUserFields
   
   return (
     <EditObjectComponent

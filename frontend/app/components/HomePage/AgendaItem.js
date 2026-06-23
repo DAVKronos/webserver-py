@@ -18,7 +18,7 @@ const AgendaItem = ({ item }) => {
                   </h5>
       </Col>
       <Col xs={8}><h5><MultiLanguageText nl={item.name_nl} en={item.name_en} /></h5></Col>
-      { item.subscriptions.length ? <Col xs={2}><h5><BsPersonFill /><small>{item.subscriptions.length}</small></h5></Col> : null }
+      { item.subscriptions ? <Col xs={2}><h5><BsPersonFill /><small>{item.subscriptions.length}</small></h5></Col> : null }
     </Row>
   )
   
