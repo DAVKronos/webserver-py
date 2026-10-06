@@ -79,9 +79,9 @@ function AgendaItem (props) {
             <Col xs={1}><BsLink /></Col>
             <Col xs={11}><a href={`http://${agendaItem.url}`}>{agendaItem.url}</a></Col>
           </Row>}
-          {agendaItem.Committee && <Row>
+          {agendaItem.committee && <Row>
             <Col xs={1}><BsGeoAlt /></Col>
-            <Col xs={11}>{agendaItem.Committee}</Col>
+            <Col xs={11}>{agendaItem.committee.name_nl}</Col>
           </Row>}
           <Row>
             <Col xs={1}><BsList /></Col>

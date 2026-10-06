@@ -48,7 +48,7 @@ const PageComponent = ({ page, isLoading }) => {
         </Button>
       </Can>
 
-      <h1><MultiLanguageText nl={page.titel_nl} en={page.titel_en} /></h1>
+      <h1><MultiLanguageText nl={page.title_nl} en={page.title_en} /></h1>
       <MultiLanguageText nl={page.content_nl} en={page.content_en} renderFunction={renderMarkdown} />
     </div>
   )
@@ -62,8 +62,12 @@ const Page = (props) => {
 }
 
 const PageWithTag = (props) => {
-  const { pagetag } = props.match.params
-  const { isLoading, isError, data, error } = useQuery(['pages', pagetag], getPageByPageTag)
+  const { page_title_nl } = props.match.params
+
+  const { isLoading, data } = useQuery(
+    ['pages', page_title_nl],
+    () => getPageByPageTag(null, page_title_nl)
+  )
 
   return <PageComponent page={data} isLoading={isLoading} />
 }

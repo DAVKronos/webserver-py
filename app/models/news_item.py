@@ -25,7 +25,7 @@ class NewsItem(NewsItemBase, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
     
     # Foreign Keys
-    creator_id: Optional[int] = Field(foreign_key="users.id")
+    creator_id: Optional[int] = Field(default=None, foreign_key="users.id")
     approved_by: Optional[int] = Field(default=None, foreign_key="users.id")
     photo_file_id: Optional[int] = Field(default=None, foreign_key="files.id")
 

@@ -65,7 +65,7 @@ const AppRouter = () => {
               <FolderRouter />
             </Route>
             <PrivateRoute path='/admin' component={AdminRouter} action='manage' subject='all' />
-            <Route path='/:pagetag'>
+            <Route path='/:page_title_nl'>
               <PagesRouter />
             </Route>
 

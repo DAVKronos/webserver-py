@@ -8,6 +8,7 @@ import { useTranslation } from 'react-i18next'
 import { Can } from '../../utils/auth-helper'
 import Announcement from './Announcement'
 
+
 const HomePage = () => {
   const { t } = useTranslation('homepage')
   return (

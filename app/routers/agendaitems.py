@@ -100,12 +100,37 @@ async def delete_subscription(agendaitem_id: int, subscription_id: int, database
 
 
 @router.post("/agendaitems", response_model=AgendaItemExtendedResponse)
-async def create_agenda_item(data: AgendaItemCreate, database: Database, user_context: Annotated[UserContext, Depends(get_current_user)]):
+async def create_agenda_item(
+    data: AgendaItemCreate,
+    database: Database,
+    user_context: Annotated[UserContext, Depends(get_current_user)]
+):
     if not user_can(user_context.permissions, CREATE, "AgendaItem"):
         raise HTTPException(status.HTTP_403_FORBIDDEN, detail="Not enough permissions.")
     
-    t = now()
-    agenda_item = AgendaItem.model_validate(data, update={'created_at': t, 'updated_at': t, 'created_by_user_id': user.id})
+    # 🔧 FIX: timezone strip (DB expects naive datetime)
+    def make_naive(dt):
+        if dt is not None and hasattr(dt, "tzinfo") and dt.tzinfo is not None:
+            return dt.replace(tzinfo=None)
+        return dt
+
+    # normalize incoming datetime fields
+    if hasattr(data, "date"):
+        data.date = make_naive(data.date)
+
+    if hasattr(data, "subscription_deadline") and data.subscription_deadline:
+        data.subscription_deadline = make_naive(data.subscription_deadline)
+
+    t = make_naive(now())
+
+    agenda_item = AgendaItem.model_validate(
+        data,
+        update={
+            'created_at': t,
+            'updated_at': t,
+            'created_by_user_id': user_context.user.id
+        }
+    )
 
     database.add(agenda_item)
     await database.commit()

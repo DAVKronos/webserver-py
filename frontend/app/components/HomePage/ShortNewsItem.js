@@ -21,7 +21,7 @@ const ShortNewsItem = ({ item }) => {
     <Row>
       <Col md={3} style={{ display: 'flex' }}>
         <Link to={`/newsitems/${item.id}`} className='align-self-center'>
-          <Image className='d-block w-100' src={item.photo_file.path} alt={item.title_nl} thumbnail />
+          <Image className='d-block w-100' src={item.photo_file?.path} alt={item.title_nl} thumbnail />
         </Link>
       </Col>
       <Col md={9}>

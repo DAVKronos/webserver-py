@@ -14,7 +14,7 @@ const agendaItemFields = [{
   type: 'text',
   required: true
 }, {
-  name: 'agendaitemtype_id',
+  name: 'agendaitem_type_id',
   type: 'reference',
   required: true,
   itemQuery: [['agendaitemtypes'], getAgendaitemTypes]

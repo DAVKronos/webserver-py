@@ -2,37 +2,47 @@ import React, { useState, useContext } from 'react'
 import { Button, Col, Row, Image, Form } from 'react-bootstrap'
 import { format } from '../../utils/date-format'
 import { useQuery, useQueryCache } from 'react-query'
+
 import {
   approveNewsItem,
   createNewsItemComment,
+  getUnapprovedNewsItem,
   getNewsItem,
   getNewsItemComments,
   removeNewsItem,
   removeNewsItemComment
 } from './queries'
+
 import DefaultSpinner from '../Generic/Spinner'
 import { Can } from '../../utils/auth-helper'
 import { useTranslation } from 'react-i18next'
 import { Link, useHistory } from 'react-router-dom'
 import ReactMarkdown from 'react-markdown'
-import { getUser } from '../Users/queries'
 import { subject } from '@casl/ability'
 import { authContext } from '../../utils/AuthContext'
 
+/* ---------------- COMMENTS ---------------- */
+
 const NewsItemComments = ({ newsItemId }) => {
-  const { isLoading, isError, data: comments, error } = useQuery(['comments', newsItemId], getNewsItemComments)
+  const { isLoading, data: comments } = useQuery(
+    ['comments', newsItemId],
+    getNewsItemComments
+  )
 
   return (
     <div>
-      {comments && comments.map(comment => {
-        return <Comment key={comment.id} comment={comment} />
-      })}
-      <Can I='create' a='Comment'>
+      {comments?.map(comment => (
+        <Comment key={comment.id} comment={comment} />
+      ))}
+
+      <Can I="create" a="Comment">
         {!isLoading && <NewComment newsItemId={newsItemId} />}
       </Can>
     </div>
   )
 }
+
+/* ---------------- NEW COMMENT ---------------- */
 
 const NewComment = ({ newsItemId }) => {
   const { user } = useContext(authContext)
@@ -43,79 +53,106 @@ const NewComment = ({ newsItemId }) => {
 
   const createComment = () => {
     setLoading(true)
-    const comment = { commentable_id: newsItemId, commentable_type: 'Newsitem', commenttext: text }
-    createNewsItemComment(newsItemId, comment).then(() => {
-      queryCache.invalidateQueries(['comments', comment.commentable_id])
-    }).finally(() => {
-      setLoading(false)
-    })
+
+    const comment = {
+      newsitem_id: newsItemId,
+      content: text
+    }
+
+    createNewsItemComment(newsItemId, comment)
+      .then(() => {
+        queryCache.invalidateQueries(['comments', newsItemId])
+        setText('')
+      })
+      .finally(() => setLoading(false))
   }
 
   return (
-    <Row style={{ borderTop: '1px solid #eee', paddingTop: 10, display: 'flex', alignItems: 'center' }}>
-      <Col md={2} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-        {user && <Image src={user.avatar_file.path} roundedCircle />}
-        {user && <h5>{user.name}</h5>}
+    <Row style={{ borderTop: '1px solid #eee', paddingTop: 10 }}>
+      <Col md={2} className="text-center">
+        {user && (
+          <>
+            <Image src={user.avatar_file?.path} roundedCircle />
+            <h5>{user.name}</h5>
+          </>
+        )}
       </Col>
-      <Col md={8} style={{ display: 'flex', alignItems: 'center' }}>
-        <Form.Control as='textarea' value={text} onChange={e => setText(e.target.value)} placeholder={t('comment')} />
+
+      <Col md={8}>
+        <Form.Control
+          as="textarea"
+          value={text}
+          onChange={(e) => setText(e.target.value)}
+          placeholder={t('comment')}
+        />
       </Col>
+
       <Col md={2}>
-
-        <Button variant='success' onClick={createComment} disabled={loading}>
-          {loading && <DefaultSpinner inline />}
-          {!loading && t('send')}
+        <Button variant="success" onClick={createComment} disabled={loading}>
+          {loading ? <DefaultSpinner inline /> : t('send')}
         </Button>
-
       </Col>
     </Row>
   )
 }
 
+/* ---------------- COMMENT ---------------- */
+
 const Comment = ({ comment }) => {
-  const commentUser = comment.user
   const { t } = useTranslation('generic')
   const queryCache = useQueryCache()
+
   const onClickRemove = () => {
-    removeNewsItemComment(comment.commentable_id, comment.id).then(() => {
-      queryCache.invalidateQueries(['comments', comment.commentable_id])
+    removeNewsItemComment(comment.id).then(() => {
+      queryCache.invalidateQueries(['comments', comment.newsitem_id])
     })
   }
+
   return (
-    <Row style={{ borderTop: '1px solid #eee', paddingTop: 10, display: 'flex', alignItems: 'center' }}>
-      <Col md={2} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-        {commentUser && <Image src={commentUser.avatar_file.path} roundedCircle />}
-        {commentUser && <h5>{commentUser.name}</h5>}
+    <Row style={{ borderTop: '1px solid #eee', paddingTop: 10 }}>
+      <Col md={2} className="text-center">
+        {comment.user && (
+          <>
+            <Image src={comment.user.avatar_file?.path} roundedCircle />
+            <h5>{comment.user.name}</h5>
+          </>
+        )}
       </Col>
-      <Col md={8} style={{ display: 'flex', alignItems: 'center' }}>
-        {comment.commenttext}
+
+      <Col md={8}>
+        {comment.content}
       </Col>
+
       <Col md={2}>
-        <Can I='destroy' this={subject('Comment', comment)}>
-          <Button variant='danger' onClick={onClickRemove}>{t('remove')}</Button>
+        <Can I="destroy" this={subject('Comment', comment)}>
+          <Button variant="danger" onClick={onClickRemove}>
+            {t('remove')}
+          </Button>
         </Can>
       </Col>
     </Row>
   )
 }
 
-
+/* ---------------- NEWS ITEM  ---------------- */
 
 function NewsItem(props) {
   const { t, i18n } = useTranslation('generic')
   const history = useHistory()
-  const id = parseInt(props.match.params.id, 10)
+  const queryCache = useQueryCache()
 
-  const { isLoading, isError, data, error } = useQuery(['newsitems', id], getNewsItem)
+  const id = parseInt(props.match.params.id)
+  const isUnapproved = props.match.url.includes('unapproved')
 
-  if (isLoading) {
-    return <DefaultSpinner />
-  }
+  const fetcher = isUnapproved ? getUnapprovedNewsItem : getNewsItem
 
-  if (isError) {
-    return <div>Error: {error.message}</div>
-  }
+  const { isLoading, isError, data, error } = useQuery(
+    ['newsitems', id],
+    fetcher
+  )
 
+  if (isLoading) return <DefaultSpinner />
+  if (isError) return <div>Error: {error.message}</div>
   if (!data) return null
 
   const item = data
@@ -126,64 +163,42 @@ function NewsItem(props) {
   const title = getLocalized(item.title_nl, item.title_en)
   const news = getLocalized(item.content_nl, item.content_en)
 
-  const onClickRemove = async () => {
-    try {
-      await removeNewsItem(id)
+  const onClickRemove = () => {
+    removeNewsItem(id).then(() => {
       history.goBack()
-    } catch (e) {
-      console.error(e)
-    }
+    })
   }
 
-  const onClickApprove = async () => {
-    try {
-      await approveNewsItem(id)
+  const onClickApprove = () => {
+    approveNewsItem(id).then(() => {
+      queryCache.invalidateQueries(['newsitems'])
       history.push('/admin/approve-news')
-    } catch (e) {
-      console.error(e)
-    }
+    })
   }
 
   return (
     <>
       <Row>
-        <Col md={{ span: 8, offset: 2 }}>
+        <Col md={8}>
           <h1>{title}</h1>
           <p>
-            {format(item.created_at, 'PPP p', i18n.language)} | {' '}
+            {format(item.created_at, 'PPP p', i18n.language)} |{' '}
             {item.creator?.name || 'Unknown'}
           </p>
         </Col>
-      </Row>
 
-      <Row>
-        <Col md={{ span: 8, offset: 2 }}>
-          <img
-            src={item.photo_file.path}
-            alt={title}
-          />
-
-          <ReactMarkdown>
-            {news}
-          </ReactMarkdown>
-
-          <Can I='read' a='Comment'>
-            <NewsItemComments newsItemId={item.id} />
-          </Can>
-        </Col>
-
-        <Col md={2}>
+        <Col md={4} className="d-flex">
           {!item.approved && (
-            <Can I='manage' subject='all'>
-              <Button variant='success' onClick={onClickApprove}>
+            <Can I="manage" subject="all">
+              <Button variant="success" onClick={onClickApprove}>
                 {t('approve')}
               </Button>
             </Can>
           )}
 
-          <Can I='update' a='Newsitem'>
+          <Can I="update" a="Newsitem">
             <Button
-              variant='warning'
+              variant="warning"
               as={Link}
               to={`/newsitems/${id}/edit`}
             >
@@ -191,10 +206,22 @@ function NewsItem(props) {
             </Button>
           </Can>
 
-          <Can I='destroy' a='Newsitem'>
-            <Button variant='danger' onClick={onClickRemove}>
+          <Can I="destroy" a="Newsitem">
+            <Button variant="danger" onClick={onClickRemove}>
               {t('remove')}
             </Button>
+          </Can>
+        </Col>
+      </Row>
+
+      <Row>
+        <Col md={8}>
+          <img src={item.photo_file?.path} alt={title} style={{ maxWidth: '100%' }} />
+
+          <ReactMarkdown>{news}</ReactMarkdown>
+
+          <Can I="read" a="Comment">
+            <NewsItemComments newsItemId={item.id} />
           </Can>
         </Col>
       </Row>

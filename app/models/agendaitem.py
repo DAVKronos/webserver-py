@@ -59,9 +59,9 @@ class AgendaItemCreate(SQLModel):
     date: datetime
     location: Optional[str] = None
     committee_id: Optional[int] = Field(default=None, foreign_key="committees.id")
-    is_internal: bool
+    is_internal: bool = False
     url: Optional[str] = None
-    can_subscribe: bool
+    can_subscribe: bool =False
     subscription_deadline: Optional[datetime] = None
     max_subscriptions: Optional[int] = None
 

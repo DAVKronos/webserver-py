@@ -11,21 +11,21 @@ import MultiLanguageText from "../Generic/MultiLanguageText";
 
 function getPagesForMenu (pages, title) {
   return pages.filter((page) => {
-    return page.menu === title
+    return page.menu_item === title
   })
 }
 
 function getPageLinksForMenu (pages, title) {
   return getPagesForMenu(pages, title).map(page => {
-    return <NavDropdown.Item key={page.pagetag} as={NavLink} to={`/${page.pagetag}`} href={`/${page.pagetag}`}>{page.pagetag}</NavDropdown.Item>
+    return <NavDropdown.Item key={page.page_title_nl} as={NavLink} to={`/${page.page_title_nl}`} href={`/${page.page_title_nl}`}>{page.page_title_nl}</NavDropdown.Item>
   })
 }
 
 function getHighlightPages (pages) {
   return pages.filter((page) => { 
-    return page.highlight
+    return page.is_highlight
   }).map(page => {
-    return <Nav.Link className='highlight' key={page.pagetag} as={NavLink} to={`/${page.pagetag}`} href={`/${page.pagetag}`}><MultiLanguageText nl={page.pagetag} en={page.pagetag_en} /></Nav.Link>
+    return <Nav.Link className='highlight' key={page.page_title_nl} as={NavLink} to={`/${page.page_title_nl}`} href={`/${page.page_title_nl}`}><MultiLanguageText nl={page.page_title_nl} en={page.page_title_en} /></Nav.Link>
   })
 }
 

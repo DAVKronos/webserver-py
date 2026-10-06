@@ -18,8 +18,8 @@ const EditNewsItemWithData = (props) => {
 const EditNewsItem = ({ newsItem }) => {
   const queryCache = useQueryCache()
   const history = useHistory()
-  const { id, title, title_en, news, news_en } = newsItem
-  const editableFields = { title, title_en, news, news_en }
+  const { id, title_nl, title_en, content_nl, content_en } = newsItem
+  const editableFields = { title_nl, title_en, content_nl, content_en }
   const onSuccess = (savedNewsItem) => {
     queryCache.setQueryData(['newsitems', savedNewsItem.id], savedNewsItem)
     history.push(`/newsitems/${savedNewsItem.id}`)

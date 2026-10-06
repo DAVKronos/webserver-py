@@ -37,7 +37,7 @@ const AgendaItems = () => {
   }
 
   if (agendaItems && filter) {
-    agendaItems = agendaItems.filter(agendaItem => agendaItem.agendaitemtype_id === filter)
+    agendaItems = agendaItems.filter(agendaItem => agendaItem.agendaitem_type_id === filter)
   }
   return (
     <>

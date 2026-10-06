@@ -18,7 +18,7 @@ const NewsItemCarousel = ({ items }) => {
         <Carousel.Item key={item.id}>
           <img
             className='d-block w-100'
-            src={item.photo_file.path}
+            src={item.photo_file?.path}
             alt={item.title_en}
           />
           <Carousel.Caption>

@@ -3,23 +3,23 @@ import FormField from '../Generic/FormField'
 import { Form } from 'react-bootstrap'
 
 const pageFields = [{
-  name: 'pagetag',
+  name: 'page_title_nl',
   type: 'text',
   required: true
 }, {
-  name: 'pagetag_en',
+  name: 'page_title_en',
   type: 'text',
   required: true
 },
 {
-  name: 'highlight',
+  name: 'is_highlight',
   type: 'boolean'
 },
 {
-  name: 'public',
+  name: 'is_public',
   type: 'boolean'
 }, {
-  name: 'menu',
+  name: 'menu_item',
   type: 'text'
 },
 {
@@ -27,11 +27,11 @@ const pageFields = [{
   type: 'number'
 },
 {
-  name: 'information',
+  name: 'content_nl',
   type: 'textarea',
   required: true
 }, {
-  name: 'information_en',
+  name: 'content_en',
   type: 'textarea',
   required: true
 }]
