@@ -8,8 +8,6 @@ import { useTranslation } from 'react-i18next'
 import { Can } from '../../utils/auth-helper'
 import Announcement from './Announcement'
 
-// Test for commit
-
 const HomePage = () => {
   const { t } = useTranslation('homepage')
   return (
