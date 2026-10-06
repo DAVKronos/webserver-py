@@ -23,7 +23,7 @@ const NewCommittee = () => {
 
   return (
     <NewObjectComponent
-      objectName='committee'
+      objectName='Committee'
       createFunction={createCommittee}
       onSuccess={onSuccess}
       FormComponent={CommitteeForm}

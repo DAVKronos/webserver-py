@@ -29,7 +29,7 @@ const committeeFields = [
 
 
 // TODO: make required do something (with react-hook-form)
-const CommitteeForm = ({ values, setValue, children }) => {
+const CommitteeForm = ({ values, setValue, children }) => { 
   return (
     <Form>
       {committeeFields.map(
@@ -38,7 +38,7 @@ const CommitteeForm = ({ values, setValue, children }) => {
             <FormField
               {...otherProps}
               key={name}
-              modelName='committee'
+              modelName='Committee'
               fieldName={name}
               value={values[name]}
               setValue={(v) => setValue(name, v)}

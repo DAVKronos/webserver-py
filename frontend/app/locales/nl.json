@@ -248,9 +248,9 @@
       "emailaddress": "Email adres"
     },
     "Committee": {
-      "name": "Naam (Nederlands)",
+      "name_nl": "Naam (Nederlands)",
       "name_en":"Naam (Engels)",
-      "description": "Beschrijving (Nederlands)",
+      "description_nl": "Beschrijving (Nederlands)",
       "description_en": "Beschrijving (Engels)"
     },
     "folder": {

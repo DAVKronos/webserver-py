@@ -114,7 +114,7 @@ function Committees (props) {
       <Can I='create' a='Committee'>
         <Button as={Link} to='/committees/new'>
           {t('generic:addModel', {
-            model: t('models:modelNames.committee', { count: 0 })
+            model: t('models:modelNames.Committee', { count: 0 })
           })}
         </Button>
       </Can>
