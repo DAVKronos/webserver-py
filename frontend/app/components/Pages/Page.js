@@ -24,7 +24,8 @@ const PageComponent = ({ page, isLoading }) => {
   }
 
   const renderMarkdown = (text) => {
-    return <ReactMarkdown children={text} />
+  const markdown = text.replace(/<br\s*\/?>/gi, '  \n')
+  return <ReactMarkdown>{markdown}</ReactMarkdown>
   }
 
   const onClickRemove = () => {
