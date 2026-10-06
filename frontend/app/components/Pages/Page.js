@@ -49,7 +49,7 @@ const PageComponent = ({ page, isLoading }) => {
         </Button>
       </Can>
 
-      <h1><MultiLanguageText nl={page.title_nl} en={page.title_en} /></h1>
+      <h1><MultiLanguageText nl={page.page_title_nl} en={page.page_title_en} /></h1>
       <MultiLanguageText nl={page.content_nl} en={page.content_en} renderFunction={renderMarkdown} />
     </div>
   )
