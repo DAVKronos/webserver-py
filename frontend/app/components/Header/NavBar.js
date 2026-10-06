@@ -63,7 +63,7 @@ const NavBar = () => {
         </Nav>
         <Nav className='ml-auto'>
 
-          <Can I='read' an='User'>
+          <Can I='view' a='User'>
             <Nav.Link as={NavLink} to='/users'>{t('users')}</Nav.Link>
           </Can>
           <UserMenu />

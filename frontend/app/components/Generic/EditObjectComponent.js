@@ -4,7 +4,7 @@ import { useHistory } from 'react-router-dom'
 import DefaultSpinner from '../Generic/Spinner'
 import { useTranslation } from 'react-i18next'
 
-const EditObjectComponent = ({ objectName, id, existingObject, updateFunction, FormComponent, onSuccess }) => {
+const EditObjectComponent = ({ objectName, id, existingObject, updateFunction, FormComponent, onSuccess, ...rest }) => {
   const history = useHistory()
 
   const [values, setValues] = useState({ ...existingObject })
@@ -48,6 +48,8 @@ const EditObjectComponent = ({ objectName, id, existingObject, updateFunction, F
       <FormComponent
         values={values}
         setValue={setValue}
+        
+        
       >
         <Button onClick={() => update()} disabled={saving}>
           {saving && <DefaultSpinner inline size='sm' />}

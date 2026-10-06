@@ -4,7 +4,9 @@ import DefaultSpinner from '../Generic/Spinner'
 import { useHistory } from 'react-router-dom'
 import EditObjectComponent from '../Generic/EditObjectComponent'
 import { getUser, updateUser } from './queries'
-import UserForm, { adminUserFields } from './UserForm'
+import { ability } from '../../utils/auth-helper'
+import { subject } from '@casl/ability'
+import UserForm, { adminEditUserFields, limitedEditUserFields } from './UserForm'
 
 const EditUserWithData = (props) => {
   const id = parseInt(props.match.params.id)
@@ -20,18 +22,19 @@ const EditUser = ({ user }) => {
   const history = useHistory()
   const { id, name } = user
   const editableFields = Object.fromEntries(
-    adminUserFields
+    adminEditUserFields
       .filter((fieldObject) => fieldObject.type != 'file')
-      .map((fieldObject) => [fieldObject.name, user[fieldObject.name]])
+      .map((fieldObject) => [fieldObject.name, user[fieldObject.name] ?? ''])
   )
-
-  console.log(editableFields)
 
   const onSuccess = (savedUser) => {
     queryCache.setQueryData(['users', savedUser.id], savedUser)
     history.push(`/users/${savedUser.id}`)
   }
 
+  const admin = ability.can('edit.extended', subject('User', user))
+  const fields = admin ? adminEditUserFields: limitedEditUserFields
+  
   return (
     <EditObjectComponent
       id={id}
@@ -40,6 +43,7 @@ const EditUser = ({ user }) => {
       updateFunction={updateUser}
       onSuccess={onSuccess}
       FormComponent={UserForm}
+      fields={fields}
     />
   )
 }

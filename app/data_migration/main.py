@@ -24,11 +24,11 @@ async def empty_db(conn):
 async def migrate(old_conn, new_conn):
     await empty_db(new_conn)
 
-    photo_tags_mapping = {
-        "id": "id",
-        "name": "name"
-    }
-    await helper.migrate_table(old_conn, new_conn, "tag_", "photo_tags", photo_tags_mapping)
+    # photo_tags_mapping = {
+    #     "id": "id",
+    #     "name": "name"
+    # }
+    # await helper.migrate_table(old_conn, new_conn, "tag_", "photo_tags", photo_tags_mapping)
 
     pages_mapping = {
         "id": "id",
@@ -110,7 +110,7 @@ async def migrate(old_conn, new_conn):
         "created_at": 'created_at' or datetime.now(),
         "updated_at": 'updated_at' or datetime.now()
     }
-    await helper.migrate_table(old_conn, new_conn, "users", "users", user_mapping, {}, helper.user_criteria)
+    await helper.migrate_table(old_conn, new_conn, "users", "users", user_mapping, {}, helper.user_criteria, exclude_ids=[479])
 
     announcement_mapping = {
         "id": "id",

@@ -1,110 +1,65 @@
-/***FIRST STYLE THE POLAROID SECTION***/
+/*** FIRST STYLE THE POLAROID SECTION ***/
 .polaroid {
-  overflow: hidden; /*clears the floats used below*/
-  width: 100%; /*set any width you choose, but a width is needed to clear the floats in Internet Explorer*/
-}
-/***NOW POSITION THE IMAGES***/
-.polaroid figure {
-  /*as the images are held within figure its that we style*/
-  float: left; /*places the images in a line*/
-  margin: 20px 20px; /*space between the images*/
+  overflow: hidden; 
+  width: 100%; 
 }
 
-/**NEXT STYLE THE FRAME AROUND THE IMAGES***/
+/*** FIX: Target the figure correctly, add positioning anchors, and define constraints ***/
 .polaroid figure {
-  padding: 6px 8px 10px 8px; /*size the the frame*/
-  /*give the frame background a gradient - see cssdemos.tupence.co.uk/gradients.htm*/
-  background: #eee6d8; /*fallback for browsers that don't support gradient*/
-  background: -webkit-linear-gradient(top, #ede1c9, #fef8e2 20%, #f2ebde 60%);
-  background: -moz-linear-gradient(top, #ede1c9, #fef8e2 20%, #f2ebde 60%);
-  background: -o-linear-gradient(top, #ede1c9, #fef8e2 20%, #f2ebde 60%);
-  background: -ms-linear-gradient(top, #ede1c9, #fef8e2 20%, #f2ebde 60%);
-  background: linear-gradient(top, #ede1c9, #fef8e2 20%, #f2ebde 60%);
-  /*rotate the images slightly - see http://cssdemos.tupence.co.uk/transform-rotate.htm*/
-  -webkit-transform: rotate(-1deg);
-  -moz-transform: rotate(-1deg);
-  -o-transform: rotate(-1deg);
-  -ms-transform: rotate(-1deg);
+  float: left; 
+  margin: 20px 20px; 
+  position: relative; /* 👈 CRITICAL: Fixed anchor context for the :before tape */
+  width: 250px;       /* 👈 CRITICAL: Stops container collapse */
+  background: #eee6d8; 
+  padding: 12px 12px 24px 12px;
+  
+  /* FIXED: Correct syntax 'to bottom' for modern web render engines */
+  background: linear-gradient(to bottom, #ede1c9, #fef8e2 20%, #f2ebde 60%);
+  
   transform: rotate(-1deg);
-  -webkit-backface-visibility: hidden; /*prevent rotated text being jagged in Chrome and Safari*/
-  /*and add a drop shadow effect - see http://cssdemos.tupence.co.uk/box-shadow.htm*/
-  -webkit-box-shadow: 4px 4px 8px -4px rgba(0, 0, 0, .25);
-  -moz-box-shadow: 4px 4px 8px -4px rgba(0, 0, 0, .25);
+  backface-visibility: hidden; 
   box-shadow: 4px 4px 8px -4px rgba(0, 0, 0, .25);
 }
 
-/**ROTATE ALTERNATE IMAGES THE OPPOSITE WAY USING NTH-CHILD - see http://cssdemos.tupence.co.uk/nth-child.htm**/
+/* Ensure the image scales nicely within your custom layout block */
+.polaroid figure img {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+/** ROTATE ALTERNATE IMAGES **/
 .polaroid figure:nth-child(even) {
-  -webkit-transform: rotate(2deg);
-  -moz-transform: rotate(2deg);
-  -o-transform: rotate(2deg);
-  -ms-transform: rotate(2deg);
   transform: rotate(2deg);
-  -webkit-backface-visibility: hidden;
-  /*because the rotation has changed, we also change the shadow*/
-  -webkit-box-shadow: 4px 4px 8px -4px rgba(0, 0, 0, .25);
-  -moz-box-shadow: 4px 4px 8px -4px rgba(0, 0, 0, .25);
   box-shadow: -4px 4px 8px -4px rgba(0, 0, 0, .25);
 }
 
-/***NEXT WE STYLE THE CAPTIONS TO THE IMAGES USING figcaption***/
+/*** CAPTIONS ***/
 .polaroid figcaption {
   text-align: center;
-  font-family: 'Reenie Beanie', cursive; /*Reenie Beanie is available through Google Webfonts http://code.google.com/webfonts/specimen/Reenie+Beanie*/
-  font-size: 2em;
+  font-family: 'Garamond', 'Georgia', serif; /* Safe fallback if Reenie Beanie isn't linked */
+  font-style: italic;
+  font-size: 1.5rem;
   color: #454f40;
-  letter-spacing: 0.09em;
+  margin-top: 10px;
 }
 
-/***FINALLY WE ADD THE STICKY TAPE TO THE IMAGES USING :before PSEUDO ELEMENT - see http://cssdemos.tupence.co.uk/before.htm***/
+/*** FIX: Tape pseudo element wrapper ***/
 .polaroid figure:before {
-  content: ''; /*whatever is place between '' will appear (for example 'xx' will show two xs), leaving this blank results in an empty block*/
+  content: ''; 
   display: block;
-  position: absolute; /*lets us place the tape exactly where we want, relative to the figure*/
-  left: 5px; /*places the tape 5px left of the edge of the figure*/
-  top: -15px; /*places the tape -15px from the top edge of the figure*/
+  position: absolute; 
+  left: 20px; 
+  top: -12px; 
   width: 75px;
   height: 25px;
   background: rgba(222,220,198,0.7);
-  -webkit-transform: rotate(-12deg);
-  -moz-transform: rotate(-12deg);
-  -o-transform: rotate(-12deg);
-  -ms-transform: rotate(-12deg);
+  transform: rotate(-12deg);
+  z-index: 2; /* Keeps tape sitting on top of picture border lines */
 }
 
-/*style alternate tapes differently to fit with the different rotation of the images*/
 .polaroid figure:nth-child(even):before {
-  content: '';
-  left: 150px;
-  top: -15px;
-  width: 55px;
-  height: 25px;
-  -webkit-transform: rotate(12deg);
-  -moz-transform: rotate(12deg);
-  -o-transform: rotate(12deg);
-  -ms-transform: rotate(12deg);
-}
-
-.thumbnail {
-  display: block;
-  padding: 4px;
-  margin-bottom: 20px;
-  line-height: 1.428571429;
-  background-color: #f5f5f5;
-  border: 1px solid #ddd;
-  border-radius: 2px;
-}
-
-.thumbnail img {
-  display: block;
-  max-width: 100%;
-  height: auto;
-  margin-right: auto;
-  margin-left: auto;
-}
-
-.thumbnail figcaption {
-  padding: 9px;
-  text-align: center;
-  font-size: 18px;
+  left: auto;
+  right: 20px;
+  transform: rotate(12deg);
 }

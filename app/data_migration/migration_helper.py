@@ -1,10 +1,21 @@
 import re
 from datetime import datetime
-from sqlalchemy import text
+from sqlalchemy import text, bindparam
 
-async def migrate_table(old_conn, new_conn, old_table, new_table, col_mapping, fk_mapping={}, migration_criteria=None):
+async def migrate_table(old_conn, new_conn, old_table, new_table, col_mapping, fk_mapping={}, migration_criteria=None, exclude_ids=None):
     print(f"Starting {new_table} migration...")
-    res = await old_conn.execute(text(f"SELECT * FROM {old_table}"))
+
+    query = f"SELECT * FROM {old_table}"
+    params = {}
+    if exclude_ids is not None:
+        stmt = text(f"SELECT * FROM {old_table} WHERE id NOT IN :exclude_ids")
+        stmt = stmt.bindparams(bindparam("exclude_ids", expanding=True))
+        params["exclude_ids"] = list(exclude_ids)
+    else:
+        stmt = text(query)
+
+
+    res = await old_conn.execute(stmt, params)
     rows = res.mappings().all()
     
     if not rows:
@@ -85,7 +96,10 @@ async def update_sequence(conn, table):
 # Do not migrate deleted users
 def user_criteria(row):
     regex = r"x\d+.*" # Filter strings like x70 (may have a suffix)
-    return not bool(re.fullmatch(regex, row["name"]))
+    not_deleted = not bool(re.fullmatch(regex, row["name"]))
+    # There are users with invalid birth date
+    not_problematic = row["id"] != 479
+    return not_deleted and not_problematic
 
 # Create a file for each row and updating the corresponding row's file_id
 async def migrate_table_file(old_conn, new_conn, old_table, new_table, field_names, file_id_field, path):
@@ -127,11 +141,12 @@ async def migrate_photos(old_conn, new_conn):
         "updated_at": "photo_updated_at"
     }
 
+    # TODO: Fix correct path
     # Upload full photos
-    field_names["path"] = "photo_url_original"
+    field_names["path"] = "photo_file_name"
     new_file_ids = await upload_files(new_conn, rows_with_file, field_names, "")
     # Upload thumbnail photos
-    field_names["path"] = "photo_url_thumb"
+    field_names["path"] = "photo_file_name"
     new_thumb_ids = await upload_files(new_conn, rows_with_file, field_names, "")
 
 

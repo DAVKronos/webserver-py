@@ -44,11 +44,11 @@ class AgendaItem(AgendaItemBase, table=True):
 
 class AgendaItemPublicResponse(AgendaItemBase):
     id: int
+    agendaitem_type: Optional["AgendaItemType"] = None
 
 class AgendaItemExtendedResponse(AgendaItemPublicResponse):
     creator: "UserBasicResponse"
     subscriptions: List["SubscriptionResponse"] = []
-    agendaitem_type: Optional["AgendaItemType"] = None
     committee: Optional["CommitteePublicResponse"] = None
 
 class AgendaItemCreate(SQLModel):

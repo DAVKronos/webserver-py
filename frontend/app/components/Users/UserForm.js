@@ -1,16 +1,106 @@
 import React from 'react'
 import FormField from '../Generic/FormField'
 import { Form } from 'react-bootstrap'
+import { useForm, Controller } from 'react-hook-form'
 import { getUserTypes } from './queries'
-import { ability } from '../../utils/auth-helper'
 
-const userFields = [
+// All fields in a sensible order
+const newUserFields = [
+  // --- SECTION 1: CORE IDENTIFICATION ---
+  {
+    name: 'name',
+    type: 'text',
+    required: true,
+    adminOnly: true
+  },
+  {
+    name: 'initials',
+    type: 'text',
+    required: true,
+    adminOnly: true
+  },
   {
     name: 'email',
     type: 'text',
-    required: true
+    required: true,
+    adminOnly: true
+  },
+  {
+    name: 'birthdate',
+    type: 'date',
+    required: true,
+    adminOnly: true
+  },
+  {
+    name: 'sex',
+    type: 'text',
+    required: true,
+    options: ['Male', 'Female', 'Other'],
+    adminOnly: false
   },
 
+  // --- SECTION 2: CONTACT & ADDRESS ---
+  {
+    name: 'phonenumber',
+    type: 'text',
+    required: true,
+    adminOnly: false
+  },
+  {
+    name: 'address',
+    type: 'text',
+    required: true,
+    adminOnly: false
+  },
+  {
+    name: 'postalcode',
+    type: 'text',
+    required: true,
+    adminOnly: false
+  },
+  {
+    name: 'city',
+    type: 'text',
+    required: true,
+    adminOnly: false
+  },
+
+  // --- SECTION 3: INSTITUTION & MEMBERSHIP ---
+  {
+    name: 'institution',
+    type: 'text',
+    required: true,
+    adminOnly: false
+  },
+  {
+    name: 'user_type_id',
+    type: 'reference',
+    itemQuery: [['user_types'], getUserTypes],
+    adminOnly: true
+  },
+  {
+    name: 'joined_in',
+    type: 'text',
+    required: true,
+    adminOnly: false
+  },
+
+  // --- SECTION 4: FINANCIAL & ADMINISTRATIVE ---
+  {
+    name: 'unioncard_number',
+    type: 'text',
+    required: true,
+    adminOnly: true
+  },
+  {
+    name: 'bank_account_number',
+    type: 'text',
+    required: true,
+    adminOnly: true
+  }
+]
+
+const limitedEditUserFields = [
   {
     name: 'phonenumber',
     type: 'text',
@@ -32,24 +122,19 @@ const userFields = [
     required: true
   },
   {
-    name: 'studie',
+    name: 'institution',
     type: 'text',
     required: true
   },
   {
-    name: 'instelling',
+    name: 'sex',
     type: 'text',
-    required: true
+    required: true,
+    options: ['Male', 'Female', 'Other']
   },
   {
-    name: 'aanvang',
+    name: 'joined_in',
     type: 'text'
-  },
-
-  {
-    name: 'papieren_kronometer',
-    type: 'boolean',
-    required: true
   },
   {
     name: 'avatar',
@@ -57,7 +142,7 @@ const userFields = [
   }
 ]
 
-const adminUserFields = [
+const adminEditUserFields = [
   {
     name: 'name',
     type: 'text',
@@ -65,6 +150,11 @@ const adminUserFields = [
   },
   {
     name: 'initials',
+    type: 'text',
+    required: true
+  },
+  {
+    name: 'email',
     type: 'text',
     required: true
   },
@@ -78,20 +168,10 @@ const adminUserFields = [
     type: 'reference',
     itemQuery: [['user_types'], getUserTypes]
   },
-  ...userFields, // Add normal user fields
+  ...limitedEditUserFields, // Add normal user fields
+  
   {
-    name: 'sex',
-    type: 'text',
-    required: true,
-    options: ['Male', 'Female', 'Other']
-  },
-  {
-    name: 'licensenumber',
-    type: 'text',
-    required: true
-  },
-  {
-    name: 'xtracard',
+    name: 'unioncard_number',
     type: 'text',
     required: true
   },
@@ -99,17 +179,11 @@ const adminUserFields = [
     name: 'bank_account_number',
     type: 'text',
     required: true
-  }, {
-    name: 'iban',
-    type: 'text',
-    required: true
-  }
+  },
 ]
 
 // TODO: make required do something (with react-hook-form)
-const UserForm = ({ values, setValue, children }) => {
-  const fields = ability.can('manage', 'User') ? adminUserFields : userFields
-
+const UserForm = ({ values, setValue, children, fields }) => {
   return (
     <Form>
       {fields.map(
@@ -135,4 +209,4 @@ const UserForm = ({ values, setValue, children }) => {
 }
 
 export default UserForm
-export { userFields, adminUserFields }
+export { limitedEditUserFields, adminEditUserFields, newUserFields }

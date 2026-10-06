@@ -3,7 +3,7 @@ import { useQueryCache } from 'react-query'
 import { useHistory } from 'react-router-dom'
 import NewObjectComponent from '../Generic/NewObjectComponent'
 import { createUser } from './queries'
-import UserForm from './UserForm'
+import UserForm, { newUserFields } from './UserForm'
 
 const NewFolder = () => {
   const queryCache = useQueryCache()
@@ -21,6 +21,7 @@ const NewFolder = () => {
       createFunction={createUser}
       onSuccess={onSuccess}
       FormComponent={UserForm}
+      fields={newUserFields}
     />
   )
 }
