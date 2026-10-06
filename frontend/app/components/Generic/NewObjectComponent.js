@@ -8,9 +8,15 @@ const NewObjectComponent = ({ FormComponent, createFunction, onSuccess, objectNa
   const history = useHistory()
 
   const [values, setValues] = useState({})
+  // const setValue = (fieldName, value) => {
+  //   const newValues = { ...values, [fieldName]: value }
+  //   setValues(newValues)
+  // }
   const setValue = (fieldName, value) => {
-    const newValues = { ...values, [fieldName]: value }
-    setValues(newValues)
+    setValues((prevValues) => ({
+      ...prevValues,
+      [fieldName]: value
+    }))
   }
   const [creating, setCreating] = useState(false)
   const [error, setError] = useState(null)
@@ -19,7 +25,12 @@ const NewObjectComponent = ({ FormComponent, createFunction, onSuccess, objectNa
     history.goBack()
   }
 
+
+  const { t } = useTranslation('generic')
+
   const create = () => {
+    console.log('State values in NewObjectComponent:', values)
+
     setCreating(true)
     createFunction({ ...values }).then(result => {
       setCreating(false)
@@ -27,17 +38,15 @@ const NewObjectComponent = ({ FormComponent, createFunction, onSuccess, objectNa
     }).catch((error) => {
       setCreating(false)
       console.log(error)
-      if (error.response.status === 400) {
+      if (error.response.status != 200) {
         if (error.response.data && error.response.data.message) {
           setError(error.response.data.message.join(','))
         } else {
-          setError('Sommige velden missen')
+          setError(t('error') + error.response.status)
         }
       }
     })
   }
-
-  const { t } = useTranslation('generic')
 
   return (
     <>

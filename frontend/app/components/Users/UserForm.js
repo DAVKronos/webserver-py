@@ -10,93 +10,79 @@ const newUserFields = [
   {
     name: 'name',
     type: 'text',
-    required: true,
-    adminOnly: true
+    required: true
   },
   {
     name: 'initials',
     type: 'text',
-    required: true,
-    adminOnly: true
+    required: true
   },
   {
     name: 'email',
     type: 'text',
-    required: true,
-    adminOnly: true
+    required: true
   },
   {
     name: 'birthdate',
     type: 'date',
-    required: true,
-    adminOnly: true
+    required: true
   },
   {
     name: 'sex',
     type: 'text',
     required: true,
-    options: ['Male', 'Female', 'Other'],
-    adminOnly: false
+    options: ['Male', 'Female', 'Other']
   },
 
   // --- SECTION 2: CONTACT & ADDRESS ---
   {
     name: 'phonenumber',
     type: 'text',
-    required: true,
-    adminOnly: false
+    required: true
   },
   {
     name: 'address',
     type: 'text',
-    required: true,
-    adminOnly: false
+    required: true
   },
   {
     name: 'postalcode',
     type: 'text',
-    required: true,
-    adminOnly: false
+    required: true
   },
   {
     name: 'city',
     type: 'text',
-    required: true,
-    adminOnly: false
+    required: true
   },
 
   // --- SECTION 3: INSTITUTION & MEMBERSHIP ---
   {
     name: 'institution',
     type: 'text',
-    required: true,
-    adminOnly: false
+    required: true
   },
   {
     name: 'user_type_id',
     type: 'reference',
-    itemQuery: [['user_types'], getUserTypes],
-    adminOnly: true
+    itemQuery: [['user_types'], getUserTypes]
   },
   {
     name: 'joined_in',
     type: 'text',
-    required: true,
-    adminOnly: false
+    required: true
   },
 
   // --- SECTION 4: FINANCIAL & ADMINISTRATIVE ---
   {
     name: 'unioncard_number',
     type: 'text',
-    required: true,
-    adminOnly: true
+    required: true
   },
   {
     name: 'bank_account_number',
     type: 'text',
-    required: true,
-    adminOnly: true
+    required: true
   }
 ]
 

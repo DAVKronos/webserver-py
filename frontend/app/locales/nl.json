@@ -18,7 +18,8 @@
     "send": "Verstuur",
     "approve": "Keur goed",
     "search": "Zoek",
-    "comment": "Laat hier een reactie achter"
+    "comment": "Laat hier een reactie achter",
+    "error": "Er ging iets mis: "
   },
   "homepage": {
     "readMore": "Lees meer",

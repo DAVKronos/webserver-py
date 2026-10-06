@@ -20,10 +20,10 @@ function getUserTypes () {
 }
 
 function createUser (data) {
-  const formData = convertToFormData('user', data)
+  // const formData = convertToFormData('user', data)
   return restCall('users', {
     method: 'POST',
-    data: formData
+    data
   }).then((res) => res.data)
 }
 

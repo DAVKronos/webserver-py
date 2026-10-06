@@ -113,10 +113,16 @@ const FieldControl = ({ type, value, setValue, required, itemQuery, ...props }) 
     const { size } = props
     const className = size ? `form-control form-control-${size}` : 'form-control'
 
+    // Only extract the date
+    const formatDate = (date) => {
+      if (!date) return ''
+      return date.toISOString().split('T')[0]
+    }
+
     if (type === 'datetime') {
       return (
         <DatePicker
-          selected={value}
+          selected={value ? new Date(value) : null}
           locale={lang}
           showTimeSelect
           dateFormat='Pp'
@@ -128,7 +134,7 @@ const FieldControl = ({ type, value, setValue, required, itemQuery, ...props }) 
     } else if (type === 'time') {
       return (
         <DatePicker
-          selected={value}
+          selected={value ? new Date(value) : null}
           locale={lang}
           showTimeSelect
           showTimeSelectOnly
@@ -144,7 +150,11 @@ const FieldControl = ({ type, value, setValue, required, itemQuery, ...props }) 
     }
 
     return (
-      <DatePicker selected={value} locale={lang} className='form-control form-control-sm' onChange={(date) => setValue(date)} />
+      <DatePicker 
+        selected={value ? new Date(value) : null} 
+        locale={lang} className='form-control form-control-sm' 
+        onChange={(date) => setValue(formatDate(date))} 
+      />
     )
   } else if (type === 'boolean') {
     return <Form.Check type='checkbox' checked={value} onChange={() => setValue(!value)} {...props} />

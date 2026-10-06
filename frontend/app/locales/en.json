@@ -18,7 +18,8 @@
     "send": "Send",
     "approve": "Approve",
     "search": "Search",
-    "comment": "Leave a comment here"
+    "comment": "Leave a comment here",
+    "error": "Something went wrong: "
   },
   "homepage": {
     "readMore": "Read more",
