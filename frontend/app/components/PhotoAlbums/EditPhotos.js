@@ -15,8 +15,23 @@ const EditPhotos = ({ photoAlbumId }) => {
 
   const handleFileUpload = (e) => {
     setProgress(0)
-    setFiles(e.target.files)
+
+    const selectedFiles = Array.from(e.target.files)
+
+    const validFiles = selectedFiles.filter(
+      file => file.type === 'image/png' || file.type === 'image/jpeg'
+    )
+
+    if (validFiles.length !== selectedFiles.length) {
+      alert('Only PNG, JPG, and JPEG files are allowed.')
+      e.target.value = ''
+      setFiles(null)
+      return
+    }
+
+    setFiles(validFiles)
   }
+
 
   const onClickUpload = () => {
     setUploading(true)
@@ -41,7 +56,7 @@ const EditPhotos = ({ photoAlbumId }) => {
       <h2>{t('editPhotos')}</h2>
       <div>
         <h3>{t('generic:add')}</h3>
-        <Form.File onChange={handleFileUpload} multiple />
+        <Form.File  onChange={handleFileUpload}  accept=".png,.jpg,.jpeg,image/png,image/jpeg"  multiple/>
         <ProgressBar style={{ maxWidth: 400 }} now={progress} variant={progress === 100 && 'success'} animated />
         <Button onClick={onClickUpload}>
           {uploading && <DefaultSpinner inline size='sm' />} {t('upload')}
