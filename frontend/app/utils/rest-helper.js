@@ -1,53 +1,58 @@
 import axios from 'axios'
-
-const axiosInstance = axios.create({
-    baseURL: '/',
-});
+import { getAccessToken } from './token-store'
 
 const API_HOST = '/api/v1'
 
-const config = {
+// The one HTTP client for the whole app. Use `restCall` for /api/v1 endpoints
+// and `http` directly for the few routes outside it (/auth/...).
+const http = axios.create({
   headers: { Accept: 'application/json' }
+})
+
+http.interceptors.request.use((config) => {
+  const token = getAccessToken()
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`
+  }
+  return config
+})
+
+let onUnauthorized = () => {}
+
+// Called once by AuthContext so an expired/invalid token logs the user out.
+function setUnauthorizedHandler (handler) {
+  onUnauthorized = handler
 }
+
+http.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response?.status === 401 && getAccessToken()) {
+      onUnauthorized()
+    }
+    return Promise.reject(error)
+  }
+)
 
 function convertToFormData (objectName, data) {
   const formData = new FormData()
   Object.keys(data).forEach((field) => {
-    if (data[field] != undefined || data[field] != null) {
+    if (data[field] !== undefined && data[field] !== null) {
       formData.append(`${objectName}[${field}]`, data[field])
     }
   })
   return formData
 }
 
-function getAuthHeader () {
-  const token = localStorage.getItem("access_token");
-  if (token !== null) {
-    return {"Authorization": `Bearer ${token}`}
-  }
-  else {
-    return {}
-  }
-}
-
-function getConfig () {
-  const cfg = { ...config }
-  cfg.headers = { ...cfg.headers, ...getAuthHeader() }
-
-  return cfg
-}
-
+// restCall('newsitems'), restCall(`newsitems/${id}`, { method: 'PATCH', data }), ...
 function restCall (url, params = {}, method = 'get') {
-  const { headers: customHeaders, ...restParams } = params
-  const config = getConfig()
-  return axios.request({ ...config, url: `${API_HOST}/${url}`, method, ...params, headers: {...config.headers, ...customHeaders} })
+  return http.request({ method, ...params, url: `${API_HOST}/${url}` })
 }
-
 
 export {
-  axiosInstance,
+  http,
   restCall,
   API_HOST,
-  getConfig,
-  convertToFormData
+  convertToFormData,
+  setUnauthorizedHandler
 }

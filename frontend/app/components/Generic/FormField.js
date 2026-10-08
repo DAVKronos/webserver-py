@@ -3,8 +3,7 @@ import { Col, Form, Row } from 'react-bootstrap'
 import { useTranslation } from 'react-i18next'
 import DatePicker, { registerLocale } from 'react-datepicker'
 import 'react-datepicker/dist/react-datepicker.css'
-import nl from 'date-fns/locale/nl'
-import en from 'date-fns/locale/en-GB'
+import { nl, enGB as en } from 'date-fns/locale'
 import DefaultSpinner from './Spinner'
 import Select from 'react-select'
 
@@ -99,11 +98,11 @@ const OptionControl = ({ value, setValue, required, options, ...props }) => {
 }
 
 const FieldControl = ({ type, value, setValue, required, itemQuery, ...props }) => {
+  const { i18n } = useTranslation()
   if (type === 'reference') {
     const allProps = { type, value, setValue, required, itemQuery, ...props }
     return <ReferenceControl {...allProps} />
   } else if (type === 'date' || type === 'datetime' || type === 'time') {
-    const { i18n } = useTranslation()
     const lang = langFromLocale(i18n.language)
     if (!value) {
       value = new Date()

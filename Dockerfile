@@ -1,4 +1,4 @@
-FROM node:23.3-alpine3.19 AS esbuild
+FROM node:24-alpine AS esbuild
 WORKDIR /app
 COPY frontend/package.json frontend/package-lock.json frontend/esbuild.js ./
 RUN npm ci
@@ -34,5 +34,5 @@ COPY ./templates ./templates
 RUN mkdir static
 COPY --from=esbuild ./app/build ./static/react
 
-EXPOSE 8001
+EXPOSE 8000
 CMD ["python", "-m", "app.main"]

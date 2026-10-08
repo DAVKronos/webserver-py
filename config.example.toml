@@ -1,0 +1,36 @@
+# Format of config.toml (gitignored). Get the real file from the WebCie.
+
+[uvicorn]
+hostname = "0.0.0.0"
+port = 8000
+reload = true          # restart the backend when files in app/ change
+proxy_headers = true
+
+[database]
+database = "<database name>"
+database_old = "<old (Rails) database name, only used by app/data_migration>"
+hostname = "127.0.0.1"
+port = 5432
+username = "<database user>"
+password = "<database password>"
+
+# With this section present the backend reaches the database through an SSH
+# tunnel to kronos.nl (hostname/port above are then ignored). Remove the whole
+# section to connect to `hostname:port` directly.
+[database.ssh]
+username = "<ssh user>"
+password = "<ssh password>"
+
+[authentication.jwt]
+# Any long random string, e.g. the output of: python3 -c "import secrets; print(secrets.token_hex(32))"
+secret = "<random secret>"
+algorithm = "HS256"
+
+[authentication.access_token]
+expiration_minutes = 40320
+
+[authentication.refresh_token]
+expiration_minutes = 60
+
+[permissions.scopes]
+test = ["basic"]

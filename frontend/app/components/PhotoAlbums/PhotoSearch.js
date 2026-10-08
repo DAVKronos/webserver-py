@@ -3,7 +3,7 @@ import { Form, Button, Row, Col, Card, Badge, Alert } from 'react-bootstrap'
 import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router-dom'
 import { useQuery } from 'react-query'
-import axios from 'axios'
+import { restCall } from '../../utils/rest-helper'
 
 function PhotoSearch() {
   const { t } = useTranslation('generic')
@@ -15,7 +15,7 @@ function PhotoSearch() {
     ['photo-search', searchTrigger],
     async () => {
       if (!searchTrigger) return []
-      const res = await axios.get(`/api/v1/photoalbums/photos/search`, {
+      const res = await restCall('photoalbums/photos/search', {
         params: { tag: searchTrigger }
       })
       return res.data
