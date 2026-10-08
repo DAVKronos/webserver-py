@@ -34,5 +34,5 @@ COPY ./templates ./templates
 RUN mkdir static
 COPY --from=esbuild ./app/build ./static/react
 
-EXPOSE 8001
+EXPOSE 8000
 CMD ["python", "-m", "app.main"]
