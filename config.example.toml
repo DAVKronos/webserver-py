@@ -1,6 +1,4 @@
-# Copy to config.toml (which is gitignored) and fill in the values marked <...>.
-# docker-compose.yml mounts ./config.toml into the backend container, so it must
-# exist before `docker compose up`.
+# Format of config.toml (gitignored). Get the real file from the WebCie.
 
 [uvicorn]
 hostname = "0.0.0.0"
@@ -9,7 +7,6 @@ reload = true          # restart the backend when files in app/ change
 proxy_headers = true
 
 [database]
-# Ask the WebCie for the database name and credentials.
 database = "<database name>"
 database_old = "<old (Rails) database name, only used by app/data_migration>"
 hostname = "127.0.0.1"
