@@ -1,64 +1,74 @@
-import React, { createContext, useState, useEffect, useContext } from 'react'
-import { updateAbility } from './auth-helper'
-import { axiosInstance } from './rest-helper'
+import React, { createContext, useState, useEffect, useContext, useCallback } from 'react'
+import { ability, updateAbility } from './auth-helper'
+import { http, setUnauthorizedHandler } from './rest-helper'
+import { getAccessToken, setAccessToken, clearAccessToken } from './token-store'
+import queryCache from './query-cache'
 
 export const authContext = createContext({})
 
-// FIX: Accept the token parameter and attach it directly to the request headers
-function getCurrentUser(token) {
-  return axiosInstance.get('/auth/current_user', {
-    headers: {
-      Authorization: `Bearer ${token}`
-    }
-  }).then(res => res.data)
+function getCurrentUser () {
+  return http.get('/auth/current_user').then(res => res.data)
 }
 
 export const AuthProvider = ({ children }) => {
-  const [token, setToken] = useState(() => localStorage.getItem('access_token'))
+  const [token, setToken] = useState(getAccessToken)
   const [user, setUser] = useState(null)
   const [loading, setLoading] = useState(true)
+  // Only hide the app until the *first* auth check is done; later logins/logouts
+  // shouldn't unmount the whole tree.
+  const [initialized, setInitialized] = useState(false)
 
-  const login = function(newToken, persist = false) {
+  const login = useCallback((newToken, persist = false) => {
+    // Write the store before updating state so requests fired by the re-render carry the token.
+    setAccessToken(newToken, persist)
+    setLoading(true)
     setToken(newToken)
-    if (persist) localStorage.setItem('access_token', newToken)
-  }
-  
-  const logout = function() {
+  }, [])
+
+  const logout = useCallback(() => {
+    clearAccessToken()
     setToken(null)
-    setUser(null)
-    localStorage.removeItem('access_token')
-  }
+  }, [])
 
   useEffect(() => {
-    if (token) {
-      setLoading(true)
-      getCurrentUser(token)
-        .then((userData) => {
-          setUser(userData)
-          return updateAbility()
-        })
-        .catch((error) => {
-          console.error("Failed to authenticate user on refresh:", error)
-          logout()
-        })
-        .finally(() => {
-          setLoading(false)
-        })
-    } else {
-      setUser(null)
-      updateAbility().finally(() => {
-        setLoading(false)
-      })
-    }
-  }, [token])
+    setUnauthorizedHandler(logout)
+  }, [logout])
 
-  
+  useEffect(() => {
+    let cancelled = false
+
+    // /auth/permissions requires a login, so anonymous users simply get no rules.
+    const resolveUser = token
+      ? getCurrentUser().then(async (userData) => {
+        await updateAbility()
+        return userData
+      })
+      : Promise.resolve(null)
+
+    resolveUser
+      .catch((error) => {
+        console.error('Failed to authenticate user:', error)
+        logout()
+        return null
+      })
+      .then((userData) => {
+        if (cancelled) return
+        if (!userData) ability.update([])
+        setUser(userData)
+        setLoading(false)
+        setInitialized(true)
+        // Anything fetched under the previous identity may be wrong now.
+        queryCache.invalidateQueries()
+      })
+
+    return () => { cancelled = true }
+  }, [token, logout])
 
   return (
     <authContext.Provider value={{ token, user, login, logout, loading }}>
-      {!loading && children}
+      {initialized && children}
     </authContext.Provider>
   )
 }
 
-export const useAuth = () => useContext(authContext);
+export const useAuth = () => useContext(authContext)
