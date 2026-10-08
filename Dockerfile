@@ -1,4 +1,4 @@
-FROM node:23.3-alpine3.19 AS esbuild
+FROM node:24-alpine AS esbuild
 WORKDIR /app
 COPY frontend/package.json frontend/package-lock.json frontend/esbuild.js ./
 RUN npm ci

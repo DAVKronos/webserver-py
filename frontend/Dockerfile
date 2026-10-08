@@ -1,4 +1,4 @@
-FROM node:23.3-alpine3.19
+FROM node:24-alpine
 
 WORKDIR /app
 COPY package.json package-lock.json esbuild.js ./

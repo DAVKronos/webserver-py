@@ -4,7 +4,7 @@ import { AuthProvider } from './utils/AuthContext'
 import { AxiosProvider } from './utils/AxiosContext'
 import { QueryCache, ReactQueryCacheProvider } from 'react-query'
 
-import i18n from './utils/i18n.js'
+import './utils/i18n.js'
 import AppRouter from './AppRouter'
 import CookiesWarning from './components/Generic/CookiesWarning'
 
@@ -17,10 +17,6 @@ const queryCache = new QueryCache({
 })
 
 const EnvContext = React.createContext({})
-
-// Very crappy code to activate the import of the language package
-activate(i18n)
-function activate(obj) {return}
 
 const App = (props) => {
   return (

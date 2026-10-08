@@ -43,3 +43,12 @@ Modify `.vscode/launch.json` so that it contains:
             "webRoot": "${workspaceFolder}/frontend/app"
           },
 ```
+
+# Frontend without Docker
+Requires Node 22 or newer.
+```sh
+cd frontend
+npm ci
+npm run watch   # rebuilds into frontend/build on every change
+npm run lint
+```
