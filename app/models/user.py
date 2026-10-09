@@ -98,14 +98,14 @@ class UserExtendedResponse(UserBasicResponse):
 class UserCreate(SQLModel):
     name: str
     email: str
-    password: str
+    # password: str
     birthdate: date
     address: str
     postalcode: str
     city: str
     sex: str
     phonenumber: str
-    user_type_id: str
+    user_type_id: int
     bank_account_number: str
     unioncard_number: str
     institution: str

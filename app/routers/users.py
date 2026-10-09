@@ -133,7 +133,8 @@ async def create_user(data: UserCreate, database: Database, user_context: Annota
         raise HTTPException(status.HTTP_403_FORBIDDEN, detail="Not enough permissions.")
     
     t = now()
-    user = User.model_validate(data, update={'created_at': t, 'updated_at': t })
+    # TODO: Properly implement initial password flow
+    user = User.model_validate(data, update={'created_at': t, 'updated_at': t, 'password': 'password' })
     
     database.add(user)
     await database.commit()
