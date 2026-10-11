@@ -1,0 +1,14 @@
+# Only send what the Dockerfile copies. Everything else (.git, uploads in static/,
+# config.toml with secrets, node_modules) stays out of the build context and the image.
+*
+!pyproject.toml
+!poetry.lock
+!app
+!templates
+!frontend/package.json
+!frontend/package-lock.json
+!frontend/esbuild.js
+!frontend/app
+
+**/__pycache__
+**/config.toml
