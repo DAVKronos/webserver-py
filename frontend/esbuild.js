@@ -33,6 +33,8 @@ try {
     await esbuild.build(options)
     console.log('esbuild build finished.')
   }
-} catch {
+} catch (error) {
+  // esbuild already prints build errors; anything else (e.g. a stale node_modules) would exit silently.
+  if (!error.errors) console.error(error)
   process.exit(1)
 }
