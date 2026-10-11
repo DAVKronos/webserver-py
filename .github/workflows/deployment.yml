@@ -53,4 +53,4 @@ jobs:
             cd ${{ vars.APP_PATH }}
             export GITHUB_REF=${{env.github_ref}}
             export TAG=${{env.tag}}
-            docker compose --env-file ${{env.target}}.env up --build -d
+            docker compose -f docker-compose.prod.yml --env-file ${{env.target}}.env up --build -d --remove-orphans
