@@ -1,6 +1,6 @@
 # Production: only the backend image, with the minified frontend bundle baked in.
 # No code bind mounts and no esbuild watcher; the image is exactly what was built.
-#   TAG=<tag> docker compose -f docker-compose.prod.yml up --build -d --remove-orphans
+#   TAG=<commit sha> docker compose -f docker-compose.prod.yml up --build -d --remove-orphans
 services:
   python:
     build:

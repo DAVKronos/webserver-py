@@ -6,14 +6,20 @@ on:
   workflow_dispatch:
     inputs:
       github_ref:
-        description: "Deploy a specific commit"
+        description: "Deploy a specific branch, tag or commit (default: the selected branch)"
         required: false
         type: string
       target:
         description: "Where to deploy to"
         required: false
         default: development
-        type: string
+        type: choice
+        options: [ development, production ]
+
+# Deploys share one checkout on the server; never run two at once.
+concurrency:
+  group: deployment
+  cancel-in-progress: false
 
 jobs:
   clean:
@@ -30,27 +36,35 @@ jobs:
             echo "Cleaning up docker images that are not currently running."
             docker images --filter="reference=kronos/server:*" --format '{{.Repository}}:{{.Tag}}' |  grep -v "$(docker ps --format {{.Image}})" | xargs -r docker rmi
             docker system prune -f
-    
+
   deploy:
     runs-on: ubuntu-latest
     env:
-      github_ref: ${{ inputs.github_ref || github.ref }}
-      tag: ${{ inputs.github_ref && '' || github.ref_name }}
-      target: ${{ inputs.target || (github.ref=='refs/heads/main' && 'production' || 'development') }}
-              
+      TARGET: ${{ inputs.target || (github.ref == 'refs/heads/main' && 'production' || 'development') }}
+
     steps:
-      - name: Tag docker image with commit hash.
-        if: ${{ env.tag == '' }}
-        run: echo "tag=$(git rev-parse --short ${{ env.github_ref }})" >> $GITHUB_ENV
-      
-      - run: echo "ref=${{ env.github_ref }} tag=${{env.tag}} target=${{ env.target }}"
+      # Resolve whatever was pushed or requested to one full commit SHA. The server checks out
+      # exactly that commit and the image is tagged with it, so every image maps to one commit.
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.github_ref || github.sha }}
+
+      - name: Resolve commit
+        run: |
+          sha=$(git rev-parse HEAD)
+          [[ "$sha" =~ ^[0-9a-f]{40}$ ]] || { echo "Could not resolve a commit: $sha"; exit 1; }
+          echo "DEPLOY_SHA=$sha" >> "$GITHUB_ENV"
+          echo "Deploying $sha to $TARGET"
+
       - uses: appleboy/ssh-action@v1
         with:
           host: ${{ secrets.HOST }}
           username: ${{ secrets.USERNAME }}
           key: ${{ secrets.SSH_KEY }}
+          envs: DEPLOY_SHA,TARGET
           script: |
+            set -e
             cd ${{ vars.APP_PATH }}
-            export GITHUB_REF=${{env.github_ref}}
-            export TAG=${{env.tag}}
-            docker compose -f docker-compose.prod.yml --env-file ${{env.target}}.env up --build -d --remove-orphans
+            git fetch --prune origin
+            git checkout --detach "$DEPLOY_SHA"
+            TAG="$DEPLOY_SHA" docker compose -f docker-compose.prod.yml --env-file "$TARGET.env" up --build -d --remove-orphans
