@@ -7,7 +7,7 @@ from typing import Annotated
 from pathlib import Path
 from ..models.user import *
 from ..models.committees import *
-from ..authentication import get_current_user
+from ..authentication import get_current_user, hash_password
 from ..time_utils import now
 from ..permissions import *
 from ..file_utils import store_file
@@ -133,7 +133,7 @@ async def create_user(data: UserCreate, database: Database, user_context: Annota
         raise HTTPException(status.HTTP_403_FORBIDDEN, detail="Not enough permissions.")
     
     t = now()
-    user = User.model_validate(data, update={'created_at': t, 'updated_at': t })
+    user = User.model_validate(data, update={'created_at': t, 'updated_at': t, 'password': hash_password(data.password)})
     
     database.add(user)
     await database.commit()

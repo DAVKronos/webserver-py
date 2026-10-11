@@ -43,17 +43,6 @@ async def endpoint_current_user(user_context: Annotated[UserContext, Depends(get
     return UserExtendedResponse.model_validate(user_context.user)
 
 
-# maybe this belongs more to user administration than authentication?
-@router.post("/register", response_model=User)
-async def register(user_data: UserCreate, database: Database):
-    t = now()
-    hashed_password = hash_password(user_data.password)
-    user = User.model_validate(user_data, update={'created_at': t, 'updated_at': t, 'password': hashed_password})
-    database.add(user)
-    await database.commit()
-    await database.refresh(user)
-    return user
-
 # TODO: Implement
 @router.post("/forgot-password")
 async def forgot_password():
