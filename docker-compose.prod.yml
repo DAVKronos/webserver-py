@@ -7,6 +7,8 @@ services:
       context: ./
     image: kronos/server:${TAG:-latest}
     container_name: kronos_python
+    # Start uvicorn directly so production never picks up dev settings (reload) from config.toml's [uvicorn] section.
+    command: ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000", "--proxy-headers"]
     restart: unless-stopped
     volumes:
       - ./config.toml:/app/config.toml:ro
