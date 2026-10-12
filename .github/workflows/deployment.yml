@@ -80,8 +80,11 @@ jobs:
             export TAG="$DEPLOY_SHA"
             docker compose --env-file "$DEPLOY_TARGET.env" config --quiet
             docker compose --env-file "$DEPLOY_TARGET.env" build
+            # Start the new image once on its own and connect to the database the way the app does.
+            # Read-only (SELECT 1); if it fails, the running site is left alone.
+            docker compose --env-file "$DEPLOY_TARGET.env" run --rm --no-deps server python -m app.check_db
             if [ "$DEPLOY_DRY_RUN" = "true" ]; then
-              echo "Dry run: compose setup is valid and the image builds. Running containers were not touched."
+              echo "Dry run: compose setup is valid, the image builds and reaches the database. Running containers were not touched."
               exit 0
             fi
             docker compose --env-file "$DEPLOY_TARGET.env" up -d
