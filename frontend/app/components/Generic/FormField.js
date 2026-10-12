@@ -104,10 +104,11 @@ const FieldControl = ({ type, value, setValue, required, itemQuery, ...props }) 
     return <ReferenceControl {...allProps} />
   } else if (type === 'date' || type === 'datetime' || type === 'time') {
     const lang = langFromLocale(i18n.language)
-    if (!value) {
-      value = new Date()
-    } else if (!(value instanceof Date)) {
-      value = new Date(value)
+    let date = value
+    if (!date) {
+      date = new Date()
+    } else if (!(date instanceof Date)) {
+      date = new Date(date)
     }
     const { size } = props
     const className = size ? `form-control form-control-${size}` : 'form-control'
@@ -115,7 +116,7 @@ const FieldControl = ({ type, value, setValue, required, itemQuery, ...props }) 
     if (type === 'datetime') {
       return (
         <DatePicker
-          selected={value}
+          selected={date}
           locale={lang}
           showTimeSelect
           dateFormat='Pp'
@@ -127,7 +128,7 @@ const FieldControl = ({ type, value, setValue, required, itemQuery, ...props }) 
     } else if (type === 'time') {
       return (
         <DatePicker
-          selected={value}
+          selected={date}
           locale={lang}
           showTimeSelect
           showTimeSelectOnly
@@ -143,7 +144,7 @@ const FieldControl = ({ type, value, setValue, required, itemQuery, ...props }) 
     }
 
     return (
-      <DatePicker selected={value} locale={lang} className='form-control form-control-sm' onChange={(date) => setValue(date)} />
+      <DatePicker selected={date} locale={lang} className='form-control form-control-sm' onChange={(date) => setValue(date)} />
     )
   } else if (type === 'boolean') {
     return <Form.Check type='checkbox' checked={value} onChange={() => setValue(!value)} {...props} />

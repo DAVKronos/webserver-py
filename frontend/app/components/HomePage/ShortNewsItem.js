@@ -10,7 +10,7 @@ import MultiLanguageText from '../Generic/MultiLanguageText'
 const ShortNewsItem = ({ item }) => {
   const { t, i18n } = useTranslation('homepage')
   const renderNews = (news) => {
-    return <ReactMarkdown children={news.split('\n')[0]} />
+    return <ReactMarkdown>{news.split('\n')[0]}</ReactMarkdown>
   }
   let commentCount = null
   if (item.comment_count) {

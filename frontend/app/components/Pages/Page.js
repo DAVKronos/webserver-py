@@ -24,7 +24,7 @@ const PageComponent = ({ page, isLoading }) => {
   }
 
   const renderMarkdown = (text) => {
-    return <ReactMarkdown children={text} />
+    return <ReactMarkdown>{text}</ReactMarkdown>
   }
 
   const onClickRemove = () => {

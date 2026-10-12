@@ -24,6 +24,10 @@ export default [
       'react/prop-types': 'off',
       // Every file still does `import React from 'react'` (needed for React 16's JSX transform).
       'react/jsx-uses-react': 'error',
+      // New React Compiler rules in react-hooks v7. They flag patterns in existing components that need
+      // a refactor to fix properly, so they warn instead of failing the lint run.
+      'react-hooks/set-state-in-effect': 'warn',
+      'react-hooks/immutability': 'warn',
       'no-unused-vars': ['warn', { args: 'none', ignoreRestSiblings: true }]
     }
   }

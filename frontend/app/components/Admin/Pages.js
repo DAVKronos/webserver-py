@@ -13,7 +13,7 @@ const Pages = () => {
   const queryCache = useQueryCache()
   return (
     <>
-      <h1>Informatie pagina's</h1>
+      <h1>Informatie pagina&apos;s</h1>
       <Table striped>
         <thead>
           <tr>

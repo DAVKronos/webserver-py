@@ -95,7 +95,7 @@ const LoggedInMenu = ({ user }) => {
         <h3>{firstName}</h3>
       </div>
 
-      <NavDropdown.Item as={NavLink} to={`/users/${user.id}`}><BsPersonFill /> {firstName}'s stek</NavDropdown.Item>
+      <NavDropdown.Item as={NavLink} to={`/users/${user.id}`}><BsPersonFill /> {firstName}&apos;s stek</NavDropdown.Item>
       <NavDropdown.Item active={false} target='_blank' href='https://cloud.kronos.nl'><BsFillCloudFill /> {t('kronosCloud')}</NavDropdown.Item>
       <Can I='manage' this='all'>
         <NavDropdown.Item as={NavLink} to='/admin'><BsFillGearFill /> {t('admin')}</NavDropdown.Item>
