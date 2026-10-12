@@ -40,7 +40,7 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     env:
-      TARGET: ${{ inputs.target || (github.ref == 'refs/heads/main' && 'production' || 'development') }}
+      DEPLOY_TARGET: ${{ inputs.target || (github.ref == 'refs/heads/main' && 'production' || 'development') }}
 
     steps:
       # Resolve whatever was pushed or requested to one full commit SHA. The server builds exactly
@@ -54,19 +54,21 @@ jobs:
           sha=$(git rev-parse HEAD)
           [[ "$sha" =~ ^[0-9a-f]{40}$ ]] || { echo "Could not resolve a commit: $sha"; exit 1; }
           echo "DEPLOY_SHA=$sha" >> "$GITHUB_ENV"
-          echo "Deploying $sha to $TARGET"
+          echo "Deploying $sha to $DEPLOY_TARGET"
 
       - uses: appleboy/ssh-action@v1
         with:
           host: ${{ secrets.HOST }}
           username: ${{ secrets.USERNAME }}
           key: ${{ secrets.SSH_KEY }}
-          envs: DEPLOY_SHA,TARGET
+          # Not TARGET: ssh-action's own entrypoint.sh overwrites that variable with its binary path.
+          envs: DEPLOY_SHA,DEPLOY_TARGET
           # The server is not a checkout of this repo: APP_PATH holds its own compose file, which builds
           # the image straight from GitHub at $GITHUB_REF and tags it kronos/server:$TAG.
           script: |
             set -e
             cd ${{ vars.APP_PATH }}
+            echo "Deploying $DEPLOY_SHA with $DEPLOY_TARGET.env"
             export GITHUB_REF="$DEPLOY_SHA"
             export TAG="$DEPLOY_SHA"
-            docker compose --env-file "$TARGET.env" up --build -d
+            docker compose --env-file "$DEPLOY_TARGET.env" up --build -d
