@@ -39,4 +39,4 @@ Start with `docker compose -f docker-compose.yml -f docker-compose.dev.yml up`. 
 ```
 
 # Production
-Pushes to `development` and `main` are deployed by GitHub Actions using `docker-compose.prod.yml`: only the backend image with the minified frontend built in, no live code mounts.
+Pushes to `development` and `main` are deployed by GitHub Actions. The server has its own compose file, which builds the image from GitHub at the pushed commit; the compose files in this repo are for local development only.
