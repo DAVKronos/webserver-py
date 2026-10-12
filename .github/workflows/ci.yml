@@ -1,0 +1,32 @@
+name: CI
+
+# Runs on every pull request. Needs no secrets and never touches the server.
+on:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  frontend:
+    name: Frontend lint and build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      # Same dev container as `docker compose up`, so this also checks the dev setup still works.
+      - run: docker compose build frontend
+      - run: docker compose run --rm --no-deps frontend npm run lint
+      - run: docker compose run --rm --no-deps frontend npm run build:prod
+
+  image:
+    name: Production image build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      # Same Dockerfile the server builds on deploy.
+      - run: docker build --tag kronos/server:ci .

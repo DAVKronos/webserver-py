@@ -71,7 +71,8 @@ const AddResult = ({ eventId, agendaItemId }) => {
           />
         </Col>
         <Col style={{ padding: '0 5px' }} className='align-self-end d-flex flex-row-reverse'>
-          <Button variant='success' disabled={creating} style={{ margin: 0 }} onClick={onClickAddResult}>
+          {/* Disabled until the backend has a results endpoint; onClickAddResult was never defined, which crashed this page. */}
+          <Button variant='success' disabled style={{ margin: 0 }}>
             <BsPlus />
             {t('generic:addModel', {
               model: t('models:modelNames.result', { count: 1 })

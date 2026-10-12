@@ -10,7 +10,7 @@ const AdminHome = () => {
           <ListGroup.Item as={NavLink} to='/admin/approve-news' action>Nieuwsitems goedkeuren</ListGroup.Item>
           {/* <ListGroup.Item as={NavLink} to='/admin/mailinglists' action>Mailinglijsten</ListGroup.Item>
           <ListGroup.Item as={NavLink} to='/admin/aliases' action>Aliassen</ListGroup.Item> */}
-          <ListGroup.Item as={NavLink} to='/admin/pages' action>Informatie pagina's</ListGroup.Item>
+          <ListGroup.Item as={NavLink} to='/admin/pages' action>Informatie pagina&apos;s</ListGroup.Item>
           <ListGroup.Item as={NavLink} to='/admin/announcements' action>Banners</ListGroup.Item>
         </ListGroup>
       </Col>

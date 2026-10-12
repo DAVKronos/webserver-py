@@ -154,7 +154,6 @@ const User = (props) => {
       </Row>
     </>
   )
-  return null
 }
 
 export default User
