@@ -16,7 +16,7 @@ on:
         type: choice
         options: [ development, production ]
 
-# Deploys share one checkout on the server; never run two at once.
+# Deploys share one directory on the server; never run two at once.
 concurrency:
   group: deployment
   cancel-in-progress: false
@@ -43,8 +43,8 @@ jobs:
       TARGET: ${{ inputs.target || (github.ref == 'refs/heads/main' && 'production' || 'development') }}
 
     steps:
-      # Resolve whatever was pushed or requested to one full commit SHA. The server checks out
-      # exactly that commit and the image is tagged with it, so every image maps to one commit.
+      # Resolve whatever was pushed or requested to one full commit SHA. The server builds exactly
+      # that commit and the image is tagged with it, so every image maps to one commit.
       - uses: actions/checkout@v4
         with:
           ref: ${{ inputs.github_ref || github.sha }}
@@ -62,9 +62,11 @@ jobs:
           username: ${{ secrets.USERNAME }}
           key: ${{ secrets.SSH_KEY }}
           envs: DEPLOY_SHA,TARGET
+          # The server is not a checkout of this repo: APP_PATH holds its own compose file, which builds
+          # the image straight from GitHub at $GITHUB_REF and tags it kronos/server:$TAG.
           script: |
             set -e
             cd ${{ vars.APP_PATH }}
-            git fetch --prune origin
-            git checkout --detach "$DEPLOY_SHA"
-            TAG="$DEPLOY_SHA" docker compose -f docker-compose.prod.yml --env-file "$TARGET.env" up --build -d --remove-orphans
+            export GITHUB_REF="$DEPLOY_SHA"
+            export TAG="$DEPLOY_SHA"
+            docker compose --env-file "$TARGET.env" up --build -d
