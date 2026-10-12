@@ -11,8 +11,6 @@ FastAPI backend (`app/`) and React frontend (`frontend/`), run with Docker.
 
 The site runs at http://localhost:8000. Changes to the backend and frontend are picked up automatically; refresh the browser to see them.
 
-When `frontend/package.json` changes (e.g. after a pull), run `docker compose down -v` first, so the frontend's packages get reinstalled.
-
 # Debugging Python in VSCode
 Start with `docker compose -f docker-compose.yml -f docker-compose.dev.yml up`. The backend waits until a debugger attaches, using this `.vscode/launch.json` configuration:
 ```json
@@ -39,3 +37,6 @@ Start with `docker compose -f docker-compose.yml -f docker-compose.dev.yml up`. 
   }
 }
 ```
+
+# Production
+Pushes to `development` and `main` are deployed by GitHub Actions using `docker-compose.prod.yml`: only the backend image with the minified frontend built in, no live code mounts.
