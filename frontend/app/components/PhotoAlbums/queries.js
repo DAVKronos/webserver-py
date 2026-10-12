@@ -45,9 +45,6 @@ async function addPhotosToAlbums(photoAlbumId, photos, progressCallBack) {
       await restCall(`photoalbums/${photoAlbumId}/photos`, {
         method: 'POST',
         data: formData,
-        headers: {
-          'Content-Type': 'multipart/form-data' // Tells your wrapper not to overwrite this with JSON
-        },
         onUploadProgress
       })
       progressCallBack({ loaded: idx + 1, total })
@@ -65,29 +62,14 @@ function deletePhoto (photoAlbumId, photoId) {
 
 
 
-export function addTagToPhoto(photoAlbumId, photoId, tag) {
-  return fetch(`/api/v1/photoalbums/${photoAlbumId}/${photoId}/tags`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify({ tag })
-  }).then(async (res) => {
-    if (!res.ok) {
-      const error = await res.json()
-      throw new Error(error.detail || 'Failed to add tag')
-    }
-    return res.json()
-  })
+// The backend's PhotoTag model calls the field `name`.
+export function addTagToPhoto (photoAlbumId, photoId, tag) {
+  return restCall(`photoalbums/${photoAlbumId}/${photoId}/tags`, { method: 'POST', data: { name: tag } })
+    .then(res => res.data)
 }
 
-export async function getPhotosByTagSearch(tag) {
-  const response = await fetch(`/api/v1/photoalbums/photos/search?tag=${encodeURIComponent(tag)}`);
-  if (!response.ok) {
-    throw new Error('Failed to search photos by tag');
-  }
-  return response.json();
+export function getPhotosByTagSearch (tag) {
+  return restCall('photoalbums/photos/search', { params: { tag } }).then(res => res.data)
 }
-
 
 export { getPhotoAlbums, getPhotoAlbum, createPhotoAlbum, updatePhotoAlbum, removePhotoAlbum, getPhotos, addPhotosToAlbums, deletePhoto }

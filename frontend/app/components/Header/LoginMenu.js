@@ -21,7 +21,7 @@ const LoginMenu = () => {
     loginRequest(email, password, rememberMe).then((token) => {
       setLoading(false)
 	    setIncorrectCredentials(false)
-      login(token, persist=rememberMe)
+      login(token, rememberMe)
     })
       .catch((err) => {
 	    setLoading(false)

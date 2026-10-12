@@ -1,7 +1,5 @@
-import f from 'date-fns/format'
-import fD from 'date-fns/formatDistanceToNow'
-import nl from 'date-fns/locale/nl'
-import en from 'date-fns/locale/en-GB'
+import { format as f, formatDistanceToNow as fD } from 'date-fns'
+import { nl, enGB as en } from 'date-fns/locale'
 const locales = { en, nl }
 
 function langFromLocale(locale) {

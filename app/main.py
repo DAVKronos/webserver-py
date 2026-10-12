@@ -27,6 +27,9 @@ from . import api, database
 import jinja2
 templates = Jinja2Templates(directory="templates")
 
+# The frontend bundle lives outside static/ so static/ can be a plain volume for uploads.
+# Starlette matches mounts in order, so this one must come before /static.
+app.mount("/static/react", StaticFiles(directory="frontend_build"), name="react")
 app.mount("/static", StaticFiles(directory="static", follow_symlink=True), name="static")
 app.mount("/api/v1", api.app)
 app.include_router(authentication.router)
