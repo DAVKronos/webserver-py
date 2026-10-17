@@ -106,7 +106,8 @@ def permission_scopes(user_id: int):
             can([EDIT, DELETE], "Subscription"),
             can([CREATE, EDIT, DELETE], "Page"),
             can([VIEW, EDIT, DELETE], "NewsComment"),
-            can([MANAGE], "all") 
+            can([MANAGE], "all"),
+            can([CREATE, EDIT, VIEW, DELETE], "MailingList")
         ]
 
     scopes["admin"] = \
