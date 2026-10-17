@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next'
 import { UserTypeName } from './UserType'
 import { useQuery } from 'react-query'
 import { Can } from '../../utils/auth-helper'
-import { getUserCommittees, getUser } from './queries'
+import { getUserCommittees, getUser, removeUser } from './queries'
 import { subject } from '@casl/ability'
 
 import { Link, useHistory } from 'react-router-dom'
@@ -22,6 +22,12 @@ const User = (props) => {
   const date = new Date(user.birthdate)
   const created_at = new Date(user.created_at)
   const userType = i18n.language === 'nl' ? user.user_type && user.user_type.name_nl : user.user_type && user.user_type.name_en
+
+  const history = useHistory()
+  const onClickRemove = () => {
+    removeUser(id)
+    history.push('/users')
+  }
 
   return (
     <>
@@ -150,6 +156,11 @@ const User = (props) => {
               {t('changePassword')}
             </Button>
           </Can> */}
+          <Can I='delete' this={subject('User', user)}>
+            <Button variant="danger" onClick={onClickRemove}>
+              {t('generic:remove')}
+            </Button>
+          </Can>
         </Col>
       </Row>
     </>
