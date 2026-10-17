@@ -23,7 +23,6 @@ class MailingList(MailingListBase, table=True):
 
     # Relationships
     members: List["User"] = Relationship(
-        back_populates="mailing_lists",
         sa_relationship_kwargs={
             "secondary": "mailing_list_members",
             "lazy": "selectin"
