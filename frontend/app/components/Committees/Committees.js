@@ -82,7 +82,7 @@ function Committees (props) {
       <h1>{t('headerText')}</h1>
       <p className='lead'>{t('pageDescription')}</p>
 
-      <Table striped>
+      <Table responsive striped>
         <thead>
           <tr>
             <th>{t('name')}</th>

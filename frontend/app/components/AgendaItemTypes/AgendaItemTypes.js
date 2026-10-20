@@ -20,7 +20,7 @@ const AgendaItemTypes = () => {
   return (
     <>
       <h1>Agendaitem types</h1>
-      <Table>
+      <Table responsive>
         <thead>
           <tr>
             <th colSpan={3}>

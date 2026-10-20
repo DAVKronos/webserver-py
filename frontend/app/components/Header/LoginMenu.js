@@ -40,7 +40,7 @@ const LoginMenu = () => {
         <Alert variant='danger'>{t('incorrectCredentials')}</Alert>}
       <Form.Group controlId='formBasicEmail'>
         <Form.Control
-          type='email' placeholder={t('email')} onChange={e => {
+          type='email' placeholder={t('email')} aria-label={t('email')} onChange={e => {
             setEmail(e.target.value)
           }}
         />
@@ -48,7 +48,7 @@ const LoginMenu = () => {
 
       <Form.Group controlId='formBasicPassword'>
         <Form.Control
-          type='password' placeholder={t('password')} onChange={e => {
+          type='password' placeholder={t('password')} aria-label={t('password')} onChange={e => {
             setPassword(e.target.value)
           }}
         />

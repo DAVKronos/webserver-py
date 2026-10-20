@@ -28,7 +28,7 @@ const User = (props) => {
       <h1>{user.name}</h1>
       <Row>
         <Col>
-          <Table>
+          <Table responsive>
             <tbody>
               <tr>
                 <td>

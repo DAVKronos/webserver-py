@@ -1,86 +1,159 @@
 @import '../../styles/colors.scss';
 
-.logo {
-  background-color: $kronos-forest;
-  display: flex;
-  justify-content: center;
-}
-
 .site-header {
   position: relative;
-  z-index: 5;
-  border-radius: 0 0 18px 18px;
-  box-shadow: 0 10px 28px rgba(20, 54, 32, 0.12);
+  z-index: 20;
+  background: $kronos-forest;
+  color: #FFFFFF;
+}
+
+.site-masthead {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.14);
+}
+
+.site-masthead-inner {
+  display: flex;
+  max-width: 1560px;
+  min-height: 112px;
+  align-items: center;
+  justify-content: space-between;
+  padding-right: clamp(1rem, 4vw, 4rem);
+  padding-left: clamp(1rem, 4vw, 4rem);
+}
+
+.logo-container {
+  display: flex;
+  align-items: center;
+  padding: 0 !important;
+  background: transparent;
+}
+
+.brand-link {
+  display: inline-flex;
+  min-height: 56px;
+  align-items: center;
+  border-radius: 3px;
+
+  &:focus-visible {
+    outline: 3px solid $kronos-lime;
+    outline-offset: 4px;
+  }
+}
+
+.brand-logo {
+  display: block;
+  width: min(40vw, 400px);
+  max-height: 76px;
+  object-fit: contain;
+  object-position: left center;
+}
+
+.site-masthead-caption {
+  color: rgba(255, 255, 255, 0.72);
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+
+  span {
+    margin: 0 0.45rem;
+    color: $kronos-lime;
+  }
+}
+
+.site-navigation {
+  border-bottom: 4px solid $kronos-lime;
+  background: #173F30;
+
+  > .container-xl {
+    max-width: 1480px;
+    padding-right: clamp(0.75rem, 3vw, 3rem);
+    padding-left: clamp(0.75rem, 3vw, 3rem);
+  }
 }
 
 #navbar-kronos {
-  border-radius: 0 0 18px 18px;
-  background-color: $kronos-forest;
-  padding: 0.3rem 1rem;
+  min-height: 58px;
+  padding: 0;
+  background: transparent;
+
+  .navbar-collapse {
+    align-items: stretch;
+  }
+
+  .navbar-nav {
+    align-items: stretch;
+  }
 
   .navbar-nav .nav-link {
-    color: #ffffff;
-    padding: 0.8rem 0.95rem;
-    border-radius: 8px;
-    font-size: 0.94rem;
-    font-weight: 600;
+    display: flex;
+    min-height: 60px;
+    align-items: center;
+    padding: 0.7rem 1rem;
+    border-radius: 0;
+    color: rgba(255, 255, 255, 0.86);
+    font-size: 1rem;
+    font-weight: 650;
     transition: background-color 150ms ease, color 150ms ease;
 
-    &.language-switch {
-      padding: 0.5rem;
-      display: flex;
-
-      img {
-        align-self: center;
-        flex: 0 0 auto;
-      }
-    }
-
     &:hover,
+    &:focus,
     &.active {
-      background-color: rgba(255, 255, 255, 0.13);
-      color: #ffffff;
+      background: rgba(255, 255, 255, 0.1);
+      color: #FFFFFF;
+      text-decoration: none;
     }
 
+    &.highlight {
+      align-self: center;
+      min-height: 38px;
+      margin: 0.45rem 0.2rem;
+      padding: 0.4rem 0.65rem;
+      background: $kronos-lime;
+      color: $kronos-forest;
+      font-weight: 750;
+    }
   }
 
   .nav-item.show .nav-link {
-    color: #ffffff;
-    background-color: rgba(255, 255, 255, 0.13);
+    background: rgba(255, 255, 255, 0.1);
+    color: #FFFFFF;
   }
 
-  .nav-item.dropdown .dropdown-menu {
-    margin-top: 0.45rem;
-    padding: 0.45rem;
-    border: 1px solid $kronos-border;
-    border-radius: 12px;
-    box-shadow: 0 12px 30px rgba(20, 54, 32, 0.14);
+  .nav-link.highlight:hover,
+  .nav-link.highlight:focus {
+    background: #E4F29B;
+    color: $kronos-forest;
+  }
+
+  .dropdown-toggle::after {
+    margin-left: 0.5rem;
+  }
+
+  .dropdown-menu {
+    margin-top: 0;
+    border: 0;
+    border-top: 3px solid $kronos-lime;
+    border-radius: 0 0 5px 5px;
+    box-shadow: 0 14px 30px rgba(10, 33, 23, 0.2);
 
     .dropdown-item {
-      padding: 0.6rem 0.75rem;
-      border-radius: 7px;
-
-      &:hover,
-      &:focus {
-        background-color: #EFF7F0;
-        color: $kronos-forest;
-      }
+      padding: 0.7rem 0.9rem;
     }
   }
 
-  .nav-link.highlight {
-    background-color: rgba(45, 206, 107, 0.2);
-    color: #DDF9E6;
-  }
-
   .navbar-brand {
-    color: #ffffff;
-    font-weight: 750;
-    letter-spacing: -0.02em;
+    display: none;
   }
 
   .navbar-toggler {
-    border-color: rgba(255, 255, 255, 0.35);
+    margin: 0.5rem 0 0.5rem auto;
+    border-color: rgba(255, 255, 255, 0.4);
+    border-radius: 3px;
+
+    &:focus-visible {
+      outline: 3px solid $kronos-lime;
+      outline-offset: 2px;
+    }
   }
 
   .navbar-toggler-icon {
@@ -89,49 +162,107 @@
 }
 
 .login-menu {
-  width: min(280px, calc(100vw - 2rem));
+  width: min(300px, calc(100vw - 2rem));
+  padding: 0.75rem;
 }
 
 .logged-in-menu {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+  padding: 0.75rem 0.75rem 0;
+
+  img {
+    width: 56px;
+    height: 56px;
+    object-fit: cover;
+  }
 
   h3 {
-    text-align: center;
+    margin: 0.5rem 0;
+    color: $kronos-forest;
+    font-size: 1.1rem;
   }
 }
 
-.logo-container {
-  background: $kronos-forest;
-  padding: 0.75rem !important;
+.language-switch img {
+  width: 22px;
+  height: auto;
+  border-radius: 2px;
 }
 
-.logo-top{
-  display: block;
-  background: no-repeat center;
-}
+@media (min-width: 1200px) {
+  .site-masthead-inner {
+    min-height: 136px;
+  }
 
-
-
-.logo-top.d-lg-block {
-  height: 132px;
-}
-
-.logo-top.d-md-block {
-  height: 78px;
-}
-
-@media (max-width: 767.98px) {
-  .site-header {
-    border-radius: 0 0 14px 14px;
+  .brand-logo {
+    width: min(42vw, 500px);
+    max-height: 94px;
   }
 
   #navbar-kronos {
-    padding: 0.35rem 0.75rem;
+    min-height: 72px;
 
     .navbar-nav .nav-link {
-      padding: 0.7rem 0.75rem;
+      min-height: 68px;
+      padding-right: 1.15rem;
+      padding-left: 1.15rem;
+      font-size: 1.1rem;
+
+      &.highlight {
+        min-height: 44px;
+        padding-right: 0.85rem;
+        padding-left: 0.85rem;
+      }
     }
+  }
+}
+
+@media (max-width: 991.98px) {
+  .site-masthead-inner {
+    min-height: 78px;
+  }
+
+  .site-navigation {
+    > .container-xl {
+      padding-right: 1rem;
+      padding-left: 1rem;
+    }
+  }
+
+  #navbar-kronos {
+    .navbar-collapse {
+      padding: 0.4rem 0 0.65rem;
+    }
+
+    .navbar-nav .nav-link {
+      min-height: 44px;
+      padding: 0.6rem 0.75rem;
+
+      &.highlight {
+        align-self: flex-start;
+        margin: 0.3rem 0;
+      }
+    }
+  }
+}
+
+@media (max-width: 575.98px) {
+  .site-masthead-inner {
+    min-height: 68px;
+  }
+
+  .brand-logo {
+    width: min(58vw, 260px);
+    max-height: 48px;
+  }
+
+  .site-masthead-caption {
+    max-width: 120px;
+    font-size: 0.56rem;
+    letter-spacing: 0.1em;
+    text-align: right;
+  }
+
+  .login-menu {
+    width: min(300px, calc(100vw - 3rem));
   }
 }

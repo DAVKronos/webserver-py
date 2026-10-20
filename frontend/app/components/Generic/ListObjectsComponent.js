@@ -14,7 +14,7 @@ const ListObjectsComponent = ({
   const [removing, setRemoving] = useState(null)
   const { t } = useTranslation('generic')
   return (
-    <Table striped>
+    <Table responsive striped>
       <thead>
         <tr>
           {columns.map((column) => {

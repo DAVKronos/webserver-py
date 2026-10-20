@@ -24,54 +24,55 @@ import PrivateRoute from './components/Generic/PrivateRoute'
 const AppRouter = () => {
   return (
     <Router>
-      <Container fluid='lg'>
+      <div className='app-shell'>
         <Header />
-        <div className='main'>
-          <Switch>
-            <Route exact path='/'>
-              <HomePage key='home' />
-            </Route>
-            <Route exact path='/home'>
-              <HomePage key='home'/>
-            </Route>
-            <Route path='/newsitems'>
-              <NewsItemsRouter />
-            </Route>
-            <Route path='/agendaitems'>
-              <AgendaItemsRouter />
-            </Route>
-            <Route path='/photoalbums'>
-              <PhotoAlbumsRouter />
-            </Route>
-            <Route path='/committees'>
-              <CommitteesRouter />
-            </Route>
-            <Route path='/pages'>
-              <PagesRouter />
-            </Route>
-            <Route path='/users'>
-              <UsersRouter />
-            </Route>
-            <Route path='/usertypes'>
-              <UserTypesRouter />
-            </Route>
-            <Route path='/agendaitemtypes'>
-              <AgendaItemTypesRouter />
-            </Route>
-            <Route path='/documents'>
-              <DocumentRouter />
-            </Route>
-            <Route path='/folders'>
-              <FolderRouter />
-            </Route>
-            <PrivateRoute path='/admin' component={AdminRouter} action='manage' subject='all' />
-            <Route path='/:page_title_nl'>
-              <PagesRouter />
-            </Route>
-
-          </Switch>
-        </div>
-      </Container>
+        <Container fluid className='app-content'>
+          <main className='main' id='main-content'>
+            <Switch>
+              <Route exact path='/'>
+                <HomePage key='home' />
+              </Route>
+              <Route exact path='/home'>
+                <HomePage key='home'/>
+              </Route>
+              <Route path='/newsitems'>
+                <NewsItemsRouter />
+              </Route>
+              <Route path='/agendaitems'>
+                <AgendaItemsRouter />
+              </Route>
+              <Route path='/photoalbums'>
+                <PhotoAlbumsRouter />
+              </Route>
+              <Route path='/committees'>
+                <CommitteesRouter />
+              </Route>
+              <Route path='/pages'>
+                <PagesRouter />
+              </Route>
+              <Route path='/users'>
+                <UsersRouter />
+              </Route>
+              <Route path='/usertypes'>
+                <UserTypesRouter />
+              </Route>
+              <Route path='/agendaitemtypes'>
+                <AgendaItemTypesRouter />
+              </Route>
+              <Route path='/documents'>
+                <DocumentRouter />
+              </Route>
+              <Route path='/folders'>
+                <FolderRouter />
+              </Route>
+              <PrivateRoute path='/admin' component={AdminRouter} action='manage' subject='all' />
+              <Route path='/:page_title_nl'>
+                <PagesRouter />
+              </Route>
+            </Switch>
+          </main>
+        </Container>
+      </div>
     </Router>
   )
 }

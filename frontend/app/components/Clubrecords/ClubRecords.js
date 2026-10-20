@@ -78,7 +78,7 @@ const RecordTable = (data) => {
   const sex = data.sex
   if (loc === 'out' && sex === 'male') {
     return (
-      <Table>
+      <Table responsive>
         <thead>
           <tr>
             <th>{t('event')}</th>
@@ -290,7 +290,7 @@ const RecordTable = (data) => {
   }
   if (loc === 'out' && sex === 'female') {
     return (
-      <Table>
+      <Table responsive>
         <thead>
           <tr>
             <th>{t('event')}</th>
@@ -496,7 +496,7 @@ const RecordTable = (data) => {
   }
   if (loc === 'in' && sex === 'male') {
     return (
-      <Table>
+      <Table responsive>
         <thead>
           <tr>
             <th>{t('event')}</th>
@@ -650,7 +650,7 @@ const RecordTable = (data) => {
   }
   if (loc === 'in' && sex === 'female') {
     return (
-      <Table>
+      <Table responsive>
         <thead>
           <tr>
             <th>{t('event')}</th>

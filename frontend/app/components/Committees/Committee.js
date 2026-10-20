@@ -153,7 +153,7 @@ function Committee (props) {
         />
       </p>
 
-      <Table striped>
+      <Table responsive striped>
         <thead>
           <tr>
             <th>Naam</th>

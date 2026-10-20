@@ -14,7 +14,7 @@ const Pages = () => {
   return (
     <>
       <h1>Informatie pagina&apos;s</h1>
-      <Table striped>
+      <Table responsive striped>
         <thead>
           <tr>
             <th>

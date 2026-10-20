@@ -1,7 +1,17 @@
 .monthswitcher-month {
-  width: 50px;
+  width: min(50px, 20vw);
 }
 
 .monthswitcher-year {
-  width: 100px;
+  width: min(100px, 28vw);
+}
+
+@media (max-width: 575.98px) {
+  .monthswitcher-month {
+    width: 4rem;
+  }
+
+  .monthswitcher-year {
+    width: 5.5rem;
+  }
 }

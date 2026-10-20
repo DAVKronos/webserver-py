@@ -10,7 +10,7 @@ const FolderView = () => {
   // 🚨 prevent NaN
   const safeFolderId = Number.isNaN(folderId) ? null : folderId
 
-  return <DocumentExplorer folderId={safeFolderId} />
+  return <DocumentExplorer key={safeFolderId} folderId={safeFolderId} />
 }
 
 export default FolderView

@@ -7,7 +7,7 @@ import { getAgendaitemEvents } from './queries'
 
 const EventResults = ({ event }) => {
   return (
-    <Table striped size='sm' key={event.id}>
+    <Table responsive striped size='sm' key={event.id}>
       <thead>
         <tr>
           <th colSpan={3}>

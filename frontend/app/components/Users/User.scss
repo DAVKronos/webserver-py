@@ -1,15 +1,16 @@
 /*** FIRST STYLE THE POLAROID SECTION ***/
 .polaroid {
-  overflow: hidden; 
-  width: 100%; 
+  overflow: visible;
+  width: 100%;
 }
 
 /*** FIX: Target the figure correctly, add positioning anchors, and define constraints ***/
 .polaroid figure {
-  float: left; 
-  margin: 20px 20px; 
-  position: relative; /* 👈 CRITICAL: Fixed anchor context for the :before tape */
-  width: 250px;       /* 👈 CRITICAL: Stops container collapse */
+  float: none;
+  margin: 20px auto;
+  position: relative;
+  width: min(100%, 250px);
+  box-sizing: border-box;
   background: #eee6d8; 
   padding: 12px 12px 24px 12px;
   
@@ -39,7 +40,7 @@
   text-align: center;
   font-family: 'Garamond', 'Georgia', serif; /* Safe fallback if Reenie Beanie isn't linked */
   font-style: italic;
-  font-size: 1.5rem;
+  font-size: clamp(1.1rem, 5vw, 1.5rem);
   color: #454f40;
   margin-top: 10px;
 }

@@ -1,5 +1,5 @@
 import React, { useState, useContext } from 'react'
-import { Col, Button, Card, ListGroup, Form } from 'react-bootstrap'
+import { Alert, Col, Button, Card, ListGroup, Form } from 'react-bootstrap'
 import { authContext } from '../../../utils/AuthContext'
 import { useQuery, useQueryCache } from 'react-query'
 import { createSubscription, getSubscriptions, removeSubscription } from '../queries'
@@ -29,7 +29,7 @@ const SubscriptionsCard = ({ allowed, agendaItem }) => {
     body = <Subscriptions agendaItem={agendaItem} />
   }
   return (
-    <Card className='card-margin-top'>
+    <Card className='agenda-subscriptions-card card-margin-top'>
       {body}
     </Card>
   )
@@ -41,9 +41,24 @@ const Subscriptions = ({ agendaItem }) => {
   const { user } = useContext(authContext)
   const [text, setText] = useState('')
   const queryCache = useQueryCache()
-  const { isLoading, isError, data, error } = useQuery(['agendaitems', agendaItem.id, 'subscriptions'], getSubscriptions)
+  const { isLoading, isError, data, refetch } = useQuery(['agendaitems', agendaItem.id, 'subscriptions'], getSubscriptions)
   if (isLoading) {
     return <DefaultSpinner />
+  }
+  if (isError || !Array.isArray(data)) {
+    return (
+      <>
+        <Card.Header>{t('subscriptions.list')}</Card.Header>
+        <Card.Body>
+          <Alert variant='danger' className='mb-0'>
+            <div>{t('subscriptions.loadError')}</div>
+            <Button className='mt-2' variant='outline-danger' size='sm' onClick={() => refetch()}>
+              {t('retry')}
+            </Button>
+          </Alert>
+        </Card.Body>
+      </>
+    )
   }
   const subscriptions = data
   const userId = user && user.id
@@ -51,13 +66,13 @@ const Subscriptions = ({ agendaItem }) => {
 
   const onClickUnsubscribe = (subcriptionId) => {
     removeSubscription(agendaItem.id, subcriptionId).then(() => {
-      queryCache.invalidateQueries(['agendaitems', agendaItem.id, 'subscriptions'])
+      queryCache.invalidateQueries(['agendaitems'])
     })
   }
 
   const onClickSubscribe = () => {
     createSubscription(agendaItem.id, { comment: text }).then(() => {
-      queryCache.invalidateQueries(['agendaitems', agendaItem.id, 'subscriptions'])
+      queryCache.invalidateQueries(['agendaitems'])
     })
   }
 
@@ -83,9 +98,12 @@ const Subscriptions = ({ agendaItem }) => {
   return (
     <>
       <Card.Header>
-        {t('subscriptions.list')} <br />
-        <small>{formatDistanceToNow(new Date(agendaItem.subscription_deadline), lang, true)}</small><br />
-        {subscriptionOpen && agendaItem.max_subscriptions && <small>{t('subscriptions.placesLeft', { places: agendaItem.maxsubscription - subscriptions.length })}</small>}
+        <span>{t('subscriptions.list')}</span>
+        <small>{formatDistanceToNow(new Date(agendaItem.subscription_deadline), lang, true)}</small>
+        <span className='agenda-subscriptions-count' role='status' aria-atomic='true'>
+          {t('subscriptions.count', { count: subscriptions.length })}
+        </span>
+        {subscriptionOpen && agendaItem.max_subscriptions && <small>{t('subscriptions.placesLeft', { places: Math.max(0, agendaItem.max_subscriptions - subscriptions.length) })}</small>}
       </Card.Header>
       <ListGroup variant='flush'>
         {subscriptions && subscriptions.map(subscription => {

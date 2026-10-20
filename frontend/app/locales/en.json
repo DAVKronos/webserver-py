@@ -63,9 +63,32 @@
   },
   "agendaItemPage": {
     "header": "Agenda",
+    "eyebrow": "Kronos calendar",
+    "intro": "Find upcoming competitions, activities and club events.",
+    "monthSchedule": "Monthly schedule",
+    "monthNavigation": "Choose a month",
+    "month": "Month",
+    "year": "Year",
+    "noEventsTitle": "Nothing on the agenda yet",
+    "noEventsDescription": "There are no events listed for this month. Try another month to see what's coming up.",
+    "loadErrorTitle": "The agenda could not be loaded.",
+    "loadErrorDescription": "Please try again. If the problem continues, contact the site administrator.",
+    "detailLoadErrorTitle": "This event could not be loaded.",
+    "detailNotFound": "This event could not be found.",
+    "backToAgenda": "Back to agenda",
+    "eventDetails": "Event details",
+    "dateAndTime": "Date and time",
+    "location": "Location",
+    "committee": "Committee",
+    "website": "Website",
+    "aboutEvent": "About this event",
+    "retry": "Try again",
     "subscriptions": {
       "list": "Subscriptions",
       "loginNotice": "You have to login to see subscriptions.",
+      "count": "{{count}} person signed up",
+      "count_plural": "{{count}} people signed up",
+      "loadError": "The signup list could not be loaded.",
       "subscribe": "Subscribe",
       "unsubscribe": "Unsubscribe",
       "placesLeft": "{{places}} places remaining",
@@ -92,6 +115,29 @@
     "documents": "Documents",
     "edit": "Edit",
     "delete": "Delete"
+  },
+  "documentLibrary": {
+    "eyebrow": "Kronos library",
+    "title": "Documents",
+    "description": "Browse the folders and documents shared by Kronos.",
+    "folderDescription": "Browse this folder and its documents.",
+    "newFolder": "New folder",
+    "newDocument": "Add document",
+    "root": "All documents",
+    "search": "Search folders and documents",
+    "loadErrorTitle": "The library could not be loaded.",
+    "loadErrorDescription": "Please try again. If the problem continues, contact the site administrator.",
+    "retry": "Try again",
+    "folders": "Folders",
+    "folderCountOne": "1 subfolder",
+    "folderCount": "{{count}} subfolders",
+    "openFolder": "Open folder",
+    "noSearchResults": "No matches found. Try another search.",
+    "noFolders": "There are no folders here yet.",
+    "documents": "Documents",
+    "openDocument": "Open document",
+    "noDocuments": "There are no documents in this folder yet.",
+    "showAll": "Show all {{count}} documents"
   },
   "userpage": {
     "kronauts": "Kronauts",
@@ -295,4 +341,3 @@
     
   }
 }
-

@@ -32,7 +32,7 @@ const MonthSwitcher = ({ date }) => {
   const prev = new Date(year, month - 1)
   const next = new Date(year, month + 1)
   return (
-    <Nav variant='tabs'>
+    <Nav variant='tabs' className='agenda-month-switcher' aria-label={t('agendaItemPage:monthNavigation')}>
       <Nav.Item>
         <Nav.Link
           onClick={() => changeDate(prev)}
@@ -49,9 +49,9 @@ const MonthSwitcher = ({ date }) => {
         </Nav.Link>
       </Nav.Item>
       <Nav.Item>
-        <Form inline onSubmit={onClickSearch}>
-          <FormControl className='monthswitcher-month mr-sm-1' type='text' placeholder='MM' value={searchMonth} onChange={(event) => setSearchMonth(event.target.value)} />
-          <FormControl className='monthswitcher-year mr-sm-1' type='text' placeholder='YYYY' value={searchYear} onChange={(event) => setSearchYear(event.target.value)} />
+        <Form inline className='agenda-month-search' onSubmit={onClickSearch}>
+          <FormControl className='monthswitcher-month mr-sm-1' type='text' aria-label={t('agendaItemPage:month')} placeholder='MM' value={searchMonth} onChange={(event) => setSearchMonth(event.target.value)} />
+          <FormControl className='monthswitcher-year mr-sm-1' type='text' aria-label={t('agendaItemPage:year')} placeholder='YYYY' value={searchYear} onChange={(event) => setSearchYear(event.target.value)} />
           <Button variant='outline-success' type='submit'>{t('search')}</Button>
         </Form>
       </Nav.Item>

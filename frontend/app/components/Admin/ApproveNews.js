@@ -9,7 +9,7 @@ const ApproveNews = () => {
   return (
     <>
       <h1>Nieuwsitems goedkeuren</h1>
-      <Table striped>
+      <Table responsive striped>
         <thead>
           <tr>
             <th>

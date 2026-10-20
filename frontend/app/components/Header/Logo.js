@@ -1,23 +1,13 @@
 import React from 'react'
-import logonormal from '../../images/logonormal.png'
 import logowide from '../../images/logowide.png'
-// TODO very basic, does not always work, mobile ready?
+import { Link } from 'react-router-dom'
+
 const Logo = () => {
   return (
     <div className='logo-container'>
-      <div
-        className='logo-top d-none d-lg-block'
-        style={{
-          background: `url(${logonormal}) no-repeat center`,
-          backgroundSize: 'contain'
-        }}
-      />
-      <div
-        className='logo-top d-none d-md-block d-lg-none ' style={{
-          background: `url(${logowide}) no-repeat center`,
-          backgroundSize: 'contain'
-        }}
-      />
+      <Link className='brand-link' to='/' aria-label='Kronos home'>
+        <img className='brand-logo' src={logowide} alt='Drienerlose Atletiek Vereniging Kronos' />
+      </Link>
     </div>
   )
 }
