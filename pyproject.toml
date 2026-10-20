@@ -21,6 +21,8 @@ passlib = {extras = ["bcrypt"], version = "^1.7.4"}
 sqlmodel = "^0.0.21"
 sshtunnel = "^0.4.0"
 debugpy = "^1.8.14"
+google-auth = "^2.62.0"
+google-api-python-client = "^2.201.0"
 
 
 [tool.poetry.group.dev.dependencies]
