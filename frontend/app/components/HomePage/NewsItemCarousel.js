@@ -13,7 +13,7 @@ const NewsItemCarousel = ({ items }) => {
   const validItems = items.filter(item => item?.photo_file?.path)
 
   return (
-    <Carousel pause={false} interval={10000}>
+    <Carousel className='home-news-carousel' pause={false} interval={10000}>
       {validItems.map(item => (
         <Carousel.Item key={item.id}>
           <img

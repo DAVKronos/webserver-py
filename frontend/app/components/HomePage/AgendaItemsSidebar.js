@@ -16,7 +16,7 @@ function AgendaItemsSideBar () {
   }
 
   return (
-    <Card className='side-panel'>
+    <Card className='side-panel agenda-sidebar'>
       <Card.Header>Agenda</Card.Header>
       <ListGroup variant='flush'>
         {content}

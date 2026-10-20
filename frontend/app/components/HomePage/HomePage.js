@@ -13,13 +13,15 @@ const HomePage = () => {
   const { t } = useTranslation('homepage')
   return (
     <>
-      <Row>
+      <Row className='home-announcement-row'>
         <Col md={12}>
           <Announcement />
         </Col>
+      </Row>
+      <Row className='home-section-heading'>
         <Col><h1>{t('news')}</h1></Col>
       </Row>
-      <Row>
+      <Row className='home-content-row'>
         <Col md={8}>
           <NewsItems />
         </Col>

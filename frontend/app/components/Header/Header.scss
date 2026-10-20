@@ -1,55 +1,95 @@
 @import '../../styles/colors.scss';
 
 .logo {
-  background-color: $kronos-green;
+  background-color: $kronos-forest;
   display: flex;
   justify-content: center;
 }
 
+.site-header {
+  position: relative;
+  z-index: 5;
+  border-radius: 0 0 18px 18px;
+  box-shadow: 0 10px 28px rgba(20, 54, 32, 0.12);
+}
+
 #navbar-kronos {
-  background-color: $kronos-green;
-  padding: 0 1rem;
+  border-radius: 0 0 18px 18px;
+  background-color: $kronos-forest;
+  padding: 0.3rem 1rem;
+
   .navbar-nav .nav-link {
     color: #ffffff;
-    padding: 1rem;
+    padding: 0.8rem 0.95rem;
+    border-radius: 8px;
+    font-size: 0.94rem;
+    font-weight: 600;
+    transition: background-color 150ms ease, color 150ms ease;
 
     &.language-switch {
-      padding: 2px;
+      padding: 0.5rem;
       display: flex;
+
       img {
         align-self: center;
         flex: 0 0 auto;
-        //width: 15px;
-        //height: auto;
       }
     }
 
-    &:hover,  &.active {
-      background-color: $kronos-green-light;
+    &:hover,
+    &.active {
+      background-color: rgba(255, 255, 255, 0.13);
+      color: #ffffff;
     }
 
   }
 
   .nav-item.show .nav-link {
-    color: #d9d9d9;
+    color: #ffffff;
+    background-color: rgba(255, 255, 255, 0.13);
   }
 
   .nav-item.dropdown .dropdown-menu {
-    border-radius: 0;
-    //font-size: 14px;
+    margin-top: 0.45rem;
+    padding: 0.45rem;
+    border: 1px solid $kronos-border;
+    border-radius: 12px;
+    box-shadow: 0 12px 30px rgba(20, 54, 32, 0.14);
+
+    .dropdown-item {
+      padding: 0.6rem 0.75rem;
+      border-radius: 7px;
+
+      &:hover,
+      &:focus {
+        background-color: #EFF7F0;
+        color: $kronos-forest;
+      }
+    }
   }
 
   .nav-link.highlight {
-    background-color: #76C8A6;
+    background-color: rgba(45, 206, 107, 0.2);
+    color: #DDF9E6;
   }
 
   .navbar-brand {
-    color: #ffffff
+    color: #ffffff;
+    font-weight: 750;
+    letter-spacing: -0.02em;
+  }
+
+  .navbar-toggler {
+    border-color: rgba(255, 255, 255, 0.35);
+  }
+
+  .navbar-toggler-icon {
+    filter: brightness(0) invert(1);
   }
 }
 
 .login-menu {
-  width: 200px;
+  width: min(280px, calc(100vw - 2rem));
 }
 
 .logged-in-menu {
@@ -63,11 +103,9 @@
 }
 
 .logo-container {
-  background: $kronos-green;
-  padding: 10px!important;
-
+  background: $kronos-forest;
+  padding: 0.75rem !important;
 }
-
 
 .logo-top{
   display: block;
@@ -77,10 +115,23 @@
 
 
 .logo-top.d-lg-block {
-  height: 160px;
+  height: 132px;
 }
 
 .logo-top.d-md-block {
-  height: 90px;
+  height: 78px;
 }
 
+@media (max-width: 767.98px) {
+  .site-header {
+    border-radius: 0 0 14px 14px;
+  }
+
+  #navbar-kronos {
+    padding: 0.35rem 0.75rem;
+
+    .navbar-nav .nav-link {
+      padding: 0.7rem 0.75rem;
+    }
+  }
+}

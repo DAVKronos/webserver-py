@@ -32,11 +32,12 @@ const Announcement = ({ announcement, isLoading }) => {
 
   return (
     <Jumbotron
+    className='home-announcement'
     style={{
-      marginTop: 10,
-      background: announcement.photo_file?.path
-        ? `#fff url('${announcement.photo_file.path}') no-repeat right top`
-        : '#fff'
+      backgroundColor: '#14532D',
+      backgroundImage: announcement.photo_file?.path
+        ? `url('${announcement.photo_file.path}')`
+        : undefined
     }}
   >
     <h1>{announcement.title}</h1>

@@ -16,7 +16,7 @@ const NewsItems = (props) => {
     return <DefaultSpinner />
   }
   return (
-    <div>
+    <div className='home-news-feed'>
       <NewsItemCarousel items={data.slice(0, 2)} />
       {data.sort(sort_newsItems).slice(0, 8).map(item => {
         return <ShortNewsItem key={item.id} item={item} />

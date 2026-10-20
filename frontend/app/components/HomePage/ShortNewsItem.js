@@ -18,7 +18,7 @@ const ShortNewsItem = ({ item }) => {
   }
 
   return (
-    <Row>
+    <Row className='home-news-item'>
       <Col md={3} style={{ display: 'flex' }}>
         <Link to={`/newsitems/${item.id}`} className='align-self-center'>
           <Image className='d-block w-100' src={item.photo_file?.path} alt={item.title_nl} thumbnail />

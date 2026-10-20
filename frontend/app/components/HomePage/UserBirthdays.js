@@ -24,7 +24,7 @@ const UserBirthdays = () => {
   }
 
   return (
-    <Card className='side-panel'>
+    <Card className='side-panel birthday-sidebar'>
       <Card.Header>{t('birthdays')}</Card.Header>
       <ListGroup variant='flush'>
         {content}
