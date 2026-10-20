@@ -271,6 +271,8 @@ async def migrate(old_conn, new_conn):
     }
     await helper.migrate_table(old_conn, new_conn, "kronometers", "documents", document_mapping)
 
+    # TODO: Migrate mailing lists and aliases
+
     user_avatar_field_names = {
         "path": "avatar_file_name",
         "content_type": "avatar_content_type",

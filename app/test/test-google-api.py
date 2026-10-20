@@ -1,15 +1,13 @@
-# TO RUN: sudo docker compose run --rm python python3 -m app.test.test-google-api.py
+# TO RUN: sudo docker compose run --rm python python3 -m app.test.test-google-api
 from google.oauth2 import service_account
 from googleapiclient.discovery import build
 
-# Path to your private key JSON file from Google Cloud
 SERVICE_ACCOUNT_FILE = 'google-api.json'
+ADMIN_EMAIL = 'webmaster@kronos.nl'
 
 # Required scope for reading Google Groups / mailing lists
 SCOPES = ['https://www.googleapis.com/auth/admin.directory.group.readonly']
 
-# The email of a Google Workspace Administrator
-ADMIN_EMAIL = 'webmaster@kronos.nl'
 
 def list_mailing_lists():
     try:
