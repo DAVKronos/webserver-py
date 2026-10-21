@@ -1,4 +1,4 @@
-from fastapi import APIRouter, HTTPException, Depends, status, Form, UploadFile, File
+from fastapi import APIRouter, HTTPException, Depends, status, Form, UploadFile, File, Query
 from sqlalchemy.sql import extract
 from sqlmodel import select, or_
 from ..dependencies import Database
@@ -38,19 +38,27 @@ async def get_all(database: Database, user_context: Annotated[UserContext, Depen
     return users_response
 
 @router.get("/birthdays", response_model=list[UserBasicResponse])
-async def get_birthdays(database: Database):
-    today = date.today()
-    next_month = (today.month % 12) + 1
+async def get_birthdays(database: Database, month: int | None = Query(default=None, ge=1, le=12)):
     query = select(User).where(
         User.user_type_id != 9,
-        User.birthdate.is_not(None),
-        or_(
-            (extract("month", User.birthdate) == today.month) & (extract("day", User.birthdate) >= today.day),
-            (extract("month", User.birthdate) == next_month) & (extract("day", User.birthdate) <= today.day)
+        User.birthdate.is_not(None)
+    )
+    if month is None:
+        today = date.today()
+        next_month = (today.month % 12) + 1
+        query = query.where(
+            or_(
+                (extract("month", User.birthdate) == today.month) & (extract("day", User.birthdate) >= today.day),
+                (extract("month", User.birthdate) == next_month) & (extract("day", User.birthdate) <= today.day)
+            )
         )
-    ).order_by(
+    else:
+        query = query.where(extract("month", User.birthdate) == month)
+
+    query = query.order_by(
         extract("month", User.birthdate),
-        extract("day", User.birthdate)
+        extract("day", User.birthdate),
+        User.name
     )
     users = await database.exec(query)
     return users.all()

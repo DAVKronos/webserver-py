@@ -1,11 +1,17 @@
 import React from 'react'
-import { Spinner } from 'react-bootstrap'
+import kronosLogo from '../../images/logonormal.png'
 
 const DefaultSpinner = ({ inline, size }) => {
   return (
-    <div style={{ margin: !inline && 10 }}><Spinner animation='border' role='status' size={size}>
+    <div
+      className={`kronos-loader${inline ? ' kronos-loader--inline' : ''}${size === 'sm' ? ' kronos-loader--small' : ''}`}
+      role='status'
+      style={{ margin: !inline && 10 }}
+    >
+      <span className='kronos-loader__mark' aria-hidden='true'>
+        <img src={kronosLogo} alt='' />
+      </span>
       <span className='sr-only'>Loading...</span>
-    </Spinner>
     </div>
   )
 }

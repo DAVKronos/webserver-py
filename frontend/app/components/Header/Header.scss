@@ -188,6 +188,97 @@
   border-radius: 2px;
 }
 
+.theme-toggle-item {
+  display: flex;
+  align-items: center;
+  padding: 0 0.45rem;
+}
+
+.theme-toggle {
+  display: inline-flex;
+  width: 62px;
+  height: 38px;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border: 0;
+  border-radius: 20px;
+  background: transparent;
+  cursor: pointer;
+
+  &:focus-visible {
+    outline: 3px solid $kronos-lime;
+    outline-offset: 3px;
+  }
+}
+
+.theme-toggle-track {
+  position: relative;
+  display: block;
+  width: 58px;
+  height: 32px;
+  border: 1px solid rgba(255, 255, 255, 0.45);
+  border-radius: 18px;
+  background: rgba(0, 0, 0, 0.18);
+}
+
+.theme-toggle-thumb {
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  display: grid;
+  width: 24px;
+  height: 24px;
+  place-items: center;
+  border-radius: 50%;
+  background: $kronos-lime;
+  color: $kronos-forest;
+  transition: transform 180ms ease;
+
+  svg {
+    width: 15px;
+    height: 15px;
+    fill: none;
+    stroke: currentColor;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    stroke-width: 1.7;
+  }
+
+  .is-dark & {
+    transform: translateX(26px);
+  }
+}
+
+.theme-toggle-icon {
+  position: absolute;
+  top: 8px;
+  display: grid;
+  width: 14px;
+  height: 14px;
+  place-items: center;
+  color: #FFFFFF;
+  opacity: 0.75;
+
+  svg {
+    width: 14px;
+    height: 14px;
+    fill: none;
+    stroke: currentColor;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    stroke-width: 1.6;
+  }
+}
+
+.theme-toggle-icon-sun {
+  left: 8px;
+}
+
+.theme-toggle-icon-moon {
+  right: 8px;
+}
+
 @media (min-width: 1200px) {
   .site-masthead-inner {
     min-height: 136px;
@@ -240,6 +331,15 @@
       &.highlight {
         align-self: flex-start;
         margin: 0.3rem 0;
+      }
+
+      .navbar-nav.ml-auto {
+        align-items: flex-start;
+      }
+
+      .theme-toggle-item {
+        min-height: 44px;
+        padding-left: 0.75rem;
       }
     }
   }

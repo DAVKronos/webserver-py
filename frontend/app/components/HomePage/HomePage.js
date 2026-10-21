@@ -32,11 +32,11 @@ const HomePage = () => {
         </section>
         <aside className='home-sidebar'>
           <AgendaItemsSidebar />
-          <Can I='view' a='User'>
-            <UserBirthdays />
-          </Can>
         </aside>
       </div>
+      <Can I='view' a='User'>
+        <UserBirthdays />
+      </Can>
     </div>
   )
 }

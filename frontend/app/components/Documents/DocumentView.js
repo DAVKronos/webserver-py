@@ -1,7 +1,8 @@
 import React from 'react'
 import { useParams } from 'react-router-dom'
 import { useQuery } from 'react-query'
-import { Container, Spinner } from 'react-bootstrap'
+import { Container } from 'react-bootstrap'
+import DefaultSpinner from '../Generic/Spinner'
 import { getDocumentById } from './queries'
 
 const DocumentView = () => {
@@ -12,7 +13,7 @@ const DocumentView = () => {
     () => getDocumentById(null, id)
   )
 
-  if (isLoading) return <Spinner animation="border" />
+  if (isLoading) return <DefaultSpinner />
 
   if (!data) return <div>Document not found</div>
 

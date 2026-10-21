@@ -5,8 +5,8 @@ function getNewsItems () {
   return restCall('newsitems').then(res => res.data)
 }
 
-function getUserBirthdays () {
-  return restCall('users/birthdays').then(res => res.data)
+function getUserBirthdays (month) {
+  return restCall('users/birthdays', { params: { month } }).then(res => res.data)
 }
 
 function getCurrentAnnouncement () {

@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React from 'react'
 import { Nav, Navbar, NavDropdown } from 'react-bootstrap'
 import { NavLink } from 'react-router-dom'
 import UserMenu from './LoginMenu'
@@ -7,6 +7,7 @@ import { getPages } from './queries'
 import { useTranslation } from 'react-i18next'
 import { Can } from '../../utils/auth-helper'
 import LanguageSwitch from './LanguageSwitch'
+import ThemeToggle from './ThemeToggle'
 import MultiLanguageText from "../Generic/MultiLanguageText";
 
 function getPagesForMenu (pages, title) {
@@ -30,7 +31,7 @@ function getHighlightPages (pages) {
 }
 
 const NavBar = () => {
-  const { isLoading, isError, data } = useQuery('pages', getPages)
+  const { data } = useQuery('pages', getPages)
   const { t } = useTranslation('navigation')
   const pages = data || []
   return (
@@ -68,6 +69,7 @@ const NavBar = () => {
           </Can>
           <UserMenu />
           <LanguageSwitch />
+          <ThemeToggle />
         </Nav>
       </Navbar.Collapse>
     </Navbar>
