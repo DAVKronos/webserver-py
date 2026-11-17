@@ -34,7 +34,7 @@ const Announcement = ({ announcement, isLoading }) => {
     <Jumbotron
     className='home-announcement'
     style={{
-      backgroundColor: '#14532D',
+      backgroundColor: '#149E49',
       backgroundImage: announcement.photo_file?.path
         ? `url('${announcement.photo_file.path}')`
         : undefined

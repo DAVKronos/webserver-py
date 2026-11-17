@@ -1,6 +1,6 @@
 @import 'styles/colors.scss';
 $primary: $kronos-green;
-$success: $kronos-green-dark;
+$success: $kronos-green;
 @import "~bootstrap/scss/bootstrap";
 
 @import 'components/Header/Header.scss';
@@ -12,11 +12,12 @@ $success: $kronos-green-dark;
 
 :root {
   --kronos-forest: #123B2B;
-  --kronos-green: #236B49;
-  --kronos-lime: #D8EA7A;
+  --kronos-green: #149E49;
+  --kronos-green-dark: #0D7540;
+  --kronos-lime: #E2F09B;
   --kronos-ink: #17251D;
   --kronos-muted: #617168;
-  --kronos-canvas: #F4F5EF;
+  --kronos-canvas: #F4F7F2;
   --kronos-surface: #FFFFFF;
   --kronos-border: #DCE3D9;
   --kronos-shadow: 0 10px 30px rgba(18, 59, 43, 0.07);
@@ -499,7 +500,7 @@ table tbody tr:hover > * {
   padding: clamp(1.5rem, 5vw, 4rem);
   border: 0;
   border-radius: 0;
-  background-color: $kronos-forest;
+  background-color: $kronos-green;
   background-position: center;
   background-size: cover;
   color: #FFFFFF;
@@ -509,8 +510,8 @@ table tbody tr:hover > * {
     position: absolute;
     inset: 0;
     background:
-      linear-gradient(90deg, rgba(8, 31, 22, 0.94) 0%, rgba(8, 31, 22, 0.68) 58%, rgba(8, 31, 22, 0.25) 100%),
-      linear-gradient(0deg, rgba(8, 31, 22, 0.36), transparent 68%);
+      linear-gradient(90deg, rgba(13, 117, 64, 0.94) 0%, rgba(13, 117, 64, 0.68) 58%, rgba(13, 117, 64, 0.25) 100%),
+      linear-gradient(0deg, rgba(13, 117, 64, 0.36), transparent 68%);
     content: '';
   }
 
@@ -629,7 +630,7 @@ table tbody tr:hover > * {
   grid-template-rows: minmax(0, 1fr);
   overflow: hidden;
   margin: 0 0 1.4rem;
-  background: $kronos-forest;
+  background: $kronos-green;
   color: #FFFFFF;
 
   a {

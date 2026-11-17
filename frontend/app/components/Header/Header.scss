@@ -3,7 +3,7 @@
 .site-header {
   position: relative;
   z-index: 20;
-  background: $kronos-forest;
+  background: $kronos-green;
   color: #FFFFFF;
 }
 
@@ -49,7 +49,7 @@
 }
 
 .site-masthead-caption {
-  color: rgba(255, 255, 255, 0.72);
+  color: rgba(255, 255, 255, 0.78);
   font-size: 0.7rem;
   font-weight: 700;
   letter-spacing: 0.18em;
@@ -62,7 +62,7 @@
 
 .site-navigation {
   border-bottom: 4px solid $kronos-lime;
-  background: #173F30;
+  background: $kronos-green;
 
   > .container-xl {
     max-width: 1480px;
@@ -90,7 +90,7 @@
     align-items: center;
     padding: 0.7rem 1rem;
     border-radius: 0;
-    color: rgba(255, 255, 255, 0.86);
+    color: #FFFFFF;
     font-size: 1rem;
     font-weight: 650;
     transition: background-color 150ms ease, color 150ms ease;
@@ -98,7 +98,7 @@
     &:hover,
     &:focus,
     &.active {
-      background: rgba(255, 255, 255, 0.1);
+      background: rgba(255, 255, 255, 0.12);
       color: #FFFFFF;
       text-decoration: none;
     }

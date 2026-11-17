@@ -18,7 +18,6 @@ const HomePage = () => {
       </div>
       <section className='home-section-heading'>
         <div>
-          <span className='home-kicker'>DAV KRONOS <span aria-hidden='true'>/</span> ENSCHEDE</span>
           <h1>{t('news')}</h1>
         </div>
         <Link className='home-agenda-link' to='/agendaitems'>
