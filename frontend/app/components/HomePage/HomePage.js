@@ -1,11 +1,10 @@
 import React from 'react'
 import NewsItems from './HomePageNewsItems'
 import AgendaItemsSidebar from './AgendaItemsSidebar'
-import UserBirthdays from './UserBirthdays'
 import { useTranslation } from 'react-i18next'
-import { Can } from '../../utils/auth-helper'
 import Announcement from './Announcement'
 import { Link } from 'react-router-dom'
+import TrainingSchedule from './TrainingSchedule'
 
 
 const HomePage = () => {
@@ -33,9 +32,7 @@ const HomePage = () => {
           <AgendaItemsSidebar />
         </aside>
       </div>
-      <Can I='view' a='User'>
-        <UserBirthdays />
-      </Can>
+      <TrainingSchedule />
     </div>
   )
 }

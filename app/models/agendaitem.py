@@ -34,7 +34,7 @@ class AgendaItem(AgendaItemBase, table=True):
     
     created_by_user_id: int = Field(foreign_key="users.id")
     agendaitem_type_id: int = Field(foreign_key="agendaitem_types.id")
-    committee_id: int = Field(foreign_key="committees.id")
+    committee_id: Optional[int] = Field(default=None, foreign_key="committees.id")
 
     # Relationships
     creator: "User" = Relationship(back_populates="created_agenda_items", sa_relationship_kwargs={'lazy': 'selectin'})
@@ -58,6 +58,7 @@ class AgendaItemCreate(SQLModel):
     description_en: Optional[str] = None
     date: datetime
     location: Optional[str] = None
+    agendaitem_type_id: int = Field(foreign_key="agendaitem_types.id")
     committee_id: Optional[int] = Field(default=None, foreign_key="committees.id")
     is_internal: bool = False
     url: Optional[str] = None

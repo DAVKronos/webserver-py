@@ -20,6 +20,15 @@ function getAgendaitems (queryKey, params = null) {
       params: { 'date[year]': year, 'date[month]': month + 1 }
     }).then(res => res.data)
   }
+  if (Array.isArray(queryKey) && queryKey[1]) {
+    const { year, month } = queryKey[1]
+    if (Number.isInteger(year) && Number.isInteger(month)) {
+      return restCall('agendaitems', {
+        method: 'GET',
+        params: { 'date[year]': year, 'date[month]': month + 1 }
+      }).then(res => res.data)
+    }
+  }
   return restCall('agendaitems', { method: 'GET' }).then(res => res.data)
 }
 

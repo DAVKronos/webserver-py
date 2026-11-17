@@ -12,7 +12,6 @@ import { useTranslation } from 'react-i18next'
 
 const PageComponent = ({ page, isLoading }) => {
   const { t, i18n } = useTranslation('generic')
-  const lang = i18n.language
   const history = useHistory()
 
   if (isLoading) {
@@ -23,8 +22,41 @@ const PageComponent = ({ page, isLoading }) => {
     return <h1>Page not found</h1>
   }
 
+  const isTrainingTimes = page.page_title_nl?.trim().toLowerCase() === 'trainingstijden'
+  const fallbackTitle = isTrainingTimes
+    ? (i18n.language.startsWith('nl') ? 'Trainingstijden' : 'Training times')
+    : ''
+
   const renderMarkdown = (text) => {
-    return <ReactMarkdown>{text}</ReactMarkdown>
+    const components = isTrainingTimes
+      ? {
+          p: ({ children }) => {
+            const paragraphText = getMarkdownText(children).trim()
+            const firstChild = React.Children.toArray(children)[0]
+            const classNames = ['training-times-paragraph']
+
+            if (/^(monday|tuesday|wednesday|thursday|maandag|dinsdag|woensdag|donderdag)\b/i.test(paragraphText)) {
+              classNames.push('training-times-day')
+            } else if (/^(the general program|het algemene programma)\b/i.test(paragraphText)) {
+              classNames.push('training-times-program')
+            } else if (/^(all workouts|alle trainingen)\b/i.test(paragraphText)) {
+              classNames.push('training-times-location')
+            } else if (/^(note|let op|opmerking)\b/i.test(paragraphText)) {
+              classNames.push('training-times-note')
+            } else if (React.isValidElement(firstChild) && firstChild.type === 'strong') {
+              classNames.push('training-times-topic')
+            }
+
+            return <p className={classNames.join(' ')}>{children}</p>
+          }
+        }
+      : undefined
+
+    const markdown = isTrainingTimes
+        ? (text || '').replace(/(\*\*[^*\n]+\*\*):(?=\s)/g, '$1')
+        : text || ''
+
+    return <ReactMarkdown components={components}>{markdown}</ReactMarkdown>
   }
 
   const onClickRemove = () => {
@@ -34,7 +66,7 @@ const PageComponent = ({ page, isLoading }) => {
   }
 
   return (
-    <div>
+    <div className={`cms-page${isTrainingTimes ? ' training-times-page' : ''}`}>
       <Can I='update' this={subject('Page', page)}>
         <Button
           variant='warning' className='align-self-center' as={Link}
@@ -48,10 +80,27 @@ const PageComponent = ({ page, isLoading }) => {
         </Button>
       </Can>
 
-      <h1><MultiLanguageText nl={page.title_nl} en={page.title_en} /></h1>
-      <MultiLanguageText nl={page.content_nl} en={page.content_en} renderFunction={renderMarkdown} />
+      <h1 className='cms-page-title'>
+        <MultiLanguageText
+          nl={page.page_title_nl || page.title_nl || fallbackTitle}
+          en={page.page_title_en || page.title_en || fallbackTitle}
+        />
+      </h1>
+      <div className={`cms-page-content${isTrainingTimes ? ' training-times-content' : ''}`}>
+        <MultiLanguageText nl={page.content_nl} en={page.content_en} renderFunction={renderMarkdown} />
+      </div>
     </div>
   )
+}
+
+function getMarkdownText (children) {
+  return React.Children.toArray(children).map(child => {
+    if (React.isValidElement(child)) {
+      return getMarkdownText(child.props.children)
+    }
+
+    return child
+  }).join('')
 }
 
 const Page = (props) => {

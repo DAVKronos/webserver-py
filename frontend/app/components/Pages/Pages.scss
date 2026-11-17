@@ -1,0 +1,134 @@
+.cms-page {
+  max-width: 1280px;
+  margin: 0 auto;
+}
+
+.cms-page-title {
+  margin-bottom: clamp(1.5rem, 3vw, 2.5rem) !important;
+}
+
+.cms-page-content {
+  padding: clamp(1.25rem, 3vw, 2.75rem);
+  border: 1px solid var(--kronos-border);
+  border-radius: 14px;
+  background: var(--kronos-surface);
+  box-shadow: var(--kronos-shadow);
+  color: var(--kronos-ink);
+
+  p {
+    max-width: 78ch;
+    color: var(--kronos-ink);
+  }
+
+  h2,
+  h3,
+  h4 {
+    margin-top: 1.75rem;
+    color: var(--kronos-forest);
+  }
+
+  h2:first-child,
+  h3:first-child,
+  h4:first-child {
+    margin-top: 0;
+  }
+
+  ul,
+  ol {
+    max-width: 78ch;
+    padding-left: 1.4rem;
+  }
+
+  li {
+    margin-bottom: 0.35rem;
+  }
+
+  a {
+    font-weight: 650;
+  }
+}
+
+.training-times-content {
+  > p:first-child {
+    max-width: 75ch;
+    color: var(--kronos-forest);
+    font-size: clamp(1.1rem, 1.5vw, 1.3rem);
+    font-weight: 650;
+    line-height: 1.55;
+  }
+}
+
+.training-times-program {
+  margin: clamp(1.75rem, 3vw, 2.5rem) 0 0.75rem;
+  color: var(--kronos-forest) !important;
+  font-size: 1.15rem;
+  font-weight: 800;
+}
+
+.training-times-day {
+  display: inline-flex;
+  width: 23%;
+  min-height: 125px;
+  flex-direction: column;
+  justify-content: flex-start;
+  margin: 0 1% 1rem 0;
+  padding: 0.85rem 1rem;
+  border: 0;
+  border-top: 1px solid var(--kronos-border);
+  vertical-align: top;
+
+  strong {
+    display: block;
+    margin-top: 0.5rem;
+    color: var(--kronos-forest);
+    font-size: 1rem;
+    line-height: 1.45;
+  }
+}
+
+.training-times-note {
+  max-width: none !important;
+  margin: 1rem 0;
+  padding: 1rem 1.15rem;
+  border-radius: 8px;
+  background: var(--kronos-canvas);
+}
+
+.training-times-note {
+  border-left: 4px solid #D49B26;
+}
+
+.training-times-topic {
+  max-width: 85ch !important;
+  margin: 1.5rem 0;
+  padding-top: 1rem;
+  border-top: 1px solid var(--kronos-border);
+
+  strong {
+    display: block;
+    margin-bottom: 0.25rem;
+    color: var(--kronos-forest);
+    font-size: 1.1rem;
+  }
+}
+
+@media (max-width: 800px) {
+  .training-times-day {
+    width: 47%;
+    min-height: 115px;
+    margin-right: 2%;
+  }
+}
+
+@media (max-width: 520px) {
+  .cms-page-content {
+    padding: 1.1rem;
+  }
+
+  .training-times-day {
+    width: 100%;
+    min-height: 0;
+    margin-right: 0;
+    padding: 0.9rem 1rem;
+  }
+}

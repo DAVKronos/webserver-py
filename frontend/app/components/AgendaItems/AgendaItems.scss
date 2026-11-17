@@ -353,6 +353,418 @@
   transition: color 150ms ease, transform 150ms ease;
 }
 
+.agenda-calendar-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(250px, 0.34fr);
+  align-items: start;
+  gap: clamp(1rem, 2.5vw, 2rem);
+  padding: 1.25rem 1.5rem;
+}
+
+.agenda-calendar-main {
+  min-width: 0;
+}
+
+.agenda-calendar-weekdays,
+.agenda-calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 0.45rem;
+}
+
+.agenda-calendar-weekdays {
+  margin-bottom: 0.45rem;
+
+  span {
+    padding: 0.5rem 0.25rem;
+    color: $kronos-muted;
+    font-size: 0.75rem;
+    font-weight: 800;
+    text-align: center;
+    text-transform: uppercase;
+  }
+}
+
+.agenda-calendar-grid {
+  grid-auto-rows: minmax(96px, 1fr);
+}
+
+.agenda-calendar-day {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 0.55rem;
+  border: 1px solid $kronos-border;
+  border-radius: 8px;
+  background: #FFFFFF;
+  color: $kronos-ink;
+  cursor: pointer;
+  text-align: left;
+  transition: border-color 140ms ease, background-color 140ms ease, box-shadow 140ms ease;
+
+  &:hover {
+    border-color: $kronos-green;
+    background: #F7F8F4;
+  }
+
+  &.is-empty {
+    border-color: transparent;
+    background: transparent;
+    cursor: default;
+  }
+
+  &.is-selected {
+    border-color: $kronos-green;
+    background: #F7F8F4;
+    box-shadow: inset 0 0 0 1px $kronos-green;
+  }
+
+  &.has-items:not(.is-selected) {
+    border-color: #C7D8C6;
+    background: #F3F7F0;
+  }
+
+  &.is-today .agenda-calendar-date {
+    background: $kronos-green;
+    color: #FFFFFF;
+  }
+
+  &:focus-visible,
+  a:focus-visible {
+    outline: 3px solid $kronos-green;
+    outline-offset: 2px;
+  }
+}
+
+.agenda-calendar-date {
+  display: inline-grid;
+  width: 27px;
+  height: 27px;
+  flex: 0 0 auto;
+  place-items: center;
+  border-radius: 50%;
+  color: $kronos-ink;
+  font-size: 0.85rem;
+  font-weight: 750;
+  font-variant-numeric: tabular-nums;
+}
+
+.agenda-calendar-day-entries {
+  display: flex;
+  width: 100%;
+  min-width: 0;
+  flex-direction: column;
+  gap: 0.2rem;
+  margin-top: 0.3rem;
+}
+
+.agenda-calendar-day-entry {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  gap: 0.2rem;
+  overflow: hidden;
+  font-size: 0.7rem;
+  font-weight: 700;
+  line-height: 1.25;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+
+  &.is-event {
+    color: $kronos-green-dark;
+
+    &.is-upcoming {
+      padding: 0.15rem 0.25rem;
+      border-left: 3px solid $kronos-lime;
+      border-radius: 2px;
+      background: rgba($kronos-lime, 0.2);
+    }
+  }
+
+  &.is-birthday {
+    color: #A64D5D;
+
+    svg {
+      width: 12px;
+      height: 12px;
+      flex: 0 0 auto;
+      fill: none;
+      stroke: currentColor;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      stroke-width: 1.5;
+    }
+  }
+}
+
+.agenda-calendar-entry-name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.agenda-calendar-day-overflow {
+  color: $kronos-muted;
+  font-size: 0.65rem;
+  line-height: 1.2;
+}
+
+.agenda-calendar-sidebar {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.agenda-upcoming-events {
+  padding: 1rem;
+  border: 1px solid $kronos-border;
+  border-top: 4px solid $kronos-lime;
+  border-radius: 9px;
+  background: #F7F8F4;
+}
+
+.main .agenda-upcoming-events h3 {
+  margin: 0 0 0.75rem;
+  color: $kronos-forest;
+  font-size: 1.05rem;
+  font-weight: 750;
+}
+
+.agenda-upcoming-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.agenda-upcoming-event {
+  display: grid;
+  grid-template-columns: 44px minmax(0, 1fr);
+  min-height: 54px;
+  align-items: center;
+  gap: 0.65rem;
+  padding: 0.45rem 0.25rem;
+  border-bottom: 1px solid $kronos-border;
+  color: $kronos-ink;
+  text-decoration: none;
+
+  &:last-child {
+    border-bottom: 0;
+  }
+
+  &:hover,
+  &:focus-visible {
+    color: $kronos-green-dark;
+    text-decoration: none;
+
+    .agenda-upcoming-name {
+      text-decoration: underline;
+    }
+  }
+
+  &.is-next {
+    border-radius: 5px;
+    background: rgba($kronos-lime, 0.22);
+  }
+}
+
+.agenda-upcoming-date {
+  display: flex;
+  height: 44px;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border-radius: 5px;
+  background: $kronos-forest;
+  color: #FFFFFF;
+  line-height: 1;
+
+  span {
+    font-size: 1.15rem;
+    font-weight: 800;
+  }
+
+  small {
+    margin-top: 0.2rem;
+    font-size: 0.58rem;
+    font-weight: 800;
+    text-transform: uppercase;
+  }
+}
+
+.agenda-upcoming-name {
+  min-width: 0;
+  color: $kronos-forest;
+  font-size: 0.88rem;
+  font-weight: 750;
+  line-height: 1.25;
+}
+
+.agenda-selected-day {
+  padding: 1rem;
+  border: 1px solid $kronos-border;
+  border-radius: 9px;
+  background: #F7F8F4;
+}
+
+.agenda-panel-label {
+  display: block;
+  margin-bottom: 0.35rem;
+  color: $kronos-green-dark;
+  font-size: 0.7rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.main .agenda-selected-day h3 {
+  margin: 0 0 0.75rem;
+  color: $kronos-forest;
+  font-size: 1.05rem;
+  font-weight: 750;
+}
+
+.agenda-selected-events,
+.agenda-selected-birthdays {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.agenda-selected-event {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 0.3rem;
+  padding: 0.6rem 0;
+  border-bottom: 1px solid $kronos-border;
+  color: $kronos-ink;
+  text-decoration: none;
+
+  &.is-upcoming {
+    margin: 0 -0.35rem;
+    padding: 0.6rem 0.35rem;
+    border-left: 3px solid $kronos-lime;
+  }
+
+  &:last-child {
+    border-bottom: 0;
+  }
+
+  &:hover,
+  &:focus-visible {
+    color: $kronos-forest;
+    text-decoration: none;
+
+    .agenda-selected-event-title {
+      color: $kronos-green-dark;
+      text-decoration: underline;
+    }
+  }
+}
+
+.agenda-selected-event-type {
+  color: $kronos-green-dark;
+  font-size: 0.72rem;
+  font-weight: 750;
+}
+
+.agenda-selected-event-title {
+  color: $kronos-forest;
+  font-size: 0.95rem;
+  font-weight: 750;
+  line-height: 1.3;
+}
+
+.agenda-selected-event-details {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem 0.75rem;
+  color: $kronos-muted;
+  font-size: 0.8rem;
+
+  span {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+  }
+}
+
+.agenda-selected-birthday-title {
+  margin: 1rem 0 0.4rem;
+  color: #A64D5D;
+  font-size: 0.85rem;
+  font-weight: 800;
+}
+
+.agenda-birthday-person {
+  display: flex;
+  min-height: 40px;
+  align-items: center;
+  gap: 0.65rem;
+  color: $kronos-ink;
+  font-size: 0.92rem;
+  font-weight: 650;
+  text-decoration: none;
+
+  &:hover,
+  &:focus-visible {
+    color: #A64D5D;
+    text-decoration: none;
+  }
+}
+
+.agenda-birthday-icon {
+  display: inline-grid;
+  width: 32px;
+  height: 32px;
+  flex: 0 0 auto;
+  place-items: center;
+  border-radius: 50%;
+  background: #FFF2F1;
+  color: #A64D5D;
+
+  svg {
+    width: 17px;
+    height: 17px;
+    fill: none;
+    stroke: currentColor;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    stroke-width: 1.5;
+  }
+}
+
+.agenda-calendar-empty-message {
+  margin: 0;
+  color: $kronos-muted;
+  font-size: 0.9rem;
+}
+
+.agenda-calendar-loading {
+  display: grid;
+  min-height: 90px;
+  place-items: center;
+  color: $kronos-green;
+}
+
+.agenda-calendar-error {
+  margin: 0;
+  color: $kronos-ink;
+  font-size: 0.9rem;
+
+  p {
+    margin: 0 0 0.5rem;
+  }
+
+  .agenda-calendar-error-detail {
+    color: $kronos-muted;
+    font-size: 0.8rem;
+    overflow-wrap: anywhere;
+  }
+}
+
 .agenda-state {
   display: flex;
   min-height: 220px;
@@ -397,6 +809,76 @@
   justify-content: space-between;
   gap: 1rem;
   margin: 1.25rem;
+}
+
+@media (max-width: 900px) {
+  .agenda-calendar-layout {
+    grid-template-columns: minmax(0, 1fr) minmax(220px, 0.42fr);
+    gap: 1rem;
+  }
+
+  .agenda-calendar-grid {
+    grid-auto-rows: minmax(82px, 1fr);
+    gap: 0.3rem;
+  }
+
+  .agenda-calendar-day {
+    padding: 0.35rem;
+  }
+}
+
+@media (max-width: 700px) {
+  .agenda-calendar-layout {
+    grid-template-columns: minmax(0, 1fr);
+    padding: 1rem;
+  }
+
+  .agenda-calendar-grid {
+    grid-auto-rows: minmax(72px, 1fr);
+    gap: 0.25rem;
+  }
+
+  .agenda-calendar-day {
+    min-height: 72px;
+    padding: 0.25rem;
+    border-radius: 6px;
+  }
+
+  .agenda-calendar-day-entry {
+    font-size: 0.58rem;
+
+    svg {
+      display: none;
+    }
+  }
+
+  .agenda-calendar-day-overflow {
+    font-size: 0.55rem;
+  }
+}
+
+@media (max-width: 420px) {
+  .agenda-calendar-weekdays,
+  .agenda-calendar-grid {
+    gap: 0.15rem;
+  }
+
+  .agenda-calendar-weekdays span {
+    padding-right: 0;
+    padding-left: 0;
+    font-size: 0.62rem;
+  }
+
+  .agenda-calendar-day {
+    min-height: 64px;
+    padding: 0.15rem;
+  }
+
+  .agenda-calendar-date {
+    width: 24px;
+    height: 24px;
+    font-size: 0.75rem;
+  }
 }
 
 .agenda-detail {

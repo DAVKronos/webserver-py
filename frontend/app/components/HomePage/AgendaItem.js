@@ -10,15 +10,18 @@ const AgendaItem = ({ item }) => {
   const date = new Date(item.date)
   const { i18n } = useTranslation('homepage')
   return (
-    <Row as={Link} to={`/agendaitems/${item.id}`}>
-      <Col xs={2}><h5>
-        <small>{format(date, 'ccc', i18n.language)}</small> <br />
-        {date.getDate()}<br />
-        <small>{format(date, 'MMM', i18n.language)}</small>
-                  </h5>
+    <Row as={Link} to={`/agendaitems/${item.id}`} className='agenda-sidebar-link'>
+      <Col xs={3} className='agenda-sidebar-date'>
+        <span className='agenda-sidebar-weekday'>{format(date, 'ccc', i18n.language)}</span>
+        <span className='agenda-sidebar-day'>{date.getDate()}</span>
+        <span className='agenda-sidebar-month'>{format(date, 'MMM', i18n.language)}</span>
       </Col>
-      <Col xs={8}><h5><MultiLanguageText nl={item.name_nl} en={item.name_en} /></h5></Col>
-      { item.subscriptions?.length ? <Col xs={2}><h5><BsPersonFill /><small>{item.subscriptions.length}</small></h5></Col> : null }
+      <Col xs={9} className='agenda-sidebar-title'>
+        <h5><MultiLanguageText nl={item.name_nl} en={item.name_en} /></h5>
+        {item.subscriptions?.length
+          ? <span className='agenda-sidebar-subscriptions'><BsPersonFill aria-hidden='true' /> {item.subscriptions.length}</span>
+          : null}
+      </Col>
     </Row>
   )
   
