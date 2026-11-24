@@ -1,5 +1,5 @@
 import React from 'react'
-import ReactMarkdown from 'react-markdown'
+import Markdown from '../Generic/Markdown'
 import { Button, Card, Col, Row } from 'react-bootstrap'
 import { AgendaItemTypeName } from './AgendaItemType'
 import { BsGeoAlt, BsClock, BsList, BsLink } from 'react-icons/bs'
@@ -40,7 +40,7 @@ function AgendaItem (props) {
   const date = new Date(agendaItem.date)
 
   const renderDescription = (text) => {
-    return <ReactMarkdown>{text}</ReactMarkdown>
+    return <Markdown>{text}</Markdown>
   }
   return (
     <>

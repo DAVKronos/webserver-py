@@ -1,0 +1,35 @@
+// Styling for content written in markdown (pages, news, agenda items).
+// Rendered through components/Generic/Markdown.js, which wraps it in .markdown-content.
+
+.markdown-content {
+  // Fallback in case a table/image/quote arrives as raw HTML instead of via the Markdown component
+  table      { @extend .table; @extend .table-striped; @extend .table-sm; }
+  img        { @extend .img-fluid; }
+  blockquote { @extend .blockquote; }
+
+  table {
+    margin: 1rem 0;
+  }
+
+  thead th {
+    background-color: $kronos-green;
+    color: $white;
+    border-color: $kronos-green;
+    font-family: $headings-font-family;
+    font-weight: 400;
+  }
+
+  blockquote {
+    border-left: 4px solid $old-green;
+    padding-left: 1rem;
+    font-style: italic;
+  }
+
+  img {
+    margin: 1rem 0;
+  }
+
+  > :first-child {
+    margin-top: 0;
+  }
+}

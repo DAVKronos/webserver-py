@@ -1,0 +1,36 @@
+// Typography rules that Bootstrap has no variable for. Imported AFTER Bootstrap.
+
+// Odd headings: Poppins SemiBold Italic
+h1, h3, h5,
+.h1, .h3, .h5 {
+  font-weight: 600;
+  font-style: italic;
+}
+
+// Even headings: Poppins Regular
+h2, h4, h6,
+.h2, .h4, .h6 {
+  font-weight: 400;
+  font-style: normal;
+}
+
+h1, h2 {
+  color: $kronos-green;
+}
+
+h1 { margin-top: 30px; }
+h2 { margin-top: 20px; }
+
+h1, h2, h3, h4, h5, h6 {
+  small {
+    color: #777777;
+  }
+}
+
+// Bebas Neue for big display titles: <h1 className='display-title'>
+.display-title {
+  font-family: $font-family-display;
+  font-style: normal;
+  font-weight: 400;
+  letter-spacing: 0.02em;
+}

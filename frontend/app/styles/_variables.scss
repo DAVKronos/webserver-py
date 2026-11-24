@@ -1,0 +1,37 @@
+// Bootstrap overrides. This file MUST be imported BEFORE Bootstrap in App.scss:
+// Bootstrap only uses its own defaults for variables that aren't set yet.
+@import 'colors';
+
+// ---------- Theme colours ----------
+$primary:   $kronos-green;
+$secondary: $old-green;
+$success:   $old-green;
+$danger:    $track-red;   // Bootstrap calls "error" danger
+// $warning and $info: Bootstrap defaults (yellow / blue)
+
+// Extra brand colours as theme colours. This generates classes like
+// .btn-forest-green, .bg-track-red, .text-old-green, .badge-kronos-green, .alert-forest-green
+$theme-colors: (
+  'kronos-green': $kronos-green,
+  'forest-green': $forest-green,
+  'track-red':    $track-red,
+  'old-green':    $old-green
+);
+
+// ---------- Fonts ----------
+$font-stack-fallback: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+
+$font-family-sans-serif: 'Lato', $font-stack-fallback;      // body text, <p>
+$headings-font-family:   'Poppins', $font-stack-fallback;   // h1-h6
+$headings-font-weight:   600;                                // odd headings; even ones are set to 400 in _typography.scss
+$btn-font-family:        'Poppins', $font-stack-fallback;   // buttons
+$btn-font-weight:        400;
+$font-family-display:    'Bebas Neue', 'Poppins', sans-serif; // own variable, used by .display-title
+
+// Heading sizes in pairs: h1 = h2, h3 = h4, h5 = h6
+$h1-font-size: 2.25rem;
+$h2-font-size: 2.25rem;
+$h3-font-size: 1.75rem;
+$h4-font-size: 1.75rem;
+$h5-font-size: 1.25rem;
+$h6-font-size: 1.25rem;

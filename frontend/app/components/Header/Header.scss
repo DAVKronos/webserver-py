@@ -43,8 +43,20 @@
     background-color: #76C8A6;
   }
 
+  // "Kronos" wordmark on the left, in the display font (Bebas Neue)
   .navbar-brand {
-    color: #ffffff
+    font-family: $font-family-display;
+    font-size: 2rem;
+    line-height: 1;
+    letter-spacing: 0.04em;
+    color: $white;
+    padding: 0.5rem 0;
+    margin-right: 1.5rem;
+
+    &:hover, &:focus, &.active {
+      color: $white;
+      background-color: transparent;
+    }
   }
 }
 

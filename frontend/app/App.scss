@@ -1,5 +1,13 @@
-//TODO import all scss files inside component directory
-@import 'styles/colors.scss';
+// Order matters:
+// 1. our variables (colours, fonts) so Bootstrap picks them up
+// 2. Bootstrap itself
+// 3. our own styles, so they override Bootstrap and not the other way around
+@import 'styles/variables';
+@import 'styles/fonts';
+@import "~bootstrap/scss/bootstrap";
+
+@import 'styles/typography';
+@import 'styles/markdown';
 @import 'components/Header/Header.scss';
 @import 'components/Footer/Footer';
 @import 'components/AgendaItems/AgendaItems.scss';
@@ -7,7 +15,6 @@
 // @import 'components/Results/Result';
 @import 'components/Generic/MonthSwitcher';
 @import 'components/PhotoAlbums/PhotoAlbum';
-@import "~bootstrap/scss/bootstrap";
 
 html {
   font-size: 14px;
@@ -19,27 +26,6 @@ body{
 
 .main {
   padding-bottom: 140px;
-}
-
-h1 {
-  margin-top: 30px;
-  color: $kronos-green;
-}
-
-h1, h2, h3, h4, h5 {
-  small {
-    color: #777777;
-  }
-}
-
-h2 {
-  margin-top: 20px;
-  color: $kronos-green;
-}
-
-h5 {
-  font-size: 1rem;
-  font-weight: 500;
 }
 
 a {

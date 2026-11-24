@@ -20,13 +20,15 @@ import UserTypesRouter from './components/UserTypes'
 import AdminRouter from './components/Admin'
 import { Container } from 'react-bootstrap'
 import PrivateRoute from './components/Generic/PrivateRoute'
+import Footer from './components/Footer/Footer'
 
 const AppRouter = () => {
   return (
     <Router>
-      <Container fluid='lg'>
-        <Header />
+      
+        <Header/>
         <div className='main'>
+          <Container fluid='lg'>
           <Switch>
             <Route exact path='/'>
               <HomePage key='home' />
@@ -70,8 +72,9 @@ const AppRouter = () => {
             </Route>
 
           </Switch>
+          </Container>
         </div>
-      </Container>
+        <Footer />
     </Router>
   )
 }

@@ -17,7 +17,7 @@ import DefaultSpinner from '../Generic/Spinner'
 import { Can } from '../../utils/auth-helper'
 import { useTranslation } from 'react-i18next'
 import { Link, useHistory } from 'react-router-dom'
-import ReactMarkdown from 'react-markdown'
+import Markdown from '../Generic/Markdown'
 import { subject } from '@casl/ability'
 import { authContext } from '../../utils/AuthContext'
 
@@ -218,7 +218,7 @@ function NewsItem(props) {
         <Col md={8}>
           <img src={item.photo_file?.path} alt={title} style={{ maxWidth: '100%' }} />
 
-          <ReactMarkdown>{news}</ReactMarkdown>
+          <Markdown>{news}</Markdown>
 
           <Can I="read" a="Comment">
             <NewsItemComments newsItemId={item.id} />

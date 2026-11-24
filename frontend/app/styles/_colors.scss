@@ -1,3 +1,12 @@
-$kronos-green: #149E49;
-$kronos-green-light: #2DCE6B;
-$kronos-green-dark: #226040;
+// Kronos brand colours: the single source of truth.
+// Change a colour here and it updates everywhere (Bootstrap theme + custom styles).
+$kronos-green: #009245;
+$forest-green: #11602d;
+$track-red:    #ca4931;
+$old-green:    #6dd69e;
+$white:        #fff;
+$black:        #000;
+
+// Legacy names, still used in Header.scss / Footer.scss / App.scss.
+$kronos-green-dark:  $forest-green;
+$kronos-green-light: #2DCE6B; // old nav hover colour, replace during the nav bar redesign

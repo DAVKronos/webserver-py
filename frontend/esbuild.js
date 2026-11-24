@@ -16,7 +16,7 @@ const options = {
     'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV || 'development')
   },
   target: 'es2020',
-  loader: { '.js': 'jsx', '.png': 'file' },
+  loader: { '.js': 'jsx', '.png': 'file', '.ttf': 'file', '.woff': 'file', '.woff2': 'file' },
   plugins: [sassPlugin({
     // Bootstrap 4's SCSS triggers a wall of Dart Sass deprecation warnings; they go away with Bootstrap 5.
     quietDeps: true,

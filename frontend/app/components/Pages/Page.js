@@ -1,5 +1,5 @@
 import React from 'react'
-import ReactMarkdown from 'react-markdown'
+import Markdown from '../Generic/Markdown'
 import { Button } from 'react-bootstrap'
 import Spinner from '../Generic/Spinner'
 import { useQuery } from 'react-query'
@@ -24,7 +24,7 @@ const PageComponent = ({ page, isLoading }) => {
   }
 
   const renderMarkdown = (text) => {
-    return <ReactMarkdown>{text}</ReactMarkdown>
+    return <Markdown>{text}</Markdown>
   }
 
   const onClickRemove = () => {

@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { Nav, Navbar, NavDropdown } from 'react-bootstrap'
+import { Nav, Navbar, NavDropdown, Container } from 'react-bootstrap'
 import { NavLink } from 'react-router-dom'
 import UserMenu from './LoginMenu'
 import { useQuery } from 'react-query'
@@ -35,11 +35,11 @@ const NavBar = () => {
   const pages = data || []
   return (
     <Navbar id='navbar-kronos' expand='lg' variant='dark' collapseOnSelect>
-      <Navbar.Brand className='d-md-none d-flex' as={NavLink} to='/' href='/' exact>Kronos</Navbar.Brand>
+      <Container>
+      <Navbar.Brand as={NavLink} to='/' href='/' exact>D.A.V. Kronos</Navbar.Brand>
       <Navbar.Toggle aria-controls='basic-navbar-nav' />
       <Navbar.Collapse id='basic-navbar-nav' className='flex-wrap'>
         <Nav>
-          <Nav.Link as={NavLink} to='/' href='/' exact>Home</Nav.Link>
           <NavDropdown title={t('association')} id='basic-nav-dropdown'>
             <NavDropdown.Item as={NavLink} to='/Committees' href='/Committees'>{t('committees')}</NavDropdown.Item>
             {getPageLinksForMenu(pages, 'Vereniging')}
@@ -51,6 +51,7 @@ const NavBar = () => {
           <NavDropdown title={t('matches')} id='basic-nav-dropdown'>
             <NavDropdown.Item target='_blank' href='http://www.campusloop.nl'>Campusloop</NavDropdown.Item>
             <NavDropdown.Item target='_blank' href='http://jkg.kronos.nl'>Johan Knaap Games</NavDropdown.Item>
+            <NavDropdown.Item target='_blank' href='http://nsk.kronos.nl'>NSK Kronos</NavDropdown.Item>
             <NavDropdown.Item target='_blank' href='http://beermile.kronos.nl'>Beermile</NavDropdown.Item>
             {getPageLinksForMenu(pages, 'Wedstrijden')}
           </NavDropdown>
@@ -70,6 +71,7 @@ const NavBar = () => {
           <LanguageSwitch />
         </Nav>
       </Navbar.Collapse>
+      </Container>
     </Navbar>
   )
 }
