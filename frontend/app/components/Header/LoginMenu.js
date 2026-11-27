@@ -3,9 +3,11 @@ import { Alert, Button, Form, NavDropdown, Image, Col } from 'react-bootstrap'
 import { useTranslation } from 'react-i18next'
 import { login as loginRequest, logout as logoutRequest, Can } from '../../utils/auth-helper'
 import { authContext } from '../../utils/AuthContext'
-import { BsPersonFill, BsBoxArrowRight, BsFillCloudFill, BsFillGearFill } from 'react-icons/bs'
+import { BsPersonFill, BsPeopleFill, BsFillCloudFill, BsFillGearFill } from 'react-icons/bs'
 import DefaultSpinner from '../Generic/Spinner'
 import { NavLink, Link, useHistory } from 'react-router-dom'
+import missingAvatar from '../../images/avatar-missing.png'
+import LanguageToggle from './LanguageToggle'
 
 const LoginMenu = () => {
   const { t } = useTranslation('loginMenu')
@@ -73,6 +75,10 @@ const LoginMenu = () => {
           <Link to='/users/forgot_password'>{t('forgotPassword')}</Link>
         </Col>
       </Form.Row>
+      {/* Language toggle, also available when not logged in */}
+      <div className='dropdown-actions px-0'>
+        <LanguageToggle />
+      </div>
     </Form>
   )
 }
@@ -92,15 +98,23 @@ const LoggedInMenu = ({ user }) => {
     <>
       <div className='logged-in-menu'>
         <Image src={user.avatar_file?.path} roundedCircle />
-        <h3>{firstName}</h3>
+        <h4>{firstName}</h4>
       </div>
 
-      <NavDropdown.Item as={NavLink} to={`/users/${user.id}`}><BsPersonFill /> {firstName}&apos;s stek</NavDropdown.Item>
+      <NavDropdown.Item as={NavLink} to={`/users/${user.id}`}><BsPersonFill /> {t('myProfile')}</NavDropdown.Item>
+      <Can I='view' a='User'>
+        <NavDropdown.Item as={NavLink} to='/users'><BsPeopleFill /> {t('navigation:users')}</NavDropdown.Item>
+      </Can>
       <NavDropdown.Item active={false} target='_blank' href='https://cloud.kronos.nl'><BsFillCloudFill /> {t('kronosCloud')}</NavDropdown.Item>
       <Can I='manage' this='all'>
         <NavDropdown.Item as={NavLink} to='/admin'><BsFillGearFill /> {t('admin')}</NavDropdown.Item>
       </Can>
-      <NavDropdown.Item onClick={onClickLogout}><BsBoxArrowRight /> {t('logout')}</NavDropdown.Item>
+      <NavDropdown.Divider />
+      {/* Language toggle + log out button */}
+      <div className='dropdown-actions'>
+        <LanguageToggle />
+        <Button variant='danger' onClick={onClickLogout}>{t('logout')}</Button>
+      </div>
     </>
   )
 }
@@ -110,7 +124,15 @@ const UserMenu = () => {
 
   if (user) {
     const firstName = user.name.split(' ')[0]
-    const dropdownTitle = <><BsPersonFill />{firstName}</>
+    // const dropdownTitle = <><BsPersonFill />{firstName}</>
+    const dropdownTitle = (
+      <Image
+        src={user.avatar_file?.path || missingAvatar}
+        alt={firstName}
+        roundedCircle
+        className='navbar-avatar'
+      />
+    )
     return (
       <NavDropdown title={dropdownTitle} id='basic-nav-dropdown' alignRight>
         <LoggedInMenu user={user} />

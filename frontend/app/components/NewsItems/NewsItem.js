@@ -14,12 +14,14 @@ import {
 } from './queries'
 
 import DefaultSpinner from '../Generic/Spinner'
+import AdminCard from '../Generic/AdminCard'
 import { Can } from '../../utils/auth-helper'
 import { useTranslation } from 'react-i18next'
 import { Link, useHistory } from 'react-router-dom'
 import Markdown from '../Generic/Markdown'
 import { subject } from '@casl/ability'
 import { authContext } from '../../utils/AuthContext'
+import RemoveButton from '../Generic/RemoveButton'
 
 /* ---------------- COMMENTS ---------------- */
 
@@ -125,9 +127,9 @@ const Comment = ({ comment }) => {
 
       <Col md={2}>
         <Can I="destroy" this={subject('Comment', comment)}>
-          <Button variant="danger" onClick={onClickRemove}>
+          <RemoveButton variant="danger" onRemove={onClickRemove}>
             {t('remove')}
-          </Button>
+          </RemoveButton>
         </Can>
       </Col>
     </Row>
@@ -179,50 +181,52 @@ function NewsItem(props) {
   return (
     <>
       <Row>
-        <Col md={8}>
-          <h1>{title}</h1>
-          <p>
-            {format(item.created_at, 'PPP p', i18n.language)} |{' '}
-            {item.creator?.name || 'Unknown'}
-          </p>
+        <Col md={{ span: 8, offset: 2 }}>
+          <img src={item.photo_file?.path} alt={title} className='d-block' style={{ maxWidth: '100%' }} />
+          <div className='kronos-header'>
+            <h1>{title}</h1>
+          </div>
+          <div className='page-content'>
+            <h6 className='green'>
+              {format(item.created_at, 'PPP p', i18n.language)} |{' '}
+              {item.creator?.name || 'Unknown'}
+            </h6>
+            <Markdown>{news}</Markdown>
+
+            <Can I="read" a="Comment">
+              <NewsItemComments newsItemId={item.id} />
+            </Can>
+          </div>
         </Col>
 
-        <Col md={4} className="d-flex">
-          {!item.approved && (
-            <Can I="manage" subject="all">
-              <Button variant="success" onClick={onClickApprove}>
-                {t('approve')}
-              </Button>
-            </Can>
-          )}
-
+        <Col md={2}>
+          {/* Only shown to people who may edit news items */}
           <Can I="update" a="Newsitem">
-            <Button
-              variant="warning"
-              as={Link}
-              to={`/newsitems/${id}/edit`}
-            >
-              {t('edit')}
-            </Button>
-          </Can>
-
-          <Can I="destroy" a="Newsitem">
-            <Button variant="danger" onClick={onClickRemove}>
-              {t('remove')}
-            </Button>
+            <AdminCard>
+              {!item.approved && (
+                <Can I="manage" subject="all">
+                  <Button variant="success" block onClick={onClickApprove}>
+                    {t('approve')}
+                  </Button>
+                </Can>
+              )}
+              <Button variant="warning" block as={Link} to={`/newsitems/${id}/edit`}>
+                {t('edit')}
+              </Button>
+              <Can I="destroy" a="Newsitem">
+                <RemoveButton variant="danger" block onRemove={onClickRemove}>
+                  {t('remove')}
+                </RemoveButton>
+              </Can>
+            </AdminCard>
           </Can>
         </Col>
       </Row>
 
       <Row>
         <Col md={8}>
-          <img src={item.photo_file?.path} alt={title} style={{ maxWidth: '100%' }} />
-
-          <Markdown>{news}</Markdown>
-
-          <Can I="read" a="Comment">
-            <NewsItemComments newsItemId={item.id} />
-          </Can>
+          
+          
         </Col>
       </Row>
     </>

@@ -5,6 +5,7 @@ import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { deleteAgendaItemType, getAgendaItemTypes } from './queries'
 import { Can } from '../../utils/auth-helper'
+import RemoveButton from '../Generic/RemoveButton'
 
 const AgendaItemTypes = () => {
   const { t } = useTranslation('generic')
@@ -40,7 +41,7 @@ const AgendaItemTypes = () => {
                 </td>
                 <td>
                   <Can I='destroy' an='Agendaitemtype'>
-                    <Button variant='danger' onClick={() => onClickRemove(id)}>{t('remove')}</Button>
+                    <RemoveButton variant='danger' onRemove={() => onClickRemove(id)}>{t('remove')}</RemoveButton>
                   </Can>
                 </td>
               </tr>

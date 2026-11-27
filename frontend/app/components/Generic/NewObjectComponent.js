@@ -1,10 +1,13 @@
 import React, { useState } from 'react'
-import { Button, Alert } from 'react-bootstrap'
+import { Button, Alert, Row, Col } from 'react-bootstrap'
 import { useHistory } from 'react-router-dom'
 import DefaultSpinner from '../Generic/Spinner'
+import AdminCard from './AdminCard'
 import { useTranslation } from 'react-i18next'
 
-const NewObjectComponent = ({ FormComponent, createFunction, onSuccess, objectName, ...rest}) => {
+// pageLayout: kronos-header + white content container in the centre column, Create/Cancel in a card on the side.
+// Without it the page looks as before (used by all other "new" pages).
+const NewObjectComponent = ({ FormComponent, createFunction, onSuccess, objectName, pageLayout = false, ...rest }) => {
   const history = useHistory()
 
   const [values, setValues] = useState({})
@@ -38,6 +41,32 @@ const NewObjectComponent = ({ FormComponent, createFunction, onSuccess, objectNa
   }
 
   const { t } = useTranslation('generic')
+  const title = t('addModel', { model: t(`models:modelNames.${objectName}`) })
+
+  if (pageLayout) {
+    return (
+      <Row>
+        <Col md={{ span: 8, offset: 2 }}>
+          <div className='kronos-header'>
+            <h1>{title}</h1>
+          </div>
+          <div className='page-content'>
+            {error && <Alert variant='danger'><p>{error}</p></Alert>}
+            <FormComponent values={values} setValue={setValue} {...rest} />
+          </div>
+        </Col>
+        <Col md={2}>
+          <AdminCard>
+            <Button block onClick={() => create()} disabled={creating}>
+              {creating && <DefaultSpinner inline size='sm' />}
+              {!creating && t('create')}
+            </Button>
+            <Button block variant='secondary' onClick={() => cancel()}>{t('cancel')}</Button>
+          </AdminCard>
+        </Col>
+      </Row>
+    )
+  }
 
   return (
     <>

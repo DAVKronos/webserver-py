@@ -1,7 +1,8 @@
 import React from 'react'
 import Markdown from '../Generic/Markdown'
-import { Button } from 'react-bootstrap'
+import { Button, Col, Row, Image, Form } from 'react-bootstrap'
 import Spinner from '../Generic/Spinner'
+import AdminCard from '../Generic/AdminCard'
 import { useQuery } from 'react-query'
 import { getPage, getPageByPageTag, removePage } from './queries'
 import MultiLanguageText from '../Generic/MultiLanguageText'
@@ -9,6 +10,7 @@ import { Link, useHistory } from 'react-router-dom'
 import { Can } from '../../utils/auth-helper'
 import { subject } from '@casl/ability'
 import { useTranslation } from 'react-i18next'
+import RemoveButton from '../Generic/RemoveButton'
 
 const PageComponent = ({ page, isLoading }) => {
   const { t, i18n } = useTranslation('generic')
@@ -34,23 +36,34 @@ const PageComponent = ({ page, isLoading }) => {
   }
 
   return (
-    <div>
-      <Can I='update' this={subject('Page', page)}>
-        <Button
-          variant='warning' className='align-self-center' as={Link}
-          to={`/pages/${page.id}/edit`}
-        >{t('edit')}
-        </Button>
-      </Can>
-      <Can I='delete' this={subject('Page', page)}>
-        <Button variant='danger' className='align-self-center' onClick={onClickRemove}>
-          {t('remove')}
-        </Button>
-      </Can>
+    <Row>
+      <Col md={{ span: 8, offset: 2 }}>
+      <div className='kronos-header'>
+      <h1><MultiLanguageText nl={page.page_title_nl} en={page.page_title_en} /></h1></div>
+      
+      <div className='page-content'>
+        <MultiLanguageText nl={page.content_nl} en={page.content_en} renderFunction={renderMarkdown} />
+      </div>
+      
 
-      <h1><MultiLanguageText nl={page.title_nl} en={page.title_en} /></h1>
-      <MultiLanguageText nl={page.content_nl} en={page.content_en} renderFunction={renderMarkdown} />
-    </div>
+      </Col>
+      <Col md={2}>
+        {/* Only shown to people who may edit this page */}
+        <Can I='update' this={subject('Page', page)}>
+          <AdminCard>
+            <Button variant='warning' block as={Link} to={`/pages/${page.id}/edit`}>
+              {t('edit')}
+            </Button>
+            <Can I='delete' this={subject('Page', page)}>
+              <RemoveButton variant='danger' block onRemove={onClickRemove}>
+                {t('remove')}
+              </RemoveButton>
+            </Can>
+          </AdminCard>
+        </Can>
+      </Col>
+    
+    </Row>
   )
 }
 

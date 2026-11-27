@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { Table, Button } from 'react-bootstrap'
+import { Table, Button, Row, Col } from 'react-bootstrap'
 import { useQuery, useQueryCache } from 'react-query'
 import { useTranslation } from 'react-i18next'
 import {
@@ -14,6 +14,7 @@ import { FieldControl } from '../Generic/FormField'
 import { Can } from '../../utils/auth-helper'
 
 import { getUsers } from '../Users/queries'
+import RemoveButton from '../Generic/RemoveButton'
 
 
 const NewCommitteeMember = ({ CommitteeId }) => {
@@ -92,14 +93,14 @@ const CommitteeMembershipRow = ({ membership, removeFunction }) => {
       <td>{membership.function}</td>
       <td>
         <Can I='delete' a='CommitteeMembership'>
-          <Button
+          <RemoveButton
             variant='danger'
             disabled={removing}
             size='sm'
-            onClick={onClickRemove}
+            onRemove={onClickRemove}
           >
             {removing ? <DefaultSpinner inline size='sm' /> : 'Verwijder'}
-          </Button>
+          </RemoveButton>
         </Can>
       </td>
     </tr>
@@ -141,49 +142,55 @@ function Committee (props) {
   }
 
   return (
-    <>
-      <h1>
-        <MultiLanguageText nl={Committee.name_nl} en={Committee.name_en} />
-      </h1>
+    <Row>
+      <Col md={{ span: 8, offset: 2 }}>
+        <div className='kronos-header'>
+          <h1>
+            <MultiLanguageText nl={Committee.name_nl} en={Committee.name_en} />
+          </h1>
+        </div>
 
-      <p className='lead'>
-        <MultiLanguageText
-          nl={Committee.description_nl}
-          en={Committee.description_en}
-        />
-      </p>
+        <div className='page-content'>
+          <p className='lead'>
+            <MultiLanguageText
+              nl={Committee.description_nl}
+              en={Committee.description_en}
+            />
+          </p>
 
-      <Table striped>
-        <thead>
-          <tr>
-            <th>Naam</th>
-            <th>Functie</th>
-            <Can I='delete' a='CommitteeMembership'>
-              <th>Action</th>
-            </Can>
-          </tr>
-        </thead>
+          <Table striped>
+            <thead>
+              <tr>
+                <th>Naam</th>
+                <th>Functie</th>
+                <Can I='delete' a='CommitteeMembership'>
+                  <th>Action</th>
+                </Can>
+              </tr>
+            </thead>
 
-        <tbody>
-          {memberships &&
-            memberships.map((membership) => {
-              return (
-                <CommitteeMembershipRow
-                  key={membership.id}
-                  removeFunction={removeFunction}
-                  membership={membership}
-                />
-              )
-            })}
+            <tbody>
+              {memberships &&
+                memberships.map((membership) => {
+                  return (
+                    <CommitteeMembershipRow
+                      key={membership.id}
+                      removeFunction={removeFunction}
+                      membership={membership}
+                    />
+                  )
+                })}
 
-          <Can I='create' a='CommitteeMembership'>
-            <NewCommitteeMember CommitteeId={Committee.id} />
-          </Can>
-        </tbody>
-      </Table>
+              <Can I='create' a='CommitteeMembership'>
+                <NewCommitteeMember CommitteeId={Committee.id} />
+              </Can>
+            </tbody>
+          </Table>
 
-      {isMembershipsLoading && <DefaultSpinner />}
-    </>
+          {isMembershipsLoading && <DefaultSpinner />}
+        </div>
+      </Col>
+    </Row>
   )
 }
 

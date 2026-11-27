@@ -26,6 +26,7 @@ const NewCommittee = () => {
       objectName='Committee'
       createFunction={createCommittee}
       onSuccess={onSuccess}
+      pageLayout
       FormComponent={CommitteeForm}
     />
   )

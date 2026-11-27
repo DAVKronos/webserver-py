@@ -19,6 +19,7 @@ const NewNewsItem = () => {
       FormComponent={NewsItemForm}
       createFunction={createNewsItem}
       onSuccess={onSuccess}
+      pageLayout
     />
   )
 }

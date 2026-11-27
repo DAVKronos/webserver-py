@@ -1,5 +1,8 @@
 {
   "generic": {
+    "confirmRemove": "Are you sure you want to delete this item?",
+    "adminPage": "Admin page",
+    "settings": "Settings",
     "add": "Add",
     "addModel": "New {{model}}",
     "edit": "Edit",
@@ -43,6 +46,7 @@
     "documents": "Documents"
   },
   "loginMenu": {
+    "myProfile": "My profile",
     "login": "Log in",
     "logout": "Log out",
     "rememberMe": "Remember me",
@@ -56,7 +60,9 @@
     "incorrectCredentials": "Username or password incorrect."  
   },
   "footer": {
-    "sponsors": "Sponsors"
+    "sponsors": "Sponsors",
+    "contact": "Contact",
+    "externalLinks": "External Links"
   },
   "photoAlbum": {
     "no_photos": "No photos in this album"
@@ -94,6 +100,18 @@
     "delete": "Delete"
   },
   "userpage": {
+    "email": "Email",
+    "phone": "Phone",
+    "membership": "Membership",
+    "kronautSince": "Kronaut since",
+    "studentAt": "Student at",
+    "studentSince": "Student since",
+    "since": "since",
+    "contact": "Contact",
+    "studentnumber": "Student number",
+    "auLicensenumber": "AU license number",
+    "bankInfo": "Bank info",
+    "accountHolder": "Account holder:",
     "kronauts": "Kronauts",
     "initials": "Initials",
     "birthdate": "Date of birth",

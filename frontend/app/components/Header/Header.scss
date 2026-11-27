@@ -13,6 +13,13 @@
     color: #ffffff;
     padding: 1rem;
 
+    // Menu text in h6 style (Poppins Regular) for more clarity, at button size (1rem).
+    // Done in CSS rather than with <h6> tags: a heading element inside a link/button isn't valid HTML.
+    font-family: $headings-font-family;
+    font-size: 1rem;
+    font-weight: 400;
+    line-height: $headings-line-height;
+
     &.language-switch {
       padding: 2px;
       display: flex;
@@ -25,17 +32,14 @@
     }
 
     &:hover,  &.active {
-      background-color: $kronos-green-light;
+      background-color: $kronos-green-highlight;
     }
 
   }
 
-  .nav-item.show .nav-link {
-    color: #d9d9d9;
-  }
 
   .nav-item.dropdown .dropdown-menu {
-    border-radius: 0;
+    // border-radius: 0; // now 15px via $dropdown-border-radius in _variables.scss
     //font-size: 14px;
   }
 
@@ -52,6 +56,15 @@
     color: $white;
     padding: 0.5rem 0;
     margin-right: 1.5rem;
+    display: flex;
+    align-items: center;
+
+    // Logo icon in front of the wordmark
+    .navbar-brand-logo {
+      height: 2.25rem;
+      width: auto;
+      margin-right: 0.6rem;
+    }
 
     &:hover, &:focus, &.active {
       color: $white;
@@ -69,8 +82,12 @@
   flex-direction: column;
   align-items: center;
 
-  h3 {
-    text-align: center;
+  // Name: left aligned (in line with the menu items below) and green
+  h4 {
+    align-self: stretch;
+    text-align: left;
+    padding: 0 1.5rem;
+    color: $kronos-green;
   }
 }
 
@@ -96,3 +113,61 @@
   height: 90px;
 }
 
+// Round profile picture as the user menu toggle in the nav bar (LoginMenu.js)
+.navbar-avatar {
+  width: 2.25rem;
+  height: 2.25rem;          // 1:1
+  object-fit: cover;        // crop non-square photos
+}
+
+#navbar-kronos .nav-link.dropdown-toggle:has(.navbar-avatar) {
+  padding-top: 0.6rem;      // keep the bar height the same as with text links
+  padding-bottom: 0.6rem;
+}
+
+// Highlighted pages as light buttons in the nav bar (NavBar.js)
+#navbar-kronos .nav-highlight-btn {
+  align-self: center;
+  // Spacing: between the buttons via `.btn + .btn` (App.scss); the user menu's own padding gives room on the right
+
+  // No focus glow after clicking
+  &:focus,
+  &.active:focus {
+    box-shadow: none;
+  }
+
+  // Button of the page you're on: not grey (hover stays Bootstrap's grey)
+  &.active:not(:hover) {
+    background-color: $white;
+    border-color: $white;
+    color: $body-color;
+
+    // To test Old Green instead, swap the three lines above for:
+    // background-color: $old-green;
+    // border-color: $old-green;
+    // color: $forest-green;
+  }
+}
+
+// In the collapsed (mobile) menu: full width, with some space between
+@include media-breakpoint-down(md) {
+  #navbar-kronos .nav-highlight-btn {
+    margin: 0.25rem 0;
+  }
+}
+
+// Language toggle + log out button at the bottom of the user dropdown (LoginMenu.js)
+.dropdown-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 0.5rem 1.5rem;
+
+  .language-toggle {
+    display: flex;
+
+    .btn {
+      flex: 1;  // NL and ENG equally wide
+    }
+  }
+}

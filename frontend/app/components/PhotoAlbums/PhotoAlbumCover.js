@@ -9,6 +9,7 @@ import { subject } from '@casl/ability'
 import { Can } from '../../utils/auth-helper'
 import { useTranslation } from 'react-i18next'
 import placeholder from '../../images/image-thumb-placeholder.png'
+import RemoveButton from '../Generic/RemoveButton'
 
 const PhotoAlbumCover = ({ photoAlbum }) => {
   const id = photoAlbum.id
@@ -47,9 +48,9 @@ const PhotoAlbumCover = ({ photoAlbum }) => {
           </Button>
         </Can>
         <Can I='delete' this={subject('Photoalbum', photoAlbum)}>
-          <Button size='sm' variant='danger' onClick={() => onClickRemove(photoAlbum.id)}>
+          <RemoveButton size='sm' variant='danger' onRemove={() => onClickRemove(photoAlbum.id)}>
             {t('remove')}
-          </Button>
+          </RemoveButton>
         </Can>
       </Card.Body>
     </Card>

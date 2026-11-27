@@ -3,6 +3,7 @@ import { Table, Button } from 'react-bootstrap'
 import { useTranslation } from 'react-i18next'
 import DefaultSpinner from '../Generic/Spinner'
 import { Link } from 'react-router-dom'
+import RemoveButton from './RemoveButton'
 
 const ListObjectsComponent = ({
   columns = [],
@@ -51,11 +52,11 @@ const ListObjectsComponent = ({
                   </Button>
                 </td>
                 <td>
-                  <Button
+                  <RemoveButton
                     variant='danger'
                     disabled={removingThis}
                     size='sm'
-                    onClick={onClickRemove}
+                    onRemove={onClickRemove}
                   >
                     {removingThis
                       ? (
@@ -64,7 +65,7 @@ const ListObjectsComponent = ({
                       : (
                           'Verwijder'
                         )}
-                  </Button>
+                  </RemoveButton>
                 </td>
               </tr>
             )

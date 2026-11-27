@@ -1,6 +1,6 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
-import { Row, Col, Image } from 'react-bootstrap'
+import { Row, Col, Image, Card } from 'react-bootstrap'
 import { format } from '../../utils/date-format.js'
 import { useTranslation } from 'react-i18next'
 import ReactMarkdown from 'react-markdown'
@@ -9,8 +9,16 @@ import MultiLanguageText from '../Generic/MultiLanguageText'
 
 const ShortNewsItem = ({ item }) => {
   const { t, i18n } = useTranslation('homepage')
+  // Preview: max. PREVIEW_LENGTH characters, cut at a whole word, with ... behind it
+  const PREVIEW_LENGTH = 500
   const renderNews = (news) => {
-    return <ReactMarkdown>{news.split('\n')[0]}</ReactMarkdown>
+    const text = (news || '').replace(/\s+/g, ' ').trim()
+    let preview = text
+    if (text.length > PREVIEW_LENGTH) {
+      const lastSpace = text.lastIndexOf(' ', PREVIEW_LENGTH)
+      preview = text.slice(0, lastSpace > 0 ? lastSpace : PREVIEW_LENGTH) + '...'
+    }
+    return <ReactMarkdown>{preview}</ReactMarkdown>
   }
   let commentCount = null
   if (item.comment_count) {
@@ -18,21 +26,22 @@ const ShortNewsItem = ({ item }) => {
   }
 
   return (
-    <Row>
-      <Col md={3} style={{ display: 'flex' }}>
-        <Link to={`/newsitems/${item.id}`} className='align-self-center'>
-          <Image className='d-block w-100' src={item.photo_file?.path} alt={item.title_nl} thumbnail />
-        </Link>
-      </Col>
-      <Col md={9}>
-        <header>
-          <Link to={`/newsitems/${item.id}`}><h2><MultiLanguageText nl={item.title_nl} en={item.title_en} /></h2></Link>
-          <p>{format(item.created_at, 'PPP p', i18n.language)} | {item.creator?.name || 'Unknown'}{commentCount}</p>
-        </header>
+    <Card className='mb-5'>
+      {/* Image + header together form one link to the article */}
+      <Link to={`/newsitems/${item.id}`} className='card-link d-block text-decoration-none'>
+        <Card.Img variant="top" src={item.photo_file?.path} alt={item.title_nl} thumbnail/>
+        <Card.Header className='kronos-header'>
+          <h1><MultiLanguageText nl={item.title_nl} en={item.title_en} /></h1>
+        </Card.Header>
+      </Link>
+      <Card.Body>
+        <h6 className='green'>{format(item.created_at, 'PPP p', i18n.language)} | {item.creator?.name || 'Unknown'}{commentCount}</h6>
         <MultiLanguageText nl={item.content_nl} en={item.content_en} renderFunction={renderNews} />
-        <Link to={`/newsitems/${item.id}`}>{t('readMore')}</Link>
-      </Col>
-    </Row>
+        <div className='text-right'>
+          <Link to={`/newsitems/${item.id}`} className='btn btn-primary stretched-link'>{t('readMore')}</Link>
+        </div>
+      </Card.Body>
+    </Card>
   )
 }
 

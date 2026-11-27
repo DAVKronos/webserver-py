@@ -35,6 +35,7 @@ const EditPage = ({ page }) => {
       objectName='page'
       updateFunction={updatePage}
       onSuccess={onSuccess}
+      pageLayout
       FormComponent={PageForm}
     />
   )

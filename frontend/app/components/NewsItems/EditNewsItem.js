@@ -32,6 +32,7 @@ const EditNewsItem = ({ newsItem }) => {
       objectName='newsItem'
       updateFunction={updateNewsItem}
       onSuccess={onSuccess}
+      pageLayout
       FormComponent={NewsItemForm}
     />
   )

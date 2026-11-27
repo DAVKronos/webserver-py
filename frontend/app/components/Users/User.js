@@ -1,5 +1,5 @@
 import React from 'react'
-import { Col, Row, Table, Image, Button } from 'react-bootstrap'
+import { Col, Row, Image, Button } from 'react-bootstrap'
 import { useTranslation } from 'react-i18next'
 import { UserTypeName } from './UserType'
 import { useQuery } from 'react-query'
@@ -23,136 +23,108 @@ const User = (props) => {
   const created_at = new Date(user.created_at)
   const userType = i18n.language === 'nl' ? user.user_type && user.user_type.name_nl : user.user_type && user.user_type.name_en
 
+  // Helpers for the info block
+  const formatDate = (value) => (value ? new Date(value).toLocaleDateString() : '-')
+  const formatYear = (value) => (value ? new Date(value).getFullYear() : '-')
+  const show = (value) => value || '-'
+  // "t.n.v. Hr./Mw." based on gender, nothing for other
+  const salutation = (sex) => (sex === 'Male' ? 'Hr. ' : sex === 'Female' ? 'Mw. ' : '')
+
   return (
-    <>
-      <h1>{user.name}</h1>
-      <Row>
-        <Col>
-          <Table>
-            <tbody>
-              <tr>
-                <td>
-                  <b>{t('initials')}</b>
-                </td>
-                <td>{user.initials}</td>
-              </tr>
-              <tr>
-                <td>
-                  <b>{t('birthdate')}</b>
-                </td>
-                <td>{date.toLocaleDateString()}</td>
-              </tr>
-              <tr>
-                <td>
-                  <b>E-mail</b>
-                </td>
-                <td>{user.email}</td>
-              </tr>
-              <tr>
-                <td>
-                  <b>{t('membertype')}</b>
-                </td>
-                <td>{userType}</td>
-              </tr>
-              <tr>
-                <td>
-                  <b>{t('phonenumber')}</b>
-                </td>
-                <td>{user.phonenumber}</td>
-              </tr>
-              {user.institution && <tr>
-                <td>
-                  <b>{t('institution')}</b>
-                </td>
-                <td>{user.institution}</td>
-              </tr>}
-              {user.joined_in && <tr>
-                <td>
-                  <b>{t('memberSince')}</b>
-                </td>
-                <td>{user.joined_in}</td>
-              </tr>}
-              <tr>
-                <td>
-                  <b>{t('sex')}</b>
-                </td>
-                <td>{user.sex}</td>
-              </tr>
-              
-              <Can I='view.extended' this='User'>
-                <tr>
-                  <td>
-                    <b>{t('address')}</b>
-                  </td>
-                  <td>{user.address}</td>
-                </tr>
-                <tr>
-                  <td>
-                    <b>{t('postalcode')}</b>
-                  </td>
-                  <td>{user.postalcode}</td>
-                </tr>
-                <tr>
-                  <td>
-                    <b>{t('city')}</b>
-                  </td>
-                  <td>{user.city}</td>
-                </tr>
-                <tr>
-                  <td>
-                    <b>{t('unioncardnumber')}</b>
-                  </td>
-                  <td>{user.unioncard_number}</td>
-                </tr>
-                <tr>
-                  <td>
-                    <b>{t('banknumber')}</b>
-                  </td>
-                  <td>{user.bank_account_number}</td>
-                </tr>
-                <tr>
-                  <td>
-                    <b>{t('createdat')}</b>
-                  </td>
-                  <td>{created_at.toLocaleDateString()}</td>
-                </tr>
-              </Can>
-              <tr>
-                <td>
-                  <b>{t('Committees')}</b>
-                </td>
-                <td>
-                  {committees?.map((c) => (lang === 'nl' ? c.name_nl : c.name_en)).toString()}
-                </td>
-              </tr>
-            </tbody>
-          </Table>
-        </Col>
-        <Col>
-          <section className='polaroid'>
-            <figure>
-              {user.avatar_file && <Image src={user.avatar_file?.path}/>}
-              {!user.avatar_file && <Image src={missingAvatar}/>}
-              <figcaption>{user.name}</figcaption>
-            </figure>
-          </section>
-        </Col>
-      </Row>
-      <Row>
-        <Col>
+    <Row>
+      <Col md={{ span: 8, offset: 2 }}>
+        <div className='kronos-header user-header'>
+          <h1>{user.name}</h1>
+          {/* Profile picture: circle, its centre on the bottom edge of the header */}
+          <Image src={user.avatar_file?.path || missingAvatar} alt={user.name} roundedCircle className='user-avatar' />
+        </div>
+        <div className='page-content user-info'>
+          {/* General */}
+          <Row>
+            <Col md={6}>
+              <p className='mb-1'>{t('sex')}: <b>{show(user.sex)}</b></p>
+              <p>{t('birthdate')}: <b>{formatDate(user.birthdate)}</b></p>
+            </Col>
+          </Row>
+
+          {/* Contact & address */}
+          <Row>
+            <Col md={6}>
+              <h3>{t('contact')}</h3>
+              <p>
+                {t('email')}: <b><a href={`mailto:${user.email}`}>{user.email}</a></b><br />
+                {t('phone')}: <b>{show(user.phonenumber)}</b>
+              </p>
+            </Col>
+            <Can I='view.extended' this='User'>
+              <Col md={6}>
+                <h3>{t('address')}</h3>
+                <p>
+                  {user.address}<br />
+                  {user.postalcode}, {user.city}
+                </p>
+              </Col>
+            </Can>
+          </Row>
+
+          <hr />
+
+          {/* Membership & study */}
+          <Row>
+            <Col md={6}>
+              <h3>{t('membership')}</h3>
+              <p>
+                <em>{show(userType)}</em><br />
+                {t('kronautSince')} {formatYear(user.created_at)}
+                <Can I='view.extended' this='User'>
+                  <br />{t('auLicensenumber')}: <b>{show(user.license_number)}</b>
+                </Can>
+              </p>
+            </Col>
+            <Col md={6}>
+              <h3>{t('study')}</h3>
+              <p>
+                <em>{show(user.study)}</em><br />
+                {t('studentAt')} {show(user.institution)} {t('since')} {show(user.joined_in)}
+                <Can I='view.extended' this='User'>
+                  <br />{t('studentnumber')}: <b>{show(user.unioncard_number)}</b>
+                </Can>
+              </p>
+            </Col>
+          </Row>
+
+          {/* Bank info */}
+          <Can I='view.extended' this='User'>
+            <h3>{t('bankInfo')}</h3>
+            <p>
+              IBAN: <b>{show(user.bank_account_number)}</b><br />
+              <em>{t('accountHolder')} {salutation(user.sex)}{user.initials}</em>
+            </p>
+          </Can>
+
+          {/* Committees */}
+          <h3>{t('Committees')}</h3>
+          {committees && committees.length > 0
+            ? (
+              <ul>
+                {committees.map((c) => (
+                  <li key={c.id}>{lang === 'nl' ? c.name_nl : c.name_en}</li>
+                ))}
+              </ul>
+              )
+            : <p>-</p>}
+
+          {/* Settings at the bottom of the content */}
           <Can I='edit' this={subject('User', user)}>
-            <Button as={Link} to={`/users/${user.id}/edit`}>
+            <hr />
+            <h6>{t('generic:settings')}</h6>
+            <Button variant='warning' as={Link} to={`/users/${user.id}/edit`}>
               {t('generic:edit')}
             </Button>
           </Can>
-          {/* <Can I='editpassword' this={subject('User', user)}>
-            <Button as={Link} to={`/users/${user.id}/password/edit`}>
-              {t('changePassword')}
-            </Button>
-          </Can> */}
-        </Col>
-      </Row>
-    </>
+        </div>
+      </Col>
+    </Row>
   )
 }
 

@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { Table, Button } from 'react-bootstrap'
+import { Table, Button, Row, Col } from 'react-bootstrap'
 import { Link } from 'react-router-dom'
 import { useQuery, useQueryCache } from 'react-query'
 import { useTranslation } from 'react-i18next'
@@ -7,6 +7,8 @@ import { getCommittees, removeCommittee } from './queries'
 import MultiLanguageText from '../Generic/MultiLanguageText'
 import { Can } from '../../utils/auth-helper'
 import DefaultSpinner from '../Generic/Spinner'
+import { BsPlusLg } from 'react-icons/bs'
+import RemoveButton from '../Generic/RemoveButton'
 
 
 const CommitteeRow = ({ committee, removeFunction }) => {
@@ -46,14 +48,14 @@ const CommitteeRow = ({ committee, removeFunction }) => {
 
       <Can I='delete' a='Committee'>
         <td>
-          <Button
+          <RemoveButton
             variant='danger'
             disabled={removing}
             size='sm'
-            onClick={onClickRemove}
+            onRemove={onClickRemove}
           >
             {removing ? <DefaultSpinner inline size='sm' /> : 'Verwijder'}
-          </Button>
+          </RemoveButton>
         </td>
       </Can>
     </tr>
@@ -78,47 +80,56 @@ function Committees (props) {
   }
 
   return (
-    <>
-      <h1>{t('headerText')}</h1>
-      <p className='lead'>{t('pageDescription')}</p>
+    <Row>
+      <Col md={{ span: 8, offset: 2 }}>
+        <div className='kronos-header'>
+          <h1>{t('headerText')}</h1>
+        </div>
 
-      <Table striped>
-        <thead>
-          <tr>
-            <th>{t('name')}</th>
-            <Can I='update' a='Committee'>
-              <th />
-            </Can>
-            <Can I='delete' a='Committee'>
-              <th />
-            </Can>
-          </tr>
-        </thead>
+        <div className='page-content'>
+          <p className='lead'>{t('pageDescription')}</p>
 
-        <tbody>
-          {committees &&
-            committees.map((committee) => {
-              return (
-                <CommitteeRow
-                  key={committee.id}
-                  committee={committee}
-                  removeFunction={removeFunction}
-                />
-              )
-            })}
-        </tbody>
-      </Table>
+          <Table striped>
+            <thead>
+              <tr>
+                <th>{t('name')}</th>
+                <Can I='update' a='Committee'>
+                  <th />
+                </Can>
+                <Can I='delete' a='Committee'>
+                  <th />
+                </Can>
+              </tr>
+            </thead>
 
-      {isLoading && <DefaultSpinner />}
+            <tbody>
+              {committees &&
+                committees.map((committee) => {
+                  return (
+                    <CommitteeRow
+                      key={committee.id}
+                      committee={committee}
+                      removeFunction={removeFunction}
+                    />
+                  )
+                })}
+            </tbody>
+          </Table>
 
-      <Can I='create' a='Committee'>
-        <Button as={Link} to='/committees/new'>
-          {t('generic:addModel', {
-            model: t('models:modelNames.Committee', { count: 0 })
-          })}
-        </Button>
-      </Can>
-    </>
+          {isLoading && <DefaultSpinner />}
+
+          {/* New committee button at the bottom of the content */}
+          <Can I='create' a='Committee'>
+            <Button as={Link} to='/committees/new'>
+              <BsPlusLg />{' '}
+              {t('generic:addModel', {
+                model: t('models:modelNames.Committee', { count: 1 })
+              })}
+            </Button>
+          </Can>
+        </div>
+      </Col>
+    </Row>
   )
 }
 

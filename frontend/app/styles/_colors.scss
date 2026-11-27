@@ -7,6 +7,9 @@ $old-green:    #6dd69e;
 $white:        #fff;
 $black:        #000;
 
+// Hover/active highlight: same calculation Bootstrap uses for button hovers (7.5% darker)
+$kronos-green-highlight: darken($kronos-green, 7.5%); // ≈ #006c33
+
 // Legacy names, still used in Header.scss / Footer.scss / App.scss.
 $kronos-green-dark:  $forest-green;
 $kronos-green-light: #2DCE6B; // old nav hover colour, replace during the nav bar redesign

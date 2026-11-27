@@ -1,3 +1,5 @@
+@import '../../styles/colors'; // brand colours ($kronos-green etc.); this file is compiled separately from App.scss
+
 /*** FIRST STYLE THE POLAROID SECTION ***/
 .polaroid {
   overflow: hidden; 
@@ -62,4 +64,39 @@
   left: auto;
   right: 20px;
   transform: rotate(12deg);
+}
+
+/*** USER PAGE HEADER WITH ROUND PROFILE PICTURE ***/
+/* Note: this file is compiled on its own (imported from User.js), so Sass variables
+   from styles/_variables.scss aren't available here; colours are written out. */
+.user-header {
+  position: relative;            /* anchor for the absolute profile picture */
+  padding-right: 10rem;          /* long names don't run under the picture */
+  padding-top: 2rem;             /* taller header, so the top half of the picture */
+  padding-bottom: 2rem;          /* stays inside it and doesn't overlap the nav bar */
+}
+
+.user-avatar {
+  position: absolute;
+  right: 1.5rem;
+  top: 100%;                     /* top of the picture at the bottom of the header... */
+  transform: translateY(-50%);   /* ...then moved up half its height: centre on the bottom edge */
+  width: 140px;
+  height: 140px;                 /* 1:1 */
+  object-fit: cover;             /* crop non-square photos instead of stretching */
+  background-color: #fff;
+  z-index: 2;
+}
+
+@media (max-width: 767.98px) {
+  .user-header { padding-right: 7rem; }
+  .user-avatar { width: 96px; height: 96px; right: 1rem; }
+}
+
+/*** USER INFO BLOCK ***/
+.user-info {
+  h3 {
+    margin-top: 1rem;
+    color: $kronos-green;
+  }
 }

@@ -25,7 +25,7 @@ import Footer from './components/Footer/Footer'
 const AppRouter = () => {
   return (
     <Router>
-      
+      <div className='app-layout'>
         <Header/>
         <div className='main'>
           <Container fluid='lg'>
@@ -75,6 +75,7 @@ const AppRouter = () => {
           </Container>
         </div>
         <Footer />
+      </div>
     </Router>
   )
 }

@@ -20,6 +20,7 @@ const NewPage = () => {
       objectName='page'
       createFunction={createPage}
       onSuccess={onSuccess}
+      pageLayout
       FormComponent={PageForm}
     />
   )

@@ -17,6 +17,7 @@ import { useTranslation } from 'react-i18next'
 import { subject } from '@casl/ability'
 import SubscriptionsCard from './Components/SubscriptionsCard'
 import AgendaItemEventsCard from './Components/AgendaItemEventsCard'
+import RemoveButton from '../Generic/RemoveButton'
 
 function AgendaItem (props) {
   const { t, i18n } = useTranslation('generic')
@@ -58,9 +59,9 @@ function AgendaItem (props) {
             </Button>
           </Can>
           <Can I='delete' this={subject('Agendaitem', agendaItem)}>
-            <Button variant='danger' className='align-self-center' onClick={onClickRemove}>
+            <RemoveButton variant='danger' className='align-self-center' onRemove={onClickRemove}>
               {t('remove')}
-            </Button>
+            </RemoveButton>
           </Can>
 
         </Col>

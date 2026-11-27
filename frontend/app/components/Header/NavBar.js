@@ -1,12 +1,12 @@
 import React, { useState } from 'react'
-import { Nav, Navbar, NavDropdown, Container } from 'react-bootstrap'
+import { Nav, Navbar, NavDropdown, Container, Button } from 'react-bootstrap'
 import { NavLink } from 'react-router-dom'
 import UserMenu from './LoginMenu'
 import { useQuery } from 'react-query'
 import { getPages } from './queries'
 import { useTranslation } from 'react-i18next'
-import { Can } from '../../utils/auth-helper'
-import LanguageSwitch from './LanguageSwitch'
+// import LanguageSwitch from './LanguageSwitch' // replaced by LanguageToggle in the user dropdown
+import logo from '../../images/kronos-logo-icon.svg'
 import MultiLanguageText from "../Generic/MultiLanguageText";
 
 function getPagesForMenu (pages, title) {
@@ -17,7 +17,7 @@ function getPagesForMenu (pages, title) {
 
 function getPageLinksForMenu (pages, title) {
   return getPagesForMenu(pages, title).map(page => {
-    return <NavDropdown.Item key={page.page_title_nl} as={NavLink} to={`/${page.page_title_nl}`} href={`/${page.page_title_nl}`}>{page.page_title_nl}</NavDropdown.Item>
+    return <NavDropdown.Item key={page.page_title_nl} as={NavLink} to={`/${page.page_title_nl}`} /* href={`/${page.page_title_nl}`} */>{page.page_title_nl}</NavDropdown.Item>
   })
 }
 
@@ -25,7 +25,12 @@ function getHighlightPages (pages) {
   return pages.filter((page) => { 
     return page.is_highlight
   }).map(page => {
-    return <Nav.Link className='highlight' key={page.page_title_nl} as={NavLink} to={`/${page.page_title_nl}`} href={`/${page.page_title_nl}`}><MultiLanguageText nl={page.page_title_nl} en={page.page_title_en} /></Nav.Link>
+    // Highlighted pages as light buttons, on the right next to the user menu
+    return (
+      <Button key={page.page_title_nl} as={NavLink} to={`/${page.page_title_nl}`} variant='light' className='nav-highlight-btn'>
+        <MultiLanguageText nl={page.page_title_nl} en={page.page_title_en} />
+      </Button>
+    )
   })
 }
 
@@ -36,14 +41,17 @@ const NavBar = () => {
   return (
     <Navbar id='navbar-kronos' expand='lg' variant='dark' collapseOnSelect>
       <Container>
-      <Navbar.Brand as={NavLink} to='/' href='/' exact>D.A.V. Kronos</Navbar.Brand>
+      <Navbar.Brand as={NavLink} to='/' href='/' exact>
+        <img src={logo} alt='' className='navbar-brand-logo' />
+        D.A.V. Kronos
+      </Navbar.Brand>
       <Navbar.Toggle aria-controls='basic-navbar-nav' />
       <Navbar.Collapse id='basic-navbar-nav' className='flex-wrap'>
         <Nav>
           <NavDropdown title={t('association')} id='basic-nav-dropdown'>
-            <NavDropdown.Item as={NavLink} to='/Committees' href='/Committees'>{t('committees')}</NavDropdown.Item>
+            <NavDropdown.Item as={NavLink} to='/Committees' /* href='/Committees' */>{t('committees')}</NavDropdown.Item>
             {getPageLinksForMenu(pages, 'Vereniging')}
-            <NavDropdown.Item as={NavLink} to='/documents' href='/documents '>{t('documents')}</NavDropdown.Item>
+            <NavDropdown.Item as={NavLink} to='/documents' /* href='/documents ' */>{t('documents')}</NavDropdown.Item>
           </NavDropdown>
           <NavDropdown title={t('trainings')} id='basic-nav-dropdown'>
             {getPageLinksForMenu(pages, 'Trainingen')}
@@ -55,20 +63,15 @@ const NavBar = () => {
             <NavDropdown.Item target='_blank' href='http://beermile.kronos.nl'>Beermile</NavDropdown.Item>
             {getPageLinksForMenu(pages, 'Wedstrijden')}
           </NavDropdown>
-          <Nav.Link as={NavLink} to='/agendaitems' href='/agendaitems'>{t('agenda')}</Nav.Link>
-          <Nav.Link as={NavLink} to='/photoalbums' href='/photoalbums'>{t('photos')}</Nav.Link>
+          <Nav.Link as={NavLink} to='/agendaitems' /* href='/agendaitems' */>{t('agenda')}</Nav.Link>
+          <Nav.Link as={NavLink} to='/photoalbums' /* href='/photoalbums' */>{t('photos')}</Nav.Link>
 
-        </Nav>
-        <Nav>
-          {getHighlightPages(pages)}
         </Nav>
         <Nav className='ml-auto'>
-
-          <Can I='view' a='User'>
-            <Nav.Link as={NavLink} to='/users'>{t('users')}</Nav.Link>
-          </Can>
+          {getHighlightPages(pages)}
+          {/* "Users" link moved to the user dropdown (LoginMenu.js) */}
           <UserMenu />
-          <LanguageSwitch />
+          {/* <LanguageSwitch /> */}
         </Nav>
       </Navbar.Collapse>
       </Container>

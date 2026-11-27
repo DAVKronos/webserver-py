@@ -1,17 +1,15 @@
 import React from 'react'
-import { Row } from 'react-bootstrap'
+
 const Contact = () => {
   return (
-    <Row>
-      <div className='col-md-3 adresgegevens'>
-        <address>
-          <b>Drienerlose Atletiek Vereniging Kronos <br /></b>
-          Postbus 217 <br />
-          7500 AE Enschede <br />
-          <a href='mailto:info@kronos.nl'>info@kronos.nl</a>
-        </address>
-      </div>
-    </Row>
+    <address>
+      <h6>UTrack - Sport Centre</h6>
+      <em>De Hems 20,<br />7522 NL Enschede</em>
+      <br/><br/>
+
+      <h6>Mail</h6>
+      <a href='mailto:bestuur@kronos.nl'>bestuur@kronos.nl</a>
+    </address>
   )
 }
 

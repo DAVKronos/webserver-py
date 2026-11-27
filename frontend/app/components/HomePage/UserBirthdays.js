@@ -38,13 +38,13 @@ const UserBirthday = ({ user }) => {
   const birthdate = new Date(year, month - 1, day)
   return (
     <Row as={Link} to={`/users/${user.id}`} className='align-items-center'>
-      <Col xs={2}><h5>
-        {birthdate.getDate()}<br />
+      <Col xs={2}><p><b>
+        {birthdate.getDate()}<br /></b>
         <small>{format(birthdate, 'MMM')}</small>
-      </h5>
+      </p>
       </Col>
       <Col xs={2}><Image roundedCircle src={user.avatar_file?.path} /> </Col>
-      <Col xs={7}><h5>{user.name}</h5></Col>
+      <Col xs={7}><p>{user.name}</p></Col>
     </Row>
   )
 }

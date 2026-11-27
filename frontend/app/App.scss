@@ -24,8 +24,20 @@ body{
   background-color: #f5f5f5;
 }
 
+// Header, content, footer stacked; the content stretches so the footer
+// sits at the bottom of the screen on short pages.
+.app-layout {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
 .main {
-  padding-bottom: 140px;
+  flex: 1 0 auto;
+}
+
+img {
+  max-width: 100%;
 }
 
 a {
@@ -39,12 +51,12 @@ a {
 
 .card.side-panel {
   margin-bottom: 30px;
-  border-radius: 0;
+  // border-radius: 0;
 
   .card-header {
     background-color: $kronos-green;
     color: #ffffff;
-    border-radius: 0;
+    // border-radius: 0;
   }
 
 
@@ -60,9 +72,6 @@ a {
   }
 }
 
-.btn {
-  margin: 5px 0 0 5px;
-}
 
 .row-margin,.card-margin-top {
   margin-top: 20px;
@@ -70,4 +79,100 @@ a {
 
 .form-padding {
   padding: 7px;
+}
+
+// Kronos header: green bar with three large Forest Green chevrons in the background, on the left.
+// Use on any element: <Card.Header className='kronos-header'>, <h1 className='kronos-header'>, <div className='kronos-header'>
+.kronos-header {
+  display: flex;
+  align-items: center;
+  min-height: 4.5rem;
+  padding: 0.75rem 1.25rem;
+  color: $white;
+  background-color: $forest-green; // was $kronos-green
+
+  // Three chevrons, as tall as the bar. The colour is in the SVG: %23009245 = $kronos-green (#009245); was %2311602d = $forest-green
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 100'%3E%3Cg fill='%23009245'%3E%3Cpolygon points='0,0 36,0 76,50 36,100 0,100 40,50'/%3E%3Cpolygon points='60,0 96,0 136,50 96,100 60,100 100,50'/%3E%3Cpolygon points='120,0 156,0 196,50 156,100 120,100 160,50'/%3E%3C/g%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: left center;
+  background-size: auto 100%;
+
+  // Headings and links inside stay white
+  h1, h2, h3, h4, h5, h6,
+  a, a:hover, a:focus {
+    color: $white;
+    margin: 0;
+  }
+
+  // No underline on links inside the header
+  a, a:hover, a:focus {
+    text-decoration: none;
+  }
+
+}
+
+// White reading area for text-heavy pages (news articles, info pages).
+// Meant for use inside a md={8} column: <div className='page-content'>...</div>
+.page-content {
+  background-color: $white;
+  padding: 1.5rem;
+
+  @include media-breakpoint-up(md) {
+    padding: 2rem 2.5rem;
+  }
+
+  > :last-child {
+    margin-bottom: 0;
+  }
+}
+
+// Text colour helpers: <h2 className='dark-green'>, <span className='red'>
+// !important (like Bootstrap's text-* classes) so they also win over the default heading/link colours
+.green      { color: $kronos-green !important; }
+.dark-green { color: $forest-green !important; }
+.red        { color: $track-red !important; }
+
+// Top part of a card (image + kronos-header) wrapped in one link:
+// <Link className='card-link'><Card.Img /><Card.Header className='kronos-header'>...</Card.Header></Link>
+// When the card is hovered, the image darkens and zooms in.
+// The whole card is clickable via Bootstrap's `stretched-link` class on the card's button.
+.card-link {
+  display: block;
+  overflow: hidden; // keeps the zoomed image inside the card
+  border-top-left-radius: $card-inner-border-radius;
+  border-top-right-radius: $card-inner-border-radius;
+
+  img {
+    transition: transform 0.4s ease, filter 0.4s ease;
+  }
+
+  // Header stays on top of the zoomed image
+  .kronos-header {
+    position: relative;
+    z-index: 1;
+  }
+
+  // Hover (or keyboard focus) anywhere on the card
+  .card:hover &,
+  .card:focus-within & {
+    img {
+      transform: scale(1.05);
+      filter: brightness(0.75);
+    }
+  }
+}
+
+// No movement for people who turned on "reduce motion" in their system settings
+@media (prefers-reduced-motion: reduce) {
+  .card-link img {
+    transition: none;
+  }
+}
+
+// Dropdown menu items (all dropdowns): active item as a green pill.
+// Hover = green text, set via $dropdown-link-hover-color in styles/_variables.scss
+.dropdown-item {
+  width: auto;            // with the margin below: the pill doesn't touch the menu edges
+  margin: 0 0.5rem;
+  border-radius: 50rem;   // pill shape (visible on the active item)
 }
